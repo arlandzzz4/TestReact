@@ -4,7 +4,6 @@ import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-quer
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { useAuthStore } from '@/store/useAuthStore';
 import { instance } from '@/api/instance';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { properties } from './constants/properties.js';
 import AppRouter from './AppRouter';
 
