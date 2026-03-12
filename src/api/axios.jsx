@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useAuthStore } from '../store/useAuthStore';
 import { properties } from '../constants/properties.js';
 
-// [해결: 경로 오류] 중앙 집중식 상수로 관리하여 경로 수정이 용이하게 변경
+// 중앙 집중식 상수로 관리하여 경로 수정이 용이하게 변경
 const API_BASE_URL = properties.getBaseUrl();
 const REFRESH_ENDPOINT = '/api/auth/reissue';
 const LOGIN_ENDPOINT = '/api/auth/login';
