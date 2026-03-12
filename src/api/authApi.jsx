@@ -61,3 +61,14 @@ export const logoutUser = async () => {
     window.location.href = '/login';
   }
 };
+
+/**
+ * 전역 Axios 헤더에 토큰을 설정하거나 제거하는 유틸리티
+ */
+export const setAuthHeader = (token) => {
+  if (token) {
+    instance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  } else {
+    delete instance.defaults.headers.common['Authorization'];
+  }
+};

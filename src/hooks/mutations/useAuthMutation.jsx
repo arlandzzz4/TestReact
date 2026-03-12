@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { loginUser, logoutUser, registUser } from '../../api/authApi';
+import { loginUser, logoutUser, registUser, setAuthHeader } from '../../api/authApi';
 import { useAuthStore } from '../../store/useAuthStore';
 
 export const useLoginMutation = () => {
@@ -12,32 +12,39 @@ export const useLoginMutation = () => {
     
     // 로그인 성공 시 메인 대시보드나 홈 화면으로 이동합니다.
     onSuccess: (response) => {
-      const { accessToken, user } = response.data;
-      
-      // 1. 전역 헤더에 토큰 심기
-      instance.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-      
-      // 2. Zustand 스토어 업데이트
-      login(user, accessToken);
-      
-      // 3. 페이지 이동
-      navigate('/dashboard');
+      try {
+        console.log("서버 응답 데이터:", response); // 1. 데이터 구조 확인용 로그
+        
+        // 백엔드 응답이 response.data에 들어있는지, 아니면 response 자체인지 확인
+        const target = response.data || response; 
+        const { accessToken, user } = target;
+
+        if (!accessToken) {
+          throw new Error("토큰이 응답에 포함되어 있지 않습니다.");
+        }
+
+        // 2. Zustand 저장 (Zustand 내부 로직 에러 방지)
+        login(user || null, accessToken);
+        
+        // 3. 이동
+        navigate('/dashboard', { replace: true });
+        
+      } catch (err) {
+        // 여기서 에러가 나면 아래 onError가 아니라 이 catch 블록이 잡습니다.
+        console.error("onSuccess 내부 실행 에러:", err);
+        alert("로그인 처리 중 오류가 발생했습니다.");
+      }
     },
 
     // 에러 종류에 따라 다른 화면으로 보내거나 알림을 띄웁니다.
     onError: (error) => {
       console.error('로그인 에러:', error);
 
-      if (error.message === 'USER_INFO_NOT_FOUND') {
-        alert('로그인은 되었으나 유저 정보를 불러오지 못했습니다.');
-        navigate('/error/user-not-found'); // 정보 조회 실패 시 이동
-      } else if (error.response?.status === 401) {
+      const status = error.response?.status;
+      if (error.response?.status === 401) {
         alert('아이디 또는 비밀번호가 틀렸습니다.');
-        // 틀렸을 때는 이동하지 않고 현재 페이지에 머물게 할 수도 있고, 
-        // 실패 페이지로 보낼 수도 있습니다.
-        navigate('/login-fail'); 
       } else {
-        navigate('/error/server'); // 서버 장애 등 기타 에러 시 이동
+        alert('서버 에러가 발생했습니다. 잠시 후 다시 시도해주세요.', error.response?.status);
       }
     }
   });
