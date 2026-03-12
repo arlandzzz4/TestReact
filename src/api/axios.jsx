@@ -1,11 +1,25 @@
 import axios from 'axios';
-import { useAuthStore } from '../store/useAuthStore';
 import { properties } from '../constants/properties.js';
+import { useAuthStore } from '../store/useAuthStore.jsx';
 
 // 중앙 집중식 상수로 관리하여 경로 수정이 용이하게 변경
 const API_BASE_URL = properties.getBaseUrl();
 const REFRESH_ENDPOINT = '/api/auth/reissue';
 const LOGIN_ENDPOINT = '/api/auth/login';
+
+// 요청 인터셉터: 모든 요청 직전에 실행
+instance.interceptors.request.use(
+  (config) => {
+    // Zustand 스토어에서 직접 토큰을 가져옴
+    const token = useAuthStore.getState().token; 
+    
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 export const instance = axios.create({
   baseURL: API_BASE_URL,

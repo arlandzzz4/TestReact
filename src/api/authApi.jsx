@@ -1,5 +1,4 @@
 import { instance } from './axios';
-import { useAuthStore } from './store/useAuthStore';
 
 /**
  * 로그인 요청 함수

@@ -11,9 +11,17 @@ export const useLoginMutation = () => {
     mutationFn: loginUser,
     
     // 로그인 성공 시 메인 대시보드나 홈 화면으로 이동합니다.
-    onSuccess: (data) => {
-      login(data.user, data.accessToken);
-      navigate('/', { replace: true }); // replace: true를 주면 뒤로가기 방지
+    onSuccess: (response) => {
+      const { accessToken, user } = response.data;
+      
+      // 1. 전역 헤더에 토큰 심기
+      instance.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+      
+      // 2. Zustand 스토어 업데이트
+      login(user, accessToken);
+      
+      // 3. 페이지 이동
+      navigate('/dashboard');
     },
 
     // 에러 종류에 따라 다른 화면으로 보내거나 알림을 띄웁니다.
