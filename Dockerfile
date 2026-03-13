@@ -1,10 +1,12 @@
 # 1단계: 빌드 (Node.js 환경)
+ARG BUILD_MODE=development
+
 FROM node:20-alpine AS build
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-RUN npm run build
+RUN npm run build -- --mode ${BUILD_MODE}
 
 # 2단계: 실행 (Nginx 환경)
 FROM nginx:stable-alpine
