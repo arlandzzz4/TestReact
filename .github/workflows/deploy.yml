@@ -23,6 +23,7 @@ jobs:
       # 이미지 빌드 및 푸시
       - name: Build and Push
         run: |
-          # BUILD_MODE="production" 으로 명시적으로 묶어줍니다.
-          docker build --build-arg BUILD_MODE="production" -t ${{ secrets.DOCKER_USERNAME }}/react-frontend:latest .
+          docker build \
+            --build-arg BUILD_MODE=production \
+            -t ${{ secrets.DOCKER_USERNAME }}/react-frontend:latest .
           docker push ${{ secrets.DOCKER_USERNAME }}/react-frontend:latest
