@@ -1,15 +1,17 @@
 # 1단계: 빌드 (Node.js 환경)
 FROM node:20-alpine AS build
-WORKDIR /app
 
-# 빌드 시점에 외부(GitHub Actions)에서 넘겨받을 변수 선언
+# ★ 반드시 FROM 바로 다음에 위치해야 합니다 ★
 ARG BUILD_MODE
+# 값이 정말 들어오는지 로그로 확인 (빌드 시 출력됨)
+RUN echo "전달된 빌드 모드: ${BUILD_MODE}"
 
+WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
 
-# 위에서 선언한 ARG를 사용하여 빌드 실행
+# 만약 ${BUILD_MODE}가 비어있다면 Vite가 에러를 내므로 직접 확인
 RUN npm run build -- --mode ${BUILD_MODE}
 
 # 2단계: 실행 (Nginx 환경)
