@@ -1,5 +1,5 @@
 import { instance } from './axios';
-import { requestForToken } from '../components/common/fcmService.js';
+import { requestForToken } from './fcm/fcmService.js';
 
 /**
  * 로그인 요청 함수
