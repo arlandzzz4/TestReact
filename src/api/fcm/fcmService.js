@@ -1,7 +1,7 @@
 import { getToken } from "firebase/messaging";
 import { messaging } from "./fcmService"; // 설정 파일
 import { instance } from '../axios';
-import { properties } from '../constants/properties.js';
+import { properties } from '../../constants/properties.js';
 
 export const requestForToken = async () => {
   try {
