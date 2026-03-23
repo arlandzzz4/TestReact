@@ -11,8 +11,13 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { instance } from '@/api/axios';
 import { properties } from './constants/properties.js';
 import ErrorFallback from '@/components/error/ErrorFallback';
+import ReactGA from "react-ga4";
 
 const AppRouter = lazy(() => import('./routes/AppRouter'));
+
+//Google Analytics
+const GA_MEASUREMENT_ID = properties.gaMeasurementId
+ReactGA.initialize(GA_MEASUREMENT_ID);
 
 const queryClient = new QueryClient({
   defaultOptions: {

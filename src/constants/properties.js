@@ -9,5 +9,7 @@ export const properties = {
     if (import.meta.env.DEV) {
       console.log('🛠️ [DEV_LOG]:', ...args);
     }
-  }
+  },
+  gaMeasurementId: import.meta.env.GA_MEASUREMENT_ID,
+  vapidKey: import.meta.env.VAPID_KEY
 };

@@ -1,4 +1,5 @@
 import { instance } from './axios';
+import { requestForToken } from '../components/common/fcmService.js';
 
 /**
  * 로그인 요청 함수
@@ -11,9 +12,13 @@ export const loginUser = async (credentials) => {
   if (!response.data || !response.data.user) {
     throw new Error('USER_INFO_NOT_FOUND');
   }
-
-  //const { token, user } = response.data;
-  //useAuthStore.getState().login(user, token);
+  
+  if (response.status === 200) {
+    // 권한 요청 팝업이 로그인 완료 직후 바로 뜨도록 유도
+    requestForToken().catch(err => {
+      console.error("FCM 초기화 실패 (로그인은 유지):", err);
+    });
+  }
   
   return response.data;
 };
