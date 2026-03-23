@@ -10,6 +10,6 @@ export const properties = {
       console.log('🛠️ [DEV_LOG]:', ...args);
     }
   },
-  gaMeasurementId: import.meta.env.GA_MEASUREMENT_ID,
-  vapidKey: import.meta.env.VAPID_KEY
+  gaMeasurementId: import.meta.env.VITE_GA_MEASUREMENT_ID,
+  vapidKey: import.meta.env.VITE_VAPID_KEY
 };

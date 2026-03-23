@@ -17,7 +17,12 @@ const AppRouter = lazy(() => import('./routes/AppRouter'));
 
 //Google Analytics
 const GA_MEASUREMENT_ID = properties.gaMeasurementId
-ReactGA.initialize(GA_MEASUREMENT_ID);
+
+if (GA_MEASUREMENT_ID) {
+  ReactGA.initialize(GA_MEASUREMENT_ID);
+} else {
+  console.warn("⚠️ GA_MEASUREMENT_ID가 설정되지 않았습니다. 분석을 건너뜁니다.");
+}
 
 const queryClient = new QueryClient({
   defaultOptions: {
