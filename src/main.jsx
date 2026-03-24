@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
+import Quill from 'quill';
 
 // CoreUI 및 부트스트랩 스타일 적용
 import '@coreui/coreui/dist/css/coreui.min.css';
