@@ -28,6 +28,8 @@ export default defineConfig({
   build: {
     // 1. 빌드 시 청크 파일들이 제대로 참조되도록 base 경로 명시 (상황에 따라 '/')
     assetsDir: 'assets',
+    // 빌드 시작 시 outDir(dist) 폴더를 무조건 삭제 후 재생성
+    emptyOutDir: true,
     rollupOptions: {
       output: {
         // 2. 캐시 문제를 방지하기 위해 파일 이름 규칙을 더 명확히 합니다.
