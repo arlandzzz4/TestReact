@@ -10,6 +10,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-quill/dist/quill.snow.css'; 
 //import 'react-quill/dist/quill.bubble.css';
 
+//ReactQuill용 설정 / Vite/Webpack 빌드 환경 대응
+window.Quill = Quill;
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <App />
