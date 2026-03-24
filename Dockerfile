@@ -21,7 +21,8 @@ RUN npm run build -- --mode ${BUILD_MODE}
 # 2단계: 실행 (Nginx 환경)
 FROM nginx:stable-alpine
 # 기존 파일을 싹 지우고 복사하여 구버전 JS 파일과의 혼선을 방지
-RUN rm -rf /usr/share/nginx/html/* COPY --from=build /app/dist /usr/share/nginx/html
+RUN rm -rf /usr/share/nginx/html/*
+COPY --from=build /app/dist /usr/share/nginx/html
 COPY nginx/main.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
 EXPOSE 443
