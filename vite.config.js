@@ -25,16 +25,25 @@ export default defineConfig({
   },
   //React.lazy 적용
   build: {
+    // 1. 빌드 시 청크 파일들이 제대로 참조되도록 base 경로 명시 (상황에 따라 '/')
+    assetsDir: 'assets',
     rollupOptions: {
       output: {
-        // 라이브러리와 페이지 코드를 분리하여 브라우저 캐싱을 극대화합니다.
+        // 2. 캐시 문제를 방지하기 위해 파일 이름 규칙을 더 명확히 합니다.
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]',
+
         manualChunks: (id) => {
           if (id.includes('node_modules')) {
-            // 특히 무거운 라이브러리는 별도로 또 뺄 수 있습니다.
-            if (id.includes('@tanstack') || id.includes('axios')) {
-              return 'data-layer'; // 데이터 관련 라이브러리 그룹
+            // Quill 에디터 등을 사용하신다면 여기에 포함시켜야 'Not defined' 에러를 막습니다.
+            if (id.includes('quill') || id.includes('react-quill')) {
+              return 'editor-layer';
             }
-            return 'vendor'; // 그 외 일반 라이브ers
+            if (id.includes('@tanstack') || id.includes('axios')) {
+              return 'data-layer';
+            }
+            return 'vendor';
           }
         },
       },
