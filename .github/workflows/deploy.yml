@@ -27,6 +27,19 @@ jobs:
             --build-arg BUILD_MODE=production \
             -t ${{ secrets.DOCKER_USERNAME }}/react-frontend:latest .
           docker push ${{ secrets.DOCKER_USERNAME }}/react-frontend:latest
+          
+      - name: Create .env.production file
+        run: |
+          echo "VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}" >> .env.production
+          echo "VITE_GA_MEASUREMENT_ID=${{ secrets.VITE_GA_MEASUREMENT_ID }}" >> .env.production
+          echo "VITE_VAPID_KEY=${{ secrets.VITE_VAPID_KEY }}" >> .env.production
+          echo "VITE_API_KEY=${{ secrets.VITE_API_KEY }}" >> .env.production
+          echo "VITE_AUTH_DOMAIN=${{ secrets.VITE_AUTH_DOMAIN }}" >> .env.production
+          echo "VITE_PROJECT_ID=${{ secrets.VITE_PROJECT_ID }}" >> .env.production
+          echo "VITE_STORAGE_BUCKET=${{ secrets.VITE_STORAGE_BUCKET }}" >> .env.production
+          echo "VITE_MESSAGING_SENDER_ID=${{ secrets.VITE_MESSAGING_SENDER_ID }}" >> .env.production
+          echo "VITE_API_ID=${{ secrets.VITE_API_ID }}" >> .env.production
+          echo "VITE_MEASUREMENT_ID=${{ secrets.VITE_MEASUREMENT_ID }}" >> .env.production
       
       # EC2 접속 및 프론트엔드 배포 실행
       - name: Deploy to EC2 via SSH
