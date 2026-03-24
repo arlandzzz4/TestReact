@@ -4,6 +4,7 @@ import path from 'path';
 import { visualizer } from 'rollup-plugin-visualizer';
 
 export default defineConfig({
+  base: '/',
   // SWC 플러그인을 사용하여 빌드 속도를 최적화합니다.
   plugins: [react(),
     // 빌드 시 stats.html 파일을 생성하여 번들 크기를 시각화합니다.
