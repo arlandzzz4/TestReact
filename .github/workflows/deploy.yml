@@ -59,9 +59,3 @@ jobs:
             
             # 3. 미사용 이미지 정리
             sudo docker image prune -f
-
-      - name: Build with Gradle
-        run: ./gradlew build
-        env:
-          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
