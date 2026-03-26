@@ -1,0 +1,109 @@
+@use "@coreui/coreui/scss/coreui" as * with ( 
+  $enable-deprecation-messages: false,
+
+  // ✅ 여기서 커스텀 컬러 추가
+  $theme-colors: (
+    // 👉 내가 추가
+    "green": #3D6B4F,
+  ),
+);
+//@use "@coreui/chartjs/scss/coreui-chartjs";
+@use "vendors/simplebar";
+
+//네비바- 선택된 상단 네비게이션 항목 텍스트색 & 언더라인 색 변경
+.nav-underline .nav-link.active {
+  color: #3D6B4F;
+  border-bottom: 2px solid #3D6B4F;
+}
+//특정 너비 이상에서는 햄버거바 로고 숨기기
+@media (min-width: 768px) {
+  .header-toggler {
+    display: none !important;
+  }
+}
+
+body {
+  background-color: #F4F1EC;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.wrapper {
+  width: 100%;
+  padding-inline: var(--cui-sidebar-occupy-start, 0) var(--cui-sidebar-occupy-end, 0);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; // 화면 전체 높이 확보
+  will-change: auto;
+  @include transition(padding .15s);
+}
+
+.header > .container-fluid,
+.sidebar-header {
+  min-height: calc(4rem + 1px); // stylelint-disable-line function-disallowed-list
+}
+
+.sidebar-brand-full {
+  margin-left: 3px;
+}
+
+.sidebar-header {
+  .nav-underline-border {
+    --cui-nav-underline-border-link-padding-x: 1rem;
+    --cui-nav-underline-border-gap: 0;
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    min-height: calc(4rem + 1px); // stylelint-disable-line function-disallowed-list
+  }
+}
+
+.sidebar-toggler {
+  margin-inline-start: auto;
+}
+
+.sidebar-narrow,
+.sidebar-narrow-unfoldable:not(:hover) {
+  .sidebar-toggler {
+    margin-inline-end: auto;
+  }
+}
+
+.header > .container-fluid + .container-fluid {
+  min-height: 3rem;
+}
+
+.footer {
+  min-height: calc(3rem + 1px); // stylelint-disable-line function-disallowed-list
+}
+
+/* 수정: 본문 영역 flexbox 적용 */
+.body {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  min-height: 0; // flexbox overflow 문제 해결
+}
+
+.main-content {
+  flex-grow: 1;
+  width: 100%;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+@include color-mode(dark) {
+  body {
+    background-color: var(--cui-dark-bg-subtle);
+  }
+
+  .footer {
+    --cui-footer-bg: var(--cui-body-bg);
+  }
+}

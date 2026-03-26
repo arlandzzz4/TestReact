@@ -1,23 +1,33 @@
+/* app.css */
+
+/* root 전체 영역 */
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  /* text-align 제거: 중앙정렬로 인한 레이아웃 제한 방지 */
 }
 
+/* 로고 관련 스타일 */
 .logo {
   height: 6em;
   padding: 1.5em;
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
+/* 로고 회전 애니메이션 */
 @keyframes logo-spin {
   from {
     transform: rotate(0deg);
@@ -33,10 +43,12 @@
   }
 }
 
+/* 카드 스타일 */
 .card {
   padding: 2em;
 }
 
+/* 문서 링크 텍스트 스타일 */
 .read-the-docs {
   color: #888;
 }
