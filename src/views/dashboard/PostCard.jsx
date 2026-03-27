@@ -53,8 +53,12 @@ const PostCard = ({ post }) => {
       {/* 썸네일 영역 */}
       <div style={{ position: 'relative', height: '180px', overflow: 'hidden' }}>
         <CCardImage
-          src={image}
+          src={image || 'https://picsum.photos/400/180'}
           alt={title}
+           onError={(e) => {
+              e.target.onerror = null  // ← 이거 추가! 무한루프 차단
+              e.target.src = 'https://picsum.photos/400/180' // 빈문자열도 이미지없는것으로 간주하여 플레이스홀더 처리
+  }}
           style={{
             width: '100%',
             height: '100%',
