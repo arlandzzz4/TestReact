@@ -12,7 +12,8 @@
  *   - 1200px+ (xl) → 4열
  */
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
 import {
   CRow,
   CCol,
@@ -25,100 +26,62 @@ import CIcon from '@coreui/icons-react'
 import { cilSearch, cilPlus } from '@coreui/icons'
 import PostCard from './PostCard'
 
-// ── 샘플 데이터 (실제 API 연동 시 이 배열을 교체하세요) ──────────────────────
-const ALL_POSTS = [
-  {
-    id: 1,
-    tag: '자유',
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&q=80',
-    title: '새벽 한강 10Km 달성!! 드디어 해냈습니다 🎉',
-    author: '홍길동',
-    date: '26.03.10 · 16:42',
-    likes: 5,
-    comments: 3,
-  },
-  {
-    id: 2,
-    tag: '자유',
-    image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80',
-    title: '데드리프트 3개월 만에 100kg 돌파 후기',
-    author: '홍길동',
-    date: '26.03.10 · 16:42',
-    likes: 12,
-    comments: 7,
-  },
-  {
-    id: 3,
-    tag: '정보',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&q=80',
-    title: '고단백 저칼로리 식단 레시피 총정리 (벌크업용)',
-    author: '김영희',
-    date: '26.03.09 · 10:15',
-    likes: 24,
-    comments: 11,
-  },
-  {
-    id: 4,
-    tag: '정보',
-    image: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=600&q=80',
-    title: '매일 30분 계단 오르기, 3개월 결과 공유합니다',
-    author: '이철수',
-    date: '26.03.08 · 14:30',
-    likes: 9,
-    comments: 4,
-  },
-  {
-    id: 5,
-    tag: '인원모집',
-    image: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=600&q=80',
-    title: '강남 크로스핏 같이 하실 분 모집합니다 (주 3회)',
-    author: '박민준',
-    date: '26.03.07 · 09:00',
-    likes: 6,
-    comments: 15,
-  },
-  {
-    id: 6,
-    tag: '자유',
-    image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&q=80',
-    title: '다이어트 6개월 체중 변화 기록 — 20kg 감량 성공',
-    author: '최수진',
-    date: '26.03.06 · 18:55',
-    likes: 41,
-    comments: 22,
-  },
-  {
-    id: 7,
-    tag: '정보',
-    image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=600&q=80',
-    title: '스쿼트 자세 교정 후 무릎 통증이 사라진 이유',
-    author: '정재훈',
-    date: '26.03.05 · 11:20',
-    likes: 18,
-    comments: 9,
-  },
-  {
-    id: 8,
-    tag: '인원모집',
-    image: 'https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=600&q=80',
-    title: '홍대 러닝크루 모집 — 매주 토요일 아침 7시',
-    author: '윤소연',
-    date: '26.03.04 · 08:00',
-    likes: 33,
-    comments: 28,
-  },
-]
-
 const TABS = ['전체', '자유', '정보', '인원모집', '공지사항']
 
 const CommunityPosts = () => {
+  const [posts, setPosts] = useState([])
   const [activeTab, setActiveTab] = useState('전체')
   const [searchQuery, setSearchQuery] = useState('')
 
+  //API 호출
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const res = await axios.get('http://localhost:8080/api/post/search/post', {
+  params: { limit: 10 }
+})
+setPosts(res.data)
+      } catch (err) {
+        console.error(err)
+      }
+    }
+
+    fetchPosts()
+  }, [])
+
+  //카테고리 변환 함수
+  const getCategoryName = (id) => {
+    switch (id) {
+      case 1: return '자유'
+      case 2: return '정보'
+      case 3: return '인원모집'
+      default: return '공지사항'
+    }
+  }
+
+  //날짜 포멧
+  const formatDate = (dateStr) => {
+    const d = new Date(dateStr)
+    return `${d.getFullYear().toString().slice(2)}.${(d.getMonth()+1).toString().padStart(2,'0')}.${d.getDate().toString().padStart(2,'0')}`
+  }
+
+  // 백앤드 데이터 프론트에서 필요한 데이터로 변환
+  const mappedPosts = posts.map(post => ({
+    id: post.postId,
+    tag: getCategoryName(post.categoryId),
+    title: post.title,
+    author: post.nickname,
+    date: formatDate(post.createdAt),
+    likes: post.likes,
+    comments: post.comments,
+  }))
+
   // 탭 + 검색어 필터링
-  const filteredPosts = ALL_POSTS.filter((post) => {
+  const filteredPosts = mappedPosts.filter((post) => {
     const matchTab = activeTab === '전체' || post.tag === activeTab
-    const matchSearch = post.title.includes(searchQuery) || post.author.includes(searchQuery)
+    const matchSearch =
+      post.title.includes(searchQuery) ||
+      post.author.includes(searchQuery)
     return matchTab && matchSearch
   })
 
@@ -213,11 +176,11 @@ const CommunityPosts = () => {
           {filteredPosts.map((post) => (
             <CCol
               key={post.id}
-              xs={12}   // ~576px  → 1열
-              sm={6}    // ~768px  → 2열
-              md={6}    // ~992px  → 2열
-              lg={4}    // ~1200px → 3열
-              xl={3}    // 1200px+ → 4열
+              xs={12}
+              sm={6}
+              md={6}
+              lg={4}
+              xl={3}
             >
               <PostCard post={post} />
             </CCol>
