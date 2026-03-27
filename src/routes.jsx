@@ -19,6 +19,7 @@ import React from 'react'
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const MapPage = React.lazy(() => import('./pages/map/MapPage'))
 const CalcPage = React.lazy(()=> import('./pages/calc/CalcPage'))
+const CalendarPage = React.lazy(() => import('./pages/calendar/index.jsx'));
 // const Colors = React.lazy(() => import('@/views/theme/colors/Colors'));
 // const Typography = React.lazy(() => import('@/views/theme/typography/Typography'));
 // Base
@@ -90,6 +91,7 @@ const routes = [
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
   { path: '/map', name: '지도/루트', element: MapPage },
   { path: '/calc', name: '계산기', element: CalcPage },
+  { path: '/calender', name: '계산기', element: CalendarPage },
   
   // { path: '/theme', name: 'Theme', element: Colors, exact: true },
   // { path: '/theme/colors', name: 'Colors', element: Colors },

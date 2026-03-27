@@ -94,7 +94,7 @@ const AppHeader = () => {
             </CNavLink>
           </CNavItem>
           <CNavItem>
-            <CNavLink href="#">캘린더</CNavLink>
+            <CNavLink to="/calender" as={NavLink}>캘린더</CNavLink>
           </CNavItem>
           <CNavItem>
             <CNavLink href="#">음식 검색</CNavLink>
@@ -114,7 +114,7 @@ const AppHeader = () => {
         <CHeaderNav className='ms-auto'>
           <CButton to="/login" as={NavLink}
                     color="green"
-                        >로그인</CButton>
+                        >Join Us</CButton>
         </CHeaderNav>
         {/* <CHeaderNav className="ms-auto">
           <CNavItem>
