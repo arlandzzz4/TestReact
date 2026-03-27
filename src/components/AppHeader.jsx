@@ -94,7 +94,7 @@ const AppHeader = () => {
             </CNavLink>
           </CNavItem>
           <CNavItem>
-            <CNavLink to="/calender" as={NavLink}>캘린더</CNavLink>
+            <CNavLink to="/calendar" as={NavLink}>캘린더</CNavLink>
           </CNavItem>
           <CNavItem>
             <CNavLink href="#">음식 검색</CNavLink>
