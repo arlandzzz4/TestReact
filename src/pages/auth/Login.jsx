@@ -3,7 +3,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useLoginMutation } from '../../hooks/mutations/useAuthMutation';
-
+// 방금 만드신 유틸리티 임포트
+import { requestForToken } from '../../api/fcm'; 
 
 const loginSchema = z.object({
   email: z.string().min(1, '이메일을 입력해주세요.').email('올바른 이메일 형식이 아닙니다.'),
@@ -24,7 +25,16 @@ const Login = () => {
   });
 
   const onSubmit = (data) => {
-    loginMutation.mutate(data);
+    loginMutation.mutate(data, {
+      onSuccess: async () => {
+        try {
+          await requestForToken(); 
+          console.log("인증 성공 및 FCM 토큰 처리 완료");
+        } catch (error) {
+          console.error("FCM 처리 중 오류 발생 (로그인은 유지):", error);
+        }
+      }
+    });
   };
 
   return (
