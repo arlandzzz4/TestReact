@@ -16,20 +16,6 @@ export const instance = axios.create({
 let isRefreshing = false;
 let failedQueue = [];
 
-// 요청 인터셉터: 모든 요청 직전에 실행
-instance.interceptors.request.use(
-  (config) => {
-    // Zustand 스토어에서 직접 토큰을 가져옴
-    const token = useAuthStore.getState().token; 
-    
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
 const processQueue = (error, token = null) => {
   failedQueue.forEach((prom) => {
     if (error) prom.reject(error);
@@ -58,7 +44,11 @@ instance.interceptors.response.use(
     const { config, response } = error;
     const originalRequest = config;
 
-    if (!response) return Promise.reject(error);
+    // 백엔드 서버가 꺼져있거나 네트워크 연결이 끊긴 경우 (무한 대기 및 멈춤 방지)
+    if (!response) {
+      console.error('[Network Error] 백엔드 서버와 연결할 수 없습니다. 서버 상태를 확인하세요.');
+      return Promise.reject(error);
+    }
 
     // 로그인 시도 중 발생한 401은 무시
     if (originalRequest.url.includes(LOGIN_ENDPOINT)) {

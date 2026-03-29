@@ -13,7 +13,7 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
+import { instance } from '@/api/axios' // 👈 1. axios 대신 설정된 instance를 가져옵니다.
 import {
   CRow,
   CCol,
@@ -37,10 +37,11 @@ const CommunityPosts = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const res = await axios.get('http://localhost:8080/api/post/search/post', {
-  params: { limit: 10 }
-})
-setPosts(res.data)
+        // 2. baseURL이 설정된 instance를 사용하므로 전체 URL을 적을 필요가 없습니다.
+        const res = await instance.get('/api/post/search/post', {
+          params: { limit: 10 },
+        })
+        setPosts(res.data)
       } catch (err) {
         console.error(err)
       }

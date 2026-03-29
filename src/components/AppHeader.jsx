@@ -89,7 +89,7 @@ const AppHeader = () => {
 
           <h4 style={{ color: "#3D6B4F", marginRight: "50px"}}><b>IOB</b></h4>
           <CNavItem>
-            <CNavLink to="/dashboard" as={NavLink}>
+            <CNavLink to="/feed" as={NavLink}>
               홈
             </CNavLink>
           </CNavItem>

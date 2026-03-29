@@ -62,10 +62,10 @@ const avatar6 = 'https://via.placeholder.com/150/00FFFF/FFFFFF?text=6'
 // import WidgetsBrand from '../widgets/WidgetsBrand'
 // import WidgetsDropdown from '../widgets/WidgetsDropdown'
 // import MainChart from './MainChart'
-import CommunityPosts from './CommunityPosts'
+import CommunityPosts from '../../views/feed/CommunityPosts'
 // import Tables from '../base/tables/Tables'
 
-const Dashboard = () => {
+const Feed = () => {
 
   return (
     <>
@@ -74,4 +74,4 @@ const Dashboard = () => {
   )
 }
 
-export default Dashboard
+export default Feed
