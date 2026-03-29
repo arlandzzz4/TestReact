@@ -1,5 +1,5 @@
 import { getToken } from "firebase/messaging";
-import { messaging } from "./fcmConfig";
+import { messaging } from "../../config/firebase";
 import { instance } from '../axios';
 import { properties } from '../../constants/properties.js';
 
