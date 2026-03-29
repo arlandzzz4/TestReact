@@ -11,6 +11,7 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { instance } from '@/api/axios';
 import { properties } from './constants/properties.js';
 import ErrorFallback from '@/components/error/ErrorFallback';
+import FullPageLoader from '@/components/common/FullPageLoader';
 import ReactGA from "react-ga4";
 
 const AppRouter = lazy(() => import('./routes/AppRouter'));
@@ -84,11 +85,7 @@ function App() {
       >
         <AuthWrapper>
           <Suspense 
-            fallback={
-              <div className="flex items-center justify-center min-h-screen text-lg">
-                페이지를 구성 중입니다...
-              </div>
-            }
+            fallback={<FullPageLoader message="시스템을 불러오는 중입니다..." />}
           >
             <AppRouter />
           </Suspense>

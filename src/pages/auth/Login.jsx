@@ -56,40 +56,47 @@ const Login = () => {
 
   // 구글 로그인 핸들러
   const onGoogleLogin = async () => {
-    if (isLoading.google) return;
-    setIsLoading((prev) => ({ ...prev, google: true }));
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const token = await result.user.getIdToken();
-      login(result.user, token);
-      navigate('/dashboard', { replace: true });
-    } catch (error) {
-      if (error.code !== 'auth/popup-closed-by-user') alert('구글 로그인 실패');
-    } finally {
-      setIsLoading((prev) => ({ ...prev, google: false }));
+  if (isLoading.google) return;
+  setIsLoading((prev) => ({ ...prev, google: true }));
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    // ... 성공 로직
+  } catch (error) {
+    console.error("🔥 구글 상세 에러:", error.code, error.message); // 👈 이걸 확인해야 합니다!
+    
+    if (error.code === 'auth/operation-not-allowed') {
+      alert('Firebase 콘솔에서 Google 로그인을 활성화해주세요.');
+    } else if (error.code === 'auth/unauthorized-domain') {
+      alert('현재 도메인이 Firebase에 등록되지 않았습니다.');
+    } else {
+      alert(`로그인 실패: ${error.code}`);
     }
-  };
+  } finally {
+    setIsLoading((prev) => ({ ...prev, google: false }));
+  }
+};
 
   return (
-    <div className="bg-light min-vh-100 d-flex flex-row align-items-center">
+    <div className="bg-light min-vh-100 d-flex align-items-center justify-content-center">
       <CContainer>
-        <CRow className="justify-content-center">
-          <CCol md={8}>
+        <CRow className="justify-content-center align-items-center">
+          <CCol md={8} lg={6} xl={5}>
             <CCardGroup>
-              <CCard className="p-4">
+              <CCard className="p-4 shadow-sm" style={{ borderRadius: '15px' }}>
                 <CCardBody>
-                  {/* handleSubmit으로 감싸서 유효성 검사 통과 시에만 실행 */}
                   <CForm onSubmit={handleSubmit(onBasicLogin)}>
-                    <h1>로그인</h1>
-                    <p className="text-medium-emphasis mb-4">계정에 로그인하세요</p>
+                    <div className="text-center mb-4">
+                      <h1 className="fw-bold">로그인</h1>
+                      <p className="text-medium-emphasis">계정에 로그인하세요</p>
+                    </div>
 
                     {/* 이메일 입력 섹션 */}
                     <div className="mb-3">
-                      <CInputGroup>
+                      <CInputGroup className="has-validation">
                         <CInputGroupText><CIcon icon={cilUser} /></CInputGroupText>
                         <CFormInput
                           placeholder="Email"
-                          invalid={!!errors.email} // 에러 여부에 따라 붉은 테두리
+                          invalid={!!errors.email}
                           {...register('email')}
                         />
                         <CFormFeedback invalid>{errors.email?.message}</CFormFeedback>
@@ -98,7 +105,7 @@ const Login = () => {
 
                     {/* 비밀번호 입력 섹션 */}
                     <div className="mb-4">
-                      <CInputGroup>
+                      <CInputGroup className="has-validation">
                         <CInputGroupText><CIcon icon={cilLockLocked} /></CInputGroupText>
                         <CFormInput
                           type="password"
@@ -110,13 +117,11 @@ const Login = () => {
                       </CInputGroup>
                     </div>
 
-                    <CRow>
-                      <CCol xs={6}>
-                        <CButton color="primary" className="px-4" type="submit" disabled={isLoading.basic}>
-                          {isLoading.basic ? <CSpinner size="sm" /> : '로그인'}
-                        </CButton>
-                      </CCol>
-                    </CRow>
+                    <div className="d-grid gap-2">
+                      <CButton color="primary" size="lg" type="submit" disabled={isLoading.basic} style={{ border: '1px solid #e0e0e0', fontWeight: 'bold' }}>
+                        {isLoading.basic ? <CSpinner size="sm" /> : '로그인'}
+                      </CButton>
+                    </div>
 
                     <div className="my-4 d-flex align-items-center">
                       <hr className="flex-grow-1" />
@@ -127,10 +132,13 @@ const Login = () => {
                     <div className="d-grid">
                       <CButton
                         type="button"
-                        color="danger" variant="outline"
+                        color="danger"
+                        variant="outline"
+                        size="lg"
                         onClick={onGoogleLogin}
                         disabled={isLoading.google}
                         className="d-flex align-items-center justify-content-center gap-2"
+                        style={{ border: '1px solid #e0e0e0', color: '#000000', fontWeight: 'bold' }}
                       >
                         {isLoading.google ? <CSpinner size="sm" /> : <CIcon icon={cibGoogle} size="lg" />}
                         Google 로그인
@@ -139,7 +147,6 @@ const Login = () => {
                   </CForm>
                 </CCardBody>
               </CCard>
-              {/* 회원가입 카드 생략 */}
             </CCardGroup>
           </CCol>
         </CRow>
