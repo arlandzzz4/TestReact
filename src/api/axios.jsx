@@ -16,20 +16,6 @@ export const instance = axios.create({
 let isRefreshing = false;
 let failedQueue = [];
 
-// 요청 인터셉터: 모든 요청 직전에 실행
-instance.interceptors.request.use(
-  (config) => {
-    // Zustand 스토어에서 직접 토큰을 가져옴
-    const token = useAuthStore.getState().token; 
-    
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
 const processQueue = (error, token = null) => {
   failedQueue.forEach((prom) => {
     if (error) prom.reject(error);

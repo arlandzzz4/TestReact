@@ -36,13 +36,14 @@ const queryClient = new QueryClient({
 function AuthWrapper({ children }) {
   console.log("!!! AuthWrapper Component Mounted !!!"); // 👈 이게 찍히는지 확인
   
-  const { isLoggedIn, user, login, logout } = useAuthStore();
+  const { isLoggedIn, user, login, logout, token } = useAuthStore();
   console.log("Current Auth State:", { isLoggedIn, hasUser: !!user });
 
   const { data, isSuccess, isError, isLoading } = useQuery({
     queryKey: ['auth', 'me'],
     queryFn: async () => {
       console.log("Fetching /me with token:", token);
+      
       const { data } = await instance.get('/api/auth/me');
       return data;
     },
