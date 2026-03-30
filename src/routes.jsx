@@ -19,7 +19,7 @@ import React from 'react'
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const MapPage = React.lazy(() => import('./pages/map/MapPage'))
 const CalcPage = React.lazy(()=> import('./pages/calc/CalcPage'))
-const CalendarPage = React.lazy(() => import('./pages/calendar/index.jsx'));
+const CalendarPage = React.lazy(() => import('./pages/calendar/Calendar'));
  
 /**
  * Array of route configuration objects

@@ -1,92 +1,71 @@
 import React from 'react';
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
+import RootLayout from '../layout/RootLayout';
+import DefaultLayout from '../layout/DefaultLayout';
+import AdminLayout from '../layout/AdminLayout';
+import AuthGuard from '../components/AuthGuard';
+import RouterErrorFallback from '../components/error/RouterErrorFallback';
 
-/**
- * lazy 로딩 방식의 간소화
- */
-
-// 페이지 로더 컴포넌트
-const PageLoader = () => (
-  <div className="flex items-center justify-center min-h-[50vh]">
-    <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
-  </div>
-);
-
-// 라우터 구성 객체
 const router = createBrowserRouter([
   {
     path: '/',
-    lazy: async () => {
-      const { default: Home } = await import('@/pages/home/Home');
-      return { Component: Home };
-    },
-  },
-  {
-    path: '/login',
-    lazy: async () => {
-      const { default: Login } = await import('@/pages/auth/Login');
-      return { Component: Login };
-    },
-  },
-  // 2. 관리자 전용 페이지 그룹 (중첩 라우팅)
-  {
-    path: '/admin',
-    // 관리자용 레이아웃 (사이드바 등이 포함된 껍데기)
-    lazy: async () => {
-      const { default: AdminLayout } = await import('@/layouts/AdminLayout');
-      return { Component: AdminLayout };
-    },
+    element: <RootLayout />,
+    errorElement: <RouterErrorFallback />,
     children: [
+      { path: 'login', lazy: () => import('@/pages/auth/Login').then(m => ({ Component: m.default })) },
       {
-        index: true, // /admin 접속 시 바로 보여줄 페이지
-        lazy: async () => {
-          const { default: AdminDashboard } = await import('@/pages/admin/Dashboard');
-          return { Component: AdminDashboard };
+        element: <DefaultLayout />,
+        children: [
+          // 1. 공통/비로그인
+          { index: true, element: <Navigate to="/dashboard" replace /> },
+          { 
+            path: 'dashboard', 
+            lazy: () => import('@/pages/dashboard/Dashboard').then(m => ({ Component: m.default })) 
+          },
+        { path: 'calendar', lazy: () => import('@/pages/calendar/Calendar').then(m => ({ Component: m.default })) },
+        //{ path: 'food-search', lazy: () => import('@/pages/food/FoodSearch').then(m => ({ Component: m.default })) },
+        { path: 'calc', lazy: () => import('@/pages/calc/CalcPage').then(m => ({ Component: m.default })) },
+        { path: 'map', lazy: () => import('@/pages/map/MapPage').then(m => ({ Component: m.default })) },
+        //{ path: 'challenge', lazy: () => import('@/pages/challenge/Challenge').then(m => ({ Component: m.default })) },
+        //{ path: 'notifications', lazy: () => import('@/pages/notification/Notification').then(m => ({ Component: m.default })) },
+      
+        // 2. 일반 인증 구역
+        {
+          element: <AuthGuard />,
+          children: [
+            //{ path: 'feed', lazy: () => import('@/pages/feed/FeedHome').then(m => ({ Component: m.default })) },
+            { path: 'mypage', lazy: () => import('@/pages/user/MyPage').then(m => ({ Component: m.default })) },
+          ]
         },
+      ]
+    },
+
+      // 3. 어드민
+      {
+        path: 'admin',
+        element: (
+          <AuthGuard adminOnly>
+            <AdminLayout />
+          </AuthGuard>
+        ),
+        children: [
+          //{ index: true, lazy: () => import('@/pages/admin/Dashboard').then(m => ({ Component: m.default })) },
+          //{ path: 'users', lazy: () => import('@/pages/admin/UserManagement').then(m => ({ Component: m.default })) },
+          //{ path: 'reports', lazy: () => import('@/pages/admin/ReportManagement').then(m => ({ Component: m.default })) },
+          //{ path: 'posts', lazy: () => import('@/pages/admin/PostManagement').then(m => ({ Component: m.default })) },
+          //{ path: 'settings', lazy: () => import('@/pages/admin/SiteSettings').then(m => ({ Component: m.default })) },
+        ]
       },
-      {
-        path: 'users', // /admin/users
-        lazy: async () => {
-          const { default: UserManagement } = await import('@/pages/admin/UserManagement');
-          return { Component: UserManagement };
-        },
-      },
-      {
-        path: 'settings', // /admin/settings
-        lazy: async () => {
-          const { default: AdminSettings } = await import('@/pages/admin/Settings');
-          return { Component: AdminSettings };
-        },
+      
+      // 4. 404 처리
+      { 
+        path: '*', 
+        lazy: () => import('@/pages/error/NotFound').then(m => ({ Component: m.default })) 
       },
     ],
   },
-  {
-    path: '/dashboard',
-    lazy: async () => {
-      const { default: Dashboard } = await import('@/pages/dashboard/Dashboard.jsx');
-      return { Component: Dashboard };
-    },
-  },
-  {
-    path: '/mypage',
-    lazy: async () => {
-      const { default: MyPage } = await import('@/pages/user/MyPage');
-      return { Component: MyPage };
-    },
-  },
-  {
-    path: '/404',
-    lazy: async () => {
-      const { default: NotFound } = await import('@/pages/error/NotFound');
-      return { Component: NotFound };
-    },
-  },
-  {
-    path: '*',
-    element: <Navigate to="/404" replace />,
-  },
 ], {
-  // v7 미래 플러그 (경고 제거 및 최적화)
+  // v7 브레이킹 체인지 대비 및 성능 최적화 플래그
   future: {
     v7_relativeSplatPath: true,
     v7_fetcherPersist: true,
@@ -97,10 +76,7 @@ const router = createBrowserRouter([
 });
 
 function AppRouter() {
-  /**
-   * RouterProvider 사용
-   */
-  return <RouterProvider router={router} fallbackElement={<PageLoader />} />;
+  return <RouterProvider router={router} />;
 }
 
 export default AppRouter;

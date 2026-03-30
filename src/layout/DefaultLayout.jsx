@@ -1,39 +1,26 @@
+// src/layout/DefaultLayout.jsx
 import React from 'react'
-// 기존 주석과 import 유지
-import { AppContent, AppSidebar, AppFooter, AppHeader } from '../components/index'
+import { AppSidebar, AppFooter, AppHeader, AppContent } from '../components/index'
 
-/**
- * DefaultLayout functional component
- *
- * Renders the main application layout with:
- * - Fixed sidebar navigation
- * - Sticky header
- * - Flexible content area
- * - Footer at bottom
- *
- * Uses flexbox for proper content stretching and footer positioning.
- *
- * @returns {React.ReactElement} Complete application layout
- */
 const DefaultLayout = () => {
   return (
-    <div className="wrapper d-flex flex-column min-vh-100">
-      {/* 상단 헤더 */}
-      <AppHeader className="app-header w-100" />
-
-      {/* 본문 영역: 사이드바 + 메인 컨텐츠 */}
-      <div className="body flex-grow-1 d-flex">
-        {/* 사이드바 */}
-        <AppSidebar />
-
-        {/* 메인 컨텐츠 */}
-        <div className="main-content flex-grow-1 d-flex justify-content-start align-items-start p-3">
+    <div>
+      {/* 1. 사이드바 (고정 위치) */}
+      <AppSidebar />
+      
+      <div className="wrapper d-flex flex-column min-vh-100 bg-light">
+        {/* 2. 헤더 (상단 네비게이션) */}
+        <AppHeader />
+        
+        {/* 3. 실제 컨텐츠 영역 */}
+        <div className="body flex-grow-1 px-3">
+          {/* [핵심]: AppContent 내부에서 Outlet이 호출되어 페이지가 바뀝니다. */}
           <AppContent />
         </div>
+        
+        {/* 4. 푸터 */}
+        <AppFooter />
       </div>
-
-      {/* 푸터 */}
-      <AppFooter />
     </div>
   )
 }
