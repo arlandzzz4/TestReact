@@ -33,6 +33,7 @@ const PostCard = ({ post }) => {
   return (
     <CCard
       style={{
+        backgroundColor: '#fff',
         borderRadius: '18px',
         overflow: 'hidden',
         border: 'none',

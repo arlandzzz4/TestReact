@@ -1,6 +1,16 @@
 @use "@coreui/coreui/scss/coreui" as * with ( 
   $enable-deprecation-messages: false,
 
+  // ✅ 사이트 전체 배경은 베이지, 카드는 흰색으로 강제 분리
+  $body-bg: #F4F1EC,
+  $card-bg: #ffffff,
+
+  // ✅ 폼 입력창(Input), 드롭다운, 모달 등의 배경을 일괄 흰색으로 고정
+  $input-bg: #ffffff,
+  $dropdown-bg: #ffffff,
+  $modal-content-bg: #ffffff,
+  $list-group-bg: #ffffff,
+
   // ✅ 여기서 커스텀 컬러 추가
   $theme-colors: (
     // 👉 내가 추가
@@ -23,7 +33,7 @@
 }
 
 body {
-  background-color: #F4F1EC;
+   background-color: #F4F1EC !important;
   margin: 0;
   height: 100%;
   width: 100%;
@@ -32,11 +42,17 @@ body {
 .wrapper {
   width: 100%;
   padding-inline: var(--cui-sidebar-occupy-start, 0) var(--cui-sidebar-occupy-end, 0);
+  background-color: transparent !important;
   display: flex;
   flex-direction: column;
   min-height: 100vh; // 화면 전체 높이 확보
   will-change: auto;
   @include transition(padding .15s);
+}
+
+// 헤더 배경색을 흰색으로 고정
+.header {
+  background-color: #ffffff !important;
 }
 
 .header > .container-fluid,
@@ -83,6 +99,7 @@ body {
 /* 수정: 본문 영역 flexbox 적용 */
 .body {
   display: flex;
+  background-color: transparent !important;
   flex: 1;
   width: 100%;
   min-height: 0; // flexbox overflow 문제 해결
@@ -98,10 +115,36 @@ body {
   align-items: flex-start;
 }
 
+// 사이드바(Sidebar) 색상 커스텀
+.sidebar {
+  // 1. 전체 배경과 테두리 설정
+  background-color: #3D6B4F !important;
+  border-right: none !important;
+
+  // 2. 내부 요소들을 직접 타겟팅하여 스타일 강제 적용
+  .nav-link {
+    // 기본 상태 (글자 + 아이콘)
+    color: rgba(255, 255, 255, 0.65) !important;
+    .nav-icon {
+      color: rgba(255, 255, 255, 0.65) !important;
+    }
+
+    // 마우스 오버(hover) 또는 선택됨(active) 상태
+    &:hover,
+    &.active {
+      background-color: #f0e6d3 !important;
+      color: #3D6B4F !important;
+      .nav-icon {
+        color: #3D6B4F !important;
+      }
+    }
+  }
+}
+
 @include color-mode(dark) {
   body {
-    background-color: var(--cui-dark-bg-subtle);
-  }
+    background-color: #F4F1EC !important;
+  }//background-color: var(--cui-dark-bg-subtle);
 
   .footer {
     --cui-footer-bg: var(--cui-body-bg);

@@ -1,5 +1,4 @@
-// ── IOB 캘린더 스타일 ──
-// $primary: #2d5a27 은 _variables.scss 에서 설정
+// ── IOB 캘린더 전용 스타일 (iob- 접두사로 CoreUI 충돌 방지) ──
 
 .iob-main {
   padding: 2rem 2.5rem 3rem;
@@ -8,14 +7,14 @@
 }
 
 // 월 네비게이션
-.month-nav {
+.iob-month-nav {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 1.5rem;
   margin-bottom: 2rem;
 }
-.month-nav-btn {
+.iob-month-nav-btn {
   background: none;
   border: 1px solid #d0ccc0;
   border-radius: 50%;
@@ -29,7 +28,7 @@
   justify-content: center;
   &:hover { background: #ede9df; }
 }
-.month-title {
+.iob-month-title {
   font-size: 30px;
   font-weight: 400;
   color: #1e1e1a;
@@ -39,18 +38,18 @@
 }
 
 // 캘린더 그리드
-.calendar-wrap {
+.iob-calendar-wrap {
   background: #fff;
   border-radius: 16px;
   border: 1px solid #e0ddd4;
   overflow: hidden;
 }
-.cal-header {
+.iob-cal-header {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   background: #2d5a27;
 }
-.cal-header-cell {
+.iob-cal-header-cell {
   text-align: center;
   padding: 10px 0;
   font-size: 11px;
@@ -59,11 +58,11 @@
   color: rgba(255,255,255,0.7);
   &:first-child, &:last-child { color: rgba(255,255,255,0.45); }
 }
-.cal-grid {
+.iob-cal-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
 }
-.cal-cell {
+.iob-cal-cell {
   border-right: 1px solid #f0ede6;
   border-bottom: 1px solid #f0ede6;
   padding: 10px;
@@ -72,22 +71,22 @@
   flex-direction: column;
   gap: 5px;
   &:nth-child(7n) { border-right: none; }
-  &.weekend { background: #fdfcf8; }
-  &.other-month { opacity: 0.3; pointer-events: none; }
-  &.today { background: #f0f6ee; }
-  &.has-data .cell-num { color: #2d2d2a; }
+  &.iob-weekend { background: #fdfcf8; }
+  &.iob-other-month { opacity: 0.3; pointer-events: none; }
+  &.iob-today { background: #f0f6ee; }
+  &.iob-has-data .iob-cell-num { color: #2d2d2a; }
 }
-.cell-top {
+.iob-cell-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
-.cell-num {
+.iob-cell-num {
   font-size: 12px;
   font-weight: 500;
   color: #bbb;
 }
-.today-badge {
+.iob-today-badge {
   width: 22px;
   height: 22px;
   border-radius: 50%;
@@ -99,9 +98,7 @@
   align-items: center;
   justify-content: center;
 }
-
-// 운동 체크박스
-.exercise-check {
+.iob-exercise-check {
   display: flex;
   align-items: center;
   gap: 3px;
@@ -111,28 +108,26 @@
     accent-color: #2d5a27;
     cursor: pointer;
   }
-  &.checked .exercise-label { color: #2d5a27; font-weight: 500; }
+  &.iob-checked .iob-exercise-label { color: #2d5a27; font-weight: 500; }
 }
-.exercise-label {
+.iob-exercise-label {
   font-size: 10px;
   color: #ccc;
   user-select: none;
   cursor: pointer;
 }
-
-// 데이터 필
-.data-row { display: flex; flex-direction: column; gap: 3px; }
-.pill {
+.iob-data-row { display: flex; flex-direction: column; gap: 3px; }
+.iob-pill {
   font-size: 10px;
   border-radius: 4px;
   padding: 2px 6px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  &.pill-weight { background: #e8f0e4; color: #2d5a27; }
-  &.pill-meal   { background: #faf0e4; color: #7a4a10; }
+  &.iob-pill-weight { background: #e8f0e4; color: #2d5a27; }
+  &.iob-pill-meal   { background: #faf0e4; color: #7a4a10; }
 }
-.diet-btn {
+.iob-diet-btn {
   font-size: 10px;
   background: none;
   border: 1px solid #d8d4cb;
@@ -144,22 +139,22 @@
   margin-top: auto;
   align-self: flex-start;
   &:hover { background: #f5f0e6; border-color: #b8a87a; color: #7a6030; }
-  &.filled { background: #faf0e4; border-color: #e0c89a; color: #7a4a10; }
+  &.iob-filled { background: #faf0e4; border-color: #e0c89a; color: #7a4a10; }
 }
 
 // ── 식단 상세 ──
-.detail-wrap {
+.iob-detail-wrap {
   padding: 2rem 2.5rem 3rem;
   max-width: 1100px;
   margin: 0 auto;
 }
-.detail-header {
+.iob-detail-header {
   display: flex;
   align-items: center;
   gap: 1rem;
   margin-bottom: 1.75rem;
 }
-.back-btn {
+.iob-back-btn {
   background: none;
   border: 1px solid #d0ccc0;
   border-radius: 20px;
@@ -169,13 +164,13 @@
   cursor: pointer;
   &:hover { background: #ede9df; }
 }
-.detail-date {
+.iob-detail-date {
   font-size: 22px;
   font-weight: 400;
   color: #1e1e1a;
   em { font-style: normal; color: #2d5a27; }
 }
-.detail-body {
+.iob-detail-body {
   display: grid;
   grid-template-columns: 1fr 300px;
   gap: 1.5rem;
@@ -183,7 +178,7 @@
 }
 
 // 끼니 그리드
-.meal-grid {
+.iob-meal-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1px;
@@ -192,7 +187,7 @@
   overflow: hidden;
   border: 1px solid #e0ddd4;
 }
-.meal-card {
+.iob-meal-card {
   background: #fff;
   padding: 1.25rem 1.25rem 1rem;
   display: flex;
@@ -200,9 +195,9 @@
   gap: 10px;
   min-height: 180px;
 }
-.meal-title { font-size: 14px; font-weight: 500; color: #2d5a27; }
-.meal-items { display: flex; flex-direction: column; gap: 6px; flex: 1; }
-.meal-item {
+.iob-meal-title { font-size: 14px; font-weight: 500; color: #2d5a27; }
+.iob-meal-items { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.iob-meal-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -210,9 +205,9 @@
   border-radius: 6px;
   padding: 6px 10px;
 }
-.meal-item-name { font-size: 12px; color: #333; }
-.meal-item-kcal { font-size: 11px; color: #888; }
-.meal-item-del {
+.iob-meal-item-name { font-size: 12px; color: #333; }
+.iob-meal-item-kcal { font-size: 11px; color: #888; }
+.iob-meal-item-del {
   background: none;
   border: none;
   color: #ccc;
@@ -221,7 +216,7 @@
   line-height: 1;
   &:hover { color: #b05030; }
 }
-.meal-add-btn {
+.iob-meal-add-btn {
   margin-top: auto;
   background: none;
   border: 1px dashed #c8c4bc;
@@ -235,32 +230,33 @@
 }
 
 // 오른쪽 패널
-.right-panel { display: flex; flex-direction: column; gap: 1rem; }
-.stat-card {
+.iob-right-panel { display: flex; flex-direction: column; gap: 1rem; }
+
+.iob-stat-card {
   background: #fff;
   border-radius: 14px;
   border: 1px solid #e0ddd4;
   padding: 1.25rem 1.5rem;
 }
-.stat-label { font-size: 11px; color: #aaa; letter-spacing: 0.04em; margin-bottom: 6px; }
-.stat-value {
+.iob-stat-label { font-size: 11px; color: #aaa; letter-spacing: 0.04em; margin-bottom: 6px; }
+.iob-stat-value {
   font-size: 28px;
   font-weight: 400;
   color: #1e1e1a;
   letter-spacing: -0.02em;
   span { font-size: 13px; color: #888; margin-left: 3px; }
 }
-.stat-sub { font-size: 11px; color: #aaa; margin-top: 4px; }
+.iob-stat-sub { font-size: 11px; color: #aaa; margin-top: 4px; }
 
-.weight-card {
+.iob-weight-card {
   background: #fff;
   border-radius: 14px;
   border: 1px solid #e0ddd4;
   padding: 1.25rem 1.5rem;
 }
-.weight-label { font-size: 11px; color: #aaa; margin-bottom: 10px; }
-.weight-input-row { display: flex; gap: 8px; align-items: center; }
-.weight-input {
+.iob-weight-label { font-size: 11px; color: #aaa; margin-bottom: 10px; }
+.iob-weight-input-row { display: flex; gap: 8px; align-items: center; }
+.iob-weight-input {
   flex: 1;
   border: 1px solid #d8d4cb;
   border-radius: 8px;
@@ -270,7 +266,7 @@
   outline: none;
   &:focus { border-color: #2d5a27; }
 }
-.weight-save-btn {
+.iob-weight-save-btn {
   background: #2d5a27;
   color: #fff;
   border: none;
@@ -278,8 +274,9 @@
   padding: 7px 14px;
   font-size: 12px;
   cursor: pointer;
+  &:hover { background: #234a1f; }
 }
-.change-row {
+.iob-change-row {
   margin-top: 12px;
   padding-top: 12px;
   border-top: 1px solid #f0ede6;
@@ -287,8 +284,8 @@
   align-items: center;
   justify-content: space-between;
 }
-.change-label { font-size: 11px; color: #aaa; }
-.change-val {
+.iob-change-label { font-size: 11px; color: #aaa; }
+.iob-change-val {
   font-size: 14px;
   font-weight: 500;
   &.up   { color: #c04020; }
@@ -296,85 +293,21 @@
   &.same { color: #888; }
 }
 
-// ── 음식 검색 모달 ──
-.search-modal-header { padding: 1.25rem 1.25rem 0; }
-.search-modal-title {
-  font-size: 14px;
-  font-weight: 500;
-  color: #1e1e1a;
-  margin-bottom: 10px;
-  span { font-size: 12px; font-weight: 400; color: #2d5a27; margin-left: 6px; }
-}
-.search-input-row { display: flex; gap: 8px; }
-.search-input {
-  flex: 1;
-  border: 1px solid #d8d4cb;
-  border-radius: 8px;
-  padding: 9px 12px;
-  font-size: 13px;
-  color: #2d2d2a;
-  outline: none;
-  &:focus { border-color: #2d5a27; }
-}
-.search-go-btn {
-  background: #2d5a27;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 9px 16px;
-  font-size: 12px;
-  cursor: pointer;
-  white-space: nowrap;
-  &:disabled { background: #aaa; cursor: not-allowed; }
-}
-.search-status { font-size: 11px; color: #aaa; padding: 8px 0 0; min-height: 20px; }
-.search-results { overflow-y: auto; padding: 0.75rem 1.25rem 0; flex: 1; }
-.search-result-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 0;
-  border-bottom: 1px solid #f0ede6;
-  &:last-child { border-bottom: none; }
-}
-.result-info { display: flex; flex-direction: column; gap: 2px; }
-.result-name { font-size: 13px; color: #2d2d2a; }
-.result-detail { font-size: 11px; color: #aaa; }
-.result-add-btn {
-  background: #2d5a27;
-  color: #fff;
-  border: none;
-  border-radius: 20px;
-  padding: 5px 14px;
-  font-size: 11px;
-  cursor: pointer;
-  white-space: nowrap;
-  flex-shrink: 0;
-  &.added { background: #e8f0e4; color: #2d5a27; cursor: default; }
-}
-.search-modal-footer {
-  padding: 1rem 1.25rem;
-  border-top: 1px solid #f0ede6;
-  display: flex;
-  justify-content: flex-end;
-}
-.search-empty { text-align: center; padding: 2rem 0; font-size: 13px; color: #aaa; }
-
-// ── 즐겨 먹는 식단 ──
-.fav-card {
+// 즐겨 먹는 식단
+.iob-fav-card {
   background: #fff;
   border-radius: 14px;
   border: 1px solid #e0ddd4;
   padding: 1.25rem 1.5rem;
 }
-.fav-card-header {
+.iob-fav-card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 12px;
 }
-.fav-card-title { font-size: 13px; font-weight: 500; color: #1e1e1a; }
-.fav-open-btn {
+.iob-fav-card-title { font-size: 13px; font-weight: 500; color: #1e1e1a; }
+.iob-fav-open-btn {
   font-size: 11px;
   background: #2d5a27;
   color: #fff;
@@ -384,8 +317,8 @@
   cursor: pointer;
   &:hover { background: #234a1f; }
 }
-.fav-list { display: flex; flex-direction: column; gap: 6px; }
-.fav-item {
+.iob-fav-list { display: flex; flex-direction: column; gap: 6px; }
+.iob-fav-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -393,11 +326,11 @@
   border-radius: 8px;
   padding: 8px 12px;
 }
-.fav-item-left { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
-.fav-item-name { font-size: 12px; font-weight: 500; color: #2d2d2a; }
-.fav-item-detail { font-size: 10px; color: #aaa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.fav-item-right { display: flex; gap: 5px; align-items: center; flex-shrink: 0; }
-.fav-use-btn {
+.iob-fav-item-left { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+.iob-fav-item-name { font-size: 12px; font-weight: 500; color: #2d2d2a; }
+.iob-fav-item-detail { font-size: 10px; color: #aaa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.iob-fav-item-right { display: flex; gap: 5px; align-items: center; flex-shrink: 0; }
+.iob-fav-use-btn {
   font-size: 10px;
   background: #e8f0e4;
   color: #2d5a27;
@@ -408,7 +341,7 @@
   font-weight: 500;
   &:hover { background: #d0e8cc; }
 }
-.fav-del-btn {
+.iob-fav-del-btn {
   font-size: 14px;
   background: none;
   border: none;
@@ -417,20 +350,20 @@
   line-height: 1;
   &:hover { color: #b05030; }
 }
-.fav-empty { font-size: 12px; color: #bbb; text-align: center; padding: 1rem 0; }
+.iob-fav-empty { font-size: 12px; color: #bbb; text-align: center; padding: 1rem 0; }
 
 // 즐겨찾기 모달 내부
-.fav-name-row { margin-bottom: 10px; }
-.fav-name-input {
+.iob-fav-name-input {
   width: 100%;
   border: 1px solid #d8d4cb;
   border-radius: 8px;
   padding: 8px 12px;
   font-size: 13px;
   outline: none;
+  margin-bottom: 10px;
   &:focus { border-color: #2d5a27; }
 }
-.fav-staged {
+.iob-fav-staged {
   border-top: 1px solid #f0ede6;
   padding-top: 10px;
   margin-top: 8px;
@@ -440,16 +373,16 @@
   max-height: 110px;
   overflow-y: auto;
 }
-.fav-staged-title { font-size: 11px; color: #aaa; margin-bottom: 4px; }
-.fav-staged-item {
+.iob-fav-staged-title { font-size: 11px; color: #aaa; margin-bottom: 4px; }
+.iob-fav-staged-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
   font-size: 12px;
   color: #333;
 }
-.fav-staged-kcal { font-size: 11px; color: #888; }
-.fav-staged-del {
+.iob-fav-staged-kcal { font-size: 11px; color: #888; }
+.iob-fav-staged-del {
   background: none;
   border: none;
   color: #ccc;
@@ -457,20 +390,77 @@
   font-size: 13px;
   &:hover { color: #b05030; }
 }
-.fav-staged-empty { font-size: 11px; color: #ccc; text-align: center; padding: 4px 0; }
-.fav-total-text {
+.iob-fav-staged-empty { font-size: 11px; color: #ccc; text-align: center; padding: 4px 0; }
+.iob-fav-total-text {
   font-size: 12px;
   color: #888;
   strong { color: #2d5a27; font-weight: 500; }
 }
 
+// 음식 검색 모달
+.iob-search-modal-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1e1e1a;
+  margin-bottom: 10px;
+  span { font-size: 12px; font-weight: 400; color: #2d5a27; margin-left: 6px; }
+}
+.iob-search-input-row { display: flex; gap: 8px; margin-bottom: 4px; }
+.iob-search-input {
+  flex: 1;
+  border: 1px solid #d8d4cb;
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 13px;
+  color: #2d2d2a;
+  outline: none;
+  &:focus { border-color: #2d5a27; }
+}
+.iob-search-go-btn {
+  background: #2d5a27;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 16px;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  &:disabled { background: #aaa; cursor: not-allowed; }
+}
+.iob-search-status { font-size: 11px; color: #aaa; padding: 4px 0; min-height: 20px; }
+.iob-search-results { overflow-y: auto; max-height: 240px; }
+.iob-search-result-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0ede6;
+  &:last-child { border-bottom: none; }
+}
+.iob-result-info { display: flex; flex-direction: column; gap: 2px; }
+.iob-result-name { font-size: 13px; color: #2d2d2a; }
+.iob-result-detail { font-size: 11px; color: #aaa; }
+.iob-result-add-btn {
+  background: #2d5a27;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-size: 11px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  &.iob-added { background: #e8f0e4; color: #2d5a27; cursor: default; }
+}
+.iob-search-empty { text-align: center; padding: 2rem 0; font-size: 13px; color: #aaa; }
+
 // 끼니 선택 모달 그리드
-.meal-select-grid {
+.iob-meal-select-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
 }
-.meal-select-btn {
+.iob-meal-select-btn {
   border: 1.5px solid #e0ddd4;
   border-radius: 10px;
   padding: 10px;

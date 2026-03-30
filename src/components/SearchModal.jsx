@@ -32,21 +32,21 @@ export default function SearchModal({ isOpen, mealKey, onClose, onAdd }) {
   return (
     <CModal visible={isOpen} onClose={handleClose} size="lg">
       <CModalHeader>
-        <div className="search-modal-title">
+        <div className="iob-search-modal-title">
           음식 검색 <span>→ {MEAL_LABELS[mealKey]}</span>
         </div>
       </CModalHeader>
       <CModalBody>
-        <div className="search-input-row mb-2">
+        <div className="iob-search-input-row">
           <input
-            className="search-input"
+            className="iob-search-input"
             placeholder="음식 이름을 입력하세요"
             value={query}
             onChange={e => setQuery(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleSearch()}
           />
           <button
-            className="search-go-btn"
+            className="iob-search-go-btn"
             onClick={handleSearch}
             disabled={isFetching}
           >
@@ -54,7 +54,7 @@ export default function SearchModal({ isOpen, mealKey, onClose, onAdd }) {
           </button>
         </div>
 
-        <div className="search-status">
+        <div className="iob-search-status">
           {!searchTerm
             ? '음식 이름을 검색해보세요'
             : isFetching
@@ -62,20 +62,20 @@ export default function SearchModal({ isOpen, mealKey, onClose, onAdd }) {
             : `${results.length}개 결과`}
         </div>
 
-        <div className="search-results">
+        <div className="iob-search-results">
           {results.length === 0 && searchTerm && !isFetching ? (
-            <div className="search-empty">검색 결과가 없습니다</div>
+            <div className="iob-search-empty">검색 결과가 없습니다</div>
           ) : (
-            results.map((food) => {
+            results.map(food => {
               const isAdded = added.includes(food.name)
               return (
-                <div key={food.name} className="search-result-item">
-                  <div className="result-info">
-                    <div className="result-name">{food.name}</div>
-                    <div className="result-detail">{food.unit} · {food.kcal}kcal</div>
+                <div key={food.name} className="iob-search-result-item">
+                  <div className="iob-result-info">
+                    <div className="iob-result-name">{food.name}</div>
+                    <div className="iob-result-detail">{food.unit} · {food.kcal}kcal</div>
                   </div>
                   <button
-                    className={`result-add-btn ${isAdded ? 'added' : ''}`}
+                    className={`iob-result-add-btn ${isAdded ? 'iob-added' : ''}`}
                     onClick={() => !isAdded && handleAdd(food)}
                     disabled={isAdded}
                   >

@@ -11,6 +11,7 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { instance } from '@/api/axios';
 import { properties } from './constants/properties.js';
 import ErrorFallback from '@/components/error/ErrorFallback';
+import FullPageLoader from '@/components/common/FullPageLoader';
 import ReactGA from "react-ga4";
 
 const AppRouter = lazy(() => import('./routes/AppRouter'));
@@ -29,10 +30,6 @@ const queryClient = new QueryClient({
     queries: {
       retry: false,
       staleTime: 1000 * 60 * 5,
-      // 백엔드 서버가 꺼져있을 때 화면을 클릭할 때마다 계속 재요청하는 것을 방지합니다.
-      refetchOnWindowFocus: false,
-      // 네트워크 재연결 시 발생하는 불필요한 재요청도 차단합니다.
-      refetchOnReconnect: false,
     },
   },
 });
@@ -43,10 +40,11 @@ function AuthWrapper({ children }) {
   const { isLoggedIn, user, login, logout, token } = useAuthStore();
   console.log("Current Auth State:", { isLoggedIn, hasUser: !!user });
 
-  const { data, isSuccess, isError, isLoading, isFetching } = useQuery({
+  const { data, isSuccess, isError, isLoading } = useQuery({
     queryKey: ['auth', 'me'],
     queryFn: async () => {
       console.log("Fetching /me with token:", token);
+      
       const { data } = await instance.get('/api/auth/me');
       return data;
     },
@@ -64,8 +62,8 @@ function AuthWrapper({ children }) {
     }
   }, [isSuccess, isError, data, login, logout]);
 
-  // 컴포넌트가 실제로 데이터를 가져오고 있을 때만 로딩 표시 (무한 로딩 방지)
-  if (isLoading && isFetching) return <div className="text-center mt-10">사용자 확인 중...</div>;
+  // 로딩 상태일 때 화면이 튀는 것을 방지
+  if (isLoading) return <div className="text-center mt-10">사용자 확인 중...</div>;
 
   return children;
 }
@@ -87,11 +85,7 @@ function App() {
       >
         <AuthWrapper>
           <Suspense 
-            fallback={
-              <div className="flex items-center justify-center min-h-screen text-lg">
-                페이지를 구성 중입니다...
-              </div>
-            }
+            fallback={<FullPageLoader message="시스템을 불러오는 중입니다..." />}
           >
             <AppRouter />
           </Suspense>
