@@ -1,5 +1,7 @@
 @use "@coreui/coreui/scss/coreui" as * with ( 
   $enable-deprecation-messages: false,
+  // ✅ 다크모드 CSS 변수 생성 자체를 원천 차단 (라이트모드 고정)
+  $enable-dark-mode: false,
 
   // ✅ 사이트 전체 배경은 베이지, 카드는 흰색으로 강제 분리
   $body-bg: #F4F1EC,
