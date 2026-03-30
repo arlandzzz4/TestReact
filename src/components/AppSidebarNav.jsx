@@ -48,6 +48,7 @@ export const AppSidebarNav = ({ items }) => {
     )
   }
 
+  //item 하위에 메뉴가 있으면 펼쳐서 볼 수 있도록
   const navGroup = (item, index) => {
     const { component, name, icon, items, to, ...rest } = item
     const Component = component
