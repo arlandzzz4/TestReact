@@ -141,12 +141,12 @@ body {
   }
 }
 
-@include color-mode(dark) {
-  body {
-    background-color: #F4F1EC !important;
-  }//background-color: var(--cui-dark-bg-subtle);
+// @include color-mode(dark) {
+//   body {
+//     background-color: #F4F1EC !important;
+//   }//background-color: var(--cui-dark-bg-subtle);
 
-  .footer {
-    --cui-footer-bg: var(--cui-body-bg);
-  }
-}
+//   .footer {
+//     --cui-footer-bg: var(--cui-body-bg);
+//   }
+// }
