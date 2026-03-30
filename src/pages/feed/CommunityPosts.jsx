@@ -2,7 +2,7 @@
  * CommunityPosts Component
  *
  * 커뮤니티 게시글 목록을 반응형 카드 그리드로 표시하는 섹션 컴포넌트.
- * Dashboard.js 안에 삽입해서 사용합니다.
+ * Feed.jsx 안에 삽입해서 사용합니다.
  *
  * 반응형 열 수:
  *   - ~576px  (xs) → 1열
@@ -13,7 +13,7 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
+import { instance } from '@/api/axios' // 하드코딩 대신 설정된 axios 인스턴스 사용
 import {
   CRow,
   CCol,
@@ -37,10 +37,10 @@ const CommunityPosts = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const res = await axios.get('http://localhost:8080/api/post/search/post', {
-  params: { limit: 10 }
-})
-setPosts(res.data)
+        const res = await instance.get('/api/post/search/post', {
+          params: { limit: 10 }
+        })
+        setPosts(res.data)
       } catch (err) {
         console.error(err)
       }
@@ -92,26 +92,12 @@ setPosts(res.data)
       <div
         className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3"
       >
-        <h5 className="mb-0 fw-semibold">커뮤니티 게시글</h5>
+        {/* <h5 className="mb-0 fw-semibold">커뮤니티 게시글</h5> */}
 
-        {/* 글쓰기 버튼 */}
-        <CButton
-          size="sm"
-          style={{
-            background: '#c8a96e',
-            border: 'none',
-            borderRadius: '40px',
-            fontWeight: 700,
-            color: '#fff',
-            padding: '6px 16px',
-          }}
-        >
-          <CIcon icon={cilPlus} className="me-1" />
-          글쓰기
-        </CButton>
+
       </div>
 
-      {/* ── 필터 탭 + 검색 ── */}
+      {/* ── 필터 탭 + 검색 + 글쓰기 버튼 */}
       <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
 
         {/* 필터 탭 */}
@@ -119,7 +105,7 @@ setPosts(res.data)
           style={{
             display: 'flex',
             gap: 4,
-            background: 'var(--cui-card-bg, #fff)',
+            background: '#fff',
             borderRadius: '40px',
             padding: '4px',
             boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
@@ -147,8 +133,11 @@ setPosts(res.data)
           ))}
         </div>
 
-        {/* 검색창 */}
-        <CInputGroup style={{ width: 220 }}>
+        {/* 우측 그룹: 검색창 + 글쓰기 버튼 */}
+        <div className="d-flex align-items-center gap-2">
+          
+          {/* 검색창 */}
+          <CInputGroup style={{ width: 220 }}>
           <CFormInput
             placeholder="게시글 검색..."
             size="sm"
@@ -167,6 +156,24 @@ setPosts(res.data)
             <CIcon icon={cilSearch} style={{ color: '#fff', width: 14, height: 14 }} />
           </CInputGroupText>
         </CInputGroup>
+
+          {/* 글쓰기 버튼 */}
+          <CButton
+          size="sm"
+          style={{
+            background: '#c8a96e',
+            border: 'none',
+            borderRadius: '40px',
+            fontWeight: 700,
+            color: '#fff',
+            padding: '6px 16px',
+          }}
+        >
+          <CIcon icon={cilPlus} className="me-1" />
+          글쓰기
+        </CButton>
+          
+        </div>
 
       </div>
 

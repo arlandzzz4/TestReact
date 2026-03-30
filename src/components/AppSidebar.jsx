@@ -18,8 +18,8 @@
  *   <AppSidebar />
  * )
  */
-
-import React from 'react'
+import React, { useMemo } from 'react'
+import { useAuth } from '@/hooks/useAuth' // 👈 인증 상태를 가져오기 위한 훅
 import { useSelector, useDispatch } from 'react-redux'
 
 import {
@@ -30,12 +30,8 @@ import {
   CSidebarHeader,
   CSidebarToggler,
 } from '@coreui/react'
-import CIcon from '@coreui/icons-react'
 
 import { AppSidebarNav } from './AppSidebarNav'
-
-import { logo } from '@/assets/brand/logo'
-import { sygnet } from '@/assets/brand/sygnet'
 
 // sidebar nav config
 import navigation from '../_nav'
@@ -56,11 +52,21 @@ const AppSidebar = () => {
   const dispatch = useDispatch()
   const unfoldable = useSelector((state) => state.sidebarUnfoldable)
   const sidebarShow = useSelector((state) => state.sidebarShow)
+  const { isAuthenticated } = useAuth() // 👈 로그인 상태 확인
+
+  // 로그인 상태에 따라 보여줄 메뉴를 필터링합니다.
+  const filteredNav = useMemo(
+    () =>
+      navigation.filter((item) => {
+        return isAuthenticated ? true : !item.auth
+      }),
+    [isAuthenticated],
+  )
 
   return (
     <CSidebar
       className="border-end"
-      colorScheme="dark"
+      // colorScheme="dark"
       position="fixed"
       unfoldable={unfoldable}
       visible={sidebarShow}
@@ -68,10 +74,23 @@ const AppSidebar = () => {
         dispatch({ type: 'set', sidebarShow: visible })
       }}
     >
+      {/* 사이드바 헤더 */}
       <CSidebarHeader className="border-bottom">
         <CSidebarBrand to="/">
-          <CIcon customClassName="sidebar-brand-full" icon={logo} height={32} />
-          <CIcon customClassName="sidebar-brand-narrow" icon={sygnet} height={32} />
+          {/* 사이드바가 펼쳐졌을 때 보일 전체 이름 */}
+          <span
+            className="sidebar-brand-full"
+            style={{ color: 'white', fontWeight: 'bold', fontSize: '1.5rem', textDecoration: 'none' }}
+          >
+            IOB
+          </span>
+          <span
+          style={{ color: 'white', fontSize: '0.8rem', textDecoration: 'none' }}
+          > Information Of Balace</span>
+          {/* 사이드바가 좁혀졌을 때 보일 축약 이름 */}
+          <span className="sidebar-brand-narrow" style={{ color: 'white', fontWeight: 'bold', fontSize: '1.5rem' }}>
+            I
+          </span>
         </CSidebarBrand>
         <CCloseButton
           className="d-lg-none"
@@ -80,7 +99,8 @@ const AppSidebar = () => {
         />
       </CSidebarHeader>
       
-      <AppSidebarNav items={navigation} />
+      {/* 사이듣바 아이템 */}
+      <AppSidebarNav items={filteredNav} />
       <CSidebarFooter className="border-top d-none d-lg-flex">
         <CSidebarToggler
           onClick={() => dispatch({ type: 'set', sidebarUnfoldable: !unfoldable })}

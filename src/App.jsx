@@ -11,6 +11,7 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { instance } from '@/api/axios';
 import { properties } from './constants/properties.js';
 import ErrorFallback from '@/components/error/ErrorFallback';
+import FullPageLoader from '@/components/common/FullPageLoader';
 import ReactGA from "react-ga4";
 
 const AppRouter = lazy(() => import('./routes/AppRouter'));
@@ -36,13 +37,14 @@ const queryClient = new QueryClient({
 function AuthWrapper({ children }) {
   console.log("!!! AuthWrapper Component Mounted !!!"); // 👈 이게 찍히는지 확인
   
-  const { isLoggedIn, user, login, logout } = useAuthStore();
+  const { isLoggedIn, user, login, logout, token } = useAuthStore();
   console.log("Current Auth State:", { isLoggedIn, hasUser: !!user });
 
   const { data, isSuccess, isError, isLoading } = useQuery({
     queryKey: ['auth', 'me'],
     queryFn: async () => {
       console.log("Fetching /me with token:", token);
+      
       const { data } = await instance.get('/api/auth/me');
       return data;
     },
@@ -83,11 +85,7 @@ function App() {
       >
         <AuthWrapper>
           <Suspense 
-            fallback={
-              <div className="flex items-center justify-center min-h-screen text-lg">
-                페이지를 구성 중입니다...
-              </div>
-            }
+            fallback={<FullPageLoader message="시스템을 불러오는 중입니다..." />}
           >
             <AppRouter />
           </Suspense>
