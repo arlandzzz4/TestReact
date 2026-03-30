@@ -17,24 +17,27 @@ const router = createBrowserRouter([
         element: <DefaultLayout />,
         children: [
           // 1. 공통/비로그인
-          { index: true, element: <Navigate to="/dashboard" replace /> },
+          { index: true, element: <Navigate to="/feed" replace /> },
           { 
-            path: 'dashboard', 
-            lazy: () => import('@/pages/dashboard/Dashboard').then(m => ({ Component: m.default })) 
+            path: 'feed', 
+            lazy: () => import('@/pages/feed/Feed').then(m => ({ Component: m.default })) 
           },
-        { path: 'calendar', lazy: () => import('@/pages/calendar/Calendar').then(m => ({ Component: m.default })) },
+        
         //{ path: 'food-search', lazy: () => import('@/pages/food/FoodSearch').then(m => ({ Component: m.default })) },
         { path: 'calc', lazy: () => import('@/pages/calc/CalcPage').then(m => ({ Component: m.default })) },
         { path: 'map', lazy: () => import('@/pages/map/MapPage').then(m => ({ Component: m.default })) },
-        //{ path: 'challenge', lazy: () => import('@/pages/challenge/Challenge').then(m => ({ Component: m.default })) },
+         { path: 'foodSearch', lazy: () => import('@/pages/foodSearch/foodSearchPage').then(m => ({ Component: m.default })) },
+        
         //{ path: 'notifications', lazy: () => import('@/pages/notification/Notification').then(m => ({ Component: m.default })) },
       
         // 2. 일반 인증 구역
         {
           element: <AuthGuard />,
           children: [
-            //{ path: 'feed', lazy: () => import('@/pages/feed/FeedHome').then(m => ({ Component: m.default })) },
+            // { path: 'feed', lazy: () => import('@/pages/feed/Feed').then(m => ({ Component: m.default })) },
             { path: 'mypage', lazy: () => import('@/pages/user/MyPage').then(m => ({ Component: m.default })) },
+            { path: 'calendar', lazy: () => import('@/pages/calendar/Calendar').then(m => ({ Component: m.default })) },
+            { path: 'challenge', lazy: () => import('@/pages/challenge/ChallengePage').then(m => ({ Component: m.default })) },
           ]
         },
       ]

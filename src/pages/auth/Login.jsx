@@ -77,7 +77,7 @@ const Login = () => {
 };
 
   return (
-    <div className="bg-light min-vh-100 d-flex align-items-center justify-content-center">
+    <div className="min-vh-100 d-flex align-items-center justify-content-center">
       <CContainer>
         <CRow className="justify-content-center align-items-center">
           <CCol md={8} lg={6} xl={5}>
@@ -144,6 +144,13 @@ const Login = () => {
                         Google 로그인
                       </CButton>
                     </div>
+
+                    <div className="d-grid">
+                      <CButton>
+                        아직 계정이 없으신가요? 회원가입
+                      </CButton>
+                    </div>
+
                   </CForm>
                 </CCardBody>
               </CCard>
