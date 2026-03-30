@@ -12,6 +12,7 @@ import { cilLockLocked, cilUser, cibGoogle } from '@coreui/icons';
 import { auth, googleProvider } from '@/config/firebase';
 import { signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
 import { useAuthStore } from '@/store/useAuthStore';
+import { NavLink } from 'react-router-dom'
 
 /**
  * 1. Zod 스키마 정의: 유효성 검사 규칙 설정
@@ -60,7 +61,15 @@ const Login = () => {
   setIsLoading((prev) => ({ ...prev, google: true }));
   try {
     const result = await signInWithPopup(auth, googleProvider);
-    // ... 성공 로직
+    const idToken = await result.user.getIdToken();
+    const user = {
+      "email" : result.user.email,
+      "nickname" : result.user.displayName,
+      "providerCode" : "02",
+      "providerId" : result.user.uid
+    }
+    login(user, idToken);
+    navigate('/dashboard', { replace: true });
   } catch (error) {
     console.error("🔥 구글 상세 에러:", error.code, error.message); // 👈 이걸 확인해야 합니다!
     
@@ -146,7 +155,7 @@ const Login = () => {
                     </div>
 
                     <div className="d-grid">
-                      <CButton>
+                      <CButton to="/register" as={NavLink}>
                         아직 계정이 없으신가요? 회원가입
                       </CButton>
                     </div>
