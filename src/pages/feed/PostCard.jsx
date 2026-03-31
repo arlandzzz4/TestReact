@@ -15,6 +15,7 @@
  */
 
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import { CCard, CCardBody, CCardImage } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilHeart, cilCommentSquare } from '@coreui/icons'
@@ -27,11 +28,14 @@ const TAG_STYLES = {
 }
 
 const PostCard = ({ post }) => {
-  const { tag, image, title, author, date, likes, comments } = post
+  const navigate = useNavigate()
+  const { id, tag, image, title, author, date, likes, comments } = post
   const tagStyle = TAG_STYLES[tag] ?? TAG_STYLES['자유']
 
   return (
     <CCard
+    // 클릭 시 해당 
+      onClick={() => navigate(`/post/${id}`)}
       style={{
         backgroundColor: '#fff',
         borderRadius: '18px',
