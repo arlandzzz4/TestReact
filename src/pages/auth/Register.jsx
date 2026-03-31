@@ -61,15 +61,7 @@ const Login = () => {
   setIsLoading((prev) => ({ ...prev, google: true }));
   try {
     const result = await signInWithPopup(auth, googleProvider);
-    const idToken = await result.user.getIdToken();
-    const user = {
-      "email" : result.user.email,
-      "nickname" : result.user.displayName,
-      "providerCode" : "02",
-      "providerId" : result.user.uid
-    }
-    login(user, idToken);
-    navigate('/dashboard', { replace: true });
+    // ... 성공 로직
   } catch (error) {
     console.error("🔥 구글 상세 에러:", error.code, error.message); // 👈 이걸 확인해야 합니다!
     
@@ -95,7 +87,7 @@ const Login = () => {
                 <CCardBody>
                   <CForm onSubmit={handleSubmit(onBasicLogin)}>
                     <div className="text-center mb-4">
-                      <h1 className="fw-bold">로그인</h1>
+                      <h1 className="fw-bold">회원가입</h1>
                       <p className="text-medium-emphasis">계정에 로그인하세요</p>
                     </div>
 
