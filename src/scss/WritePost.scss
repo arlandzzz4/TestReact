@@ -1,0 +1,204 @@
+.write-post-header {
+  background-color: #ffffff;
+  margin-left: calc(-50vw + 50%);
+  margin-right: calc(-50vw + 50%);
+}
+
+.write-post-container {
+  background-color: white;
+  border-radius: 18px;
+  border: none;
+}
+
+.write-post-inner {
+  width: 90%;
+  padding: 24px;
+}
+
+.form-section-title {
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.required-star {
+  color: red;
+}
+
+.category-btn {
+  border-radius: 40px !important;
+  border: 1px solid #CCCCCC !important;
+}
+
+.category-btn:hover {
+  background-color: #DAE8D6;
+  color: #444444 !important;
+}
+
+.post-input,
+.post-editor {
+  background-color: #FAFAF8 !important;
+}
+
+.custom-quill-editor .ql-editor {
+  min-height: 400px;
+}
+
+.ql-toolbar{
+    background-color:#F0EDE8;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.ql-container {
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.error-message {
+  color: red;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+
+.modal-action-btn {
+  border-radius: 50px !important;
+  padding: 0.5rem 1.5rem !important;
+  font-weight: 600;
+  min-width: 130px;
+}
+
+.modal-warning-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: #e55353;
+  color: white;
+}
+
+.modal-exit-btn {
+  background-color: #e55353 !important;
+  border-color: #e55353 !important;
+}
+
+.modal-exit-btn:hover {
+  background-color: #ac1f1f !important;
+  border-color: #ac1f1f !important;
+}
+
+// WritePost.scss에 추가
+
+.image-limit-info {
+  font-size: 12px;
+  color: #999;
+  font-weight: 400;
+  margin-left: 6px;
+}
+
+.image-upload-area {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+// 사진 추가 버튼
+.image-add-btn {
+  width: 80px;
+  height: 80px;
+  border: 1.5px dashed #ccc;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: #fafafa;
+  transition: border-color 0.2s, background 0.2s;
+
+  &:hover {
+    border-color: #888;
+    background: #f0f0f0;
+  }
+
+  .image-add-icon {
+    font-size: 22px;
+    color: #aaa;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .image-add-text {
+    font-size: 11px;
+    color: #aaa;
+  }
+}
+
+// 미리보기 썸네일
+.image-preview-item {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  overflow: visible;
+
+  .image-preview-thumb {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+  }
+
+  .image-remove-btn {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #555;
+    color: #fff;
+    border: none;
+    font-size: 14px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+
+    &:hover {
+      background: #222;
+    }
+  }
+}
+
+.form-cancel-btn {
+  border: 1px solid #ccc !important;
+  border-radius: 40px !important;
+  background: #fff !important;
+  color: #333 !important;
+  padding: 8px 32px !important;
+  font-weight: 500;
+
+  &:hover{
+        background-color: #ac1f1f !important;
+        border-color: #ac1f1f !important;
+        color: #fff !important;
+  }
+}
+
+.form-submit-btn {
+  background: #3d6b4f !important;
+  border: none !important;
+  border-radius: 40px !important;
+  color: #fff !important;
+  padding: 8px 32px !important;
+  font-weight: 700;
+
+  &:hover{
+        background-color: #1e4e30 !important;
+        border-color: #1e4e30 !important;
+  }
+}

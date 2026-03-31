@@ -25,6 +25,8 @@ import {
 import CIcon from '@coreui/icons-react'
 import { cilSearch, cilPlus } from '@coreui/icons'
 import PostCard from './PostCard'
+import WritePost from './WritePost'
+import { useNavigate } from 'react-router-dom'
 
 const TABS = ['전체', '자유', '정보', '인원모집', '공지사항']
 
@@ -32,6 +34,7 @@ const CommunityPosts = () => {
   const [posts, setPosts] = useState([])
   const [activeTab, setActiveTab] = useState('전체')
   const [searchQuery, setSearchQuery] = useState('')
+  const navigate = useNavigate()
 
   //API 호출
   useEffect(() => {
@@ -168,6 +171,9 @@ const CommunityPosts = () => {
             color: '#fff',
             padding: '6px 16px',
           }}
+          onClick={() => navigate('/write')}
+          // 새 창에 여는 코드는 밑에.
+          // onClick={() => window.open('/write', '_blank', 'noopener,noreferrer')}
         >
           <CIcon icon={cilPlus} className="me-1" />
           글쓰기
