@@ -22,15 +22,15 @@ const authStore = (set) => ({
   // 로그아웃 액션
   logout: () => 
     set(
-      { ...initialState }, // [변경]: initialState를 사용하여 한 번에 리셋
+      { ...initialState },
       false,
       'auth/logout'
     ),
 
-  // 등록(임시) 액션
-  regist: (userData) => 
+  // 등록 액션
+  regist: (userData, token) => 
     set(
-      { user: userData },
+      { user: userData, token: token, isLoggedIn: true},
       false,
       'auth/regist'
     ),

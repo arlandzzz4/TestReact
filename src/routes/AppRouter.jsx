@@ -13,6 +13,7 @@ const router = createBrowserRouter([
     errorElement: <RouterErrorFallback />,
     children: [
       { path: 'login', lazy: () => import('@/pages/auth/Login').then(m => ({ Component: m.default })) },
+      { path: 'agreement', lazy: () => import('@/pages/auth/Agreement').then(m => ({ Component: m.default })) },
       { path: 'register', lazy: () => import('@/pages/auth/Register').then(m => ({ Component: m.default })) },
       {
         element: <DefaultLayout />,

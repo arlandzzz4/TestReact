@@ -5,9 +5,9 @@ import { useAuthStore } from '../store/useAuthStore.jsx';
 export const loginUser = async (credentials) => {
   const response = await instance.post('/api/auth/login', credentials);
   
-  if (!response.data || !response.data.user) {
-    throw new Error('USER_INFO_NOT_FOUND');
-  }
+  //if (!response.data || !response.data.user) {
+  //  throw new Error('USER_INFO_NOT_FOUND');
+  //}
   
   if (response.status === 200) {
     requestForToken().catch(err => {

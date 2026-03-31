@@ -25,7 +25,7 @@ export const requestForToken = async () => {
     if (token) {
       console.log("발급된 FCM 토큰:", token);
       
-      await instance.post("/api/user/me/fcm-token", { fcmToken: token })
+      await instance.post("/api/user/me/fcmToken", { fcmToken: token })
         .then(() => console.log("서버에 토큰 등록 완료"))
         .catch(err => console.error("서버 토큰 등록 실패:", err));
         
