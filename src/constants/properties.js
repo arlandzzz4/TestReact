@@ -2,7 +2,7 @@ export const properties = {
   salt: "salt",
   getBaseUrl: () => {
     const url = import.meta.env.VITE_API_BASE_URL;
-    return url && url !== 'api' ? url : '/api';
+    return url && url !== 'api' ? url : '/';
   },
   isDev: import.meta.env.DEV,
   // 개발 환경에서만 로그를 남기고 싶을 때 사용하는 유틸
