@@ -11,9 +11,9 @@ import {
 import CIcon from '@coreui/icons-react';
 import { cilLockLocked, cilUser, cibGoogle } from '@coreui/icons';
 import { auth, googleProvider } from '@/config/firebase';
-import { signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithPopup, createUserWithEmailAndPassword } from 'firebase/auth';
 import { useAuthStore } from '@/store/useAuthStore';
-import { NavLink } from 'react-router-dom'
+import { useUserQuery } from '@/hooks/queries/useAuthQuery';
 
 export const signupSchema = z
   .object({
@@ -24,8 +24,16 @@ export const signupSchema = z
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/,
         "대소문자, 숫자, 특수문자를 모두 포함해야 합니다."
       ),
-    confirmPassword: z.string().min(1, "비밀번호 확인을 입력해주세요."),
+    confirmPassword: z.string()
+      .min(8, "최소 8자 이상 입력해주세요.")
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/,
+        "대소문자, 숫자, 특수문자를 모두 포함해야 합니다."
+      ),
     nickname: z.string().min(2, "닉네임은 2자 이상이어야 합니다."),
+    emailConfirm: z.literal("Y", {
+      errorMap: () => ({ message: "이메일 중복 확인이 필요합니다." }),
+    }),
     terms: z.literal("Y", {
       errorMap: () => ({ message: "이용약관에 동의해야 합니다." }),
     }),
@@ -39,25 +47,52 @@ export const signupSchema = z
   });
 
 
-const RegisterPage = () => {
+const RegistPage = () => {
   const location = useLocation();
   const { terms, privacy } = location.state || {};
   const navigate = useNavigate();
-  const regist = useAuthStore((state) => state.login);
+  const regist = useAuthStore((state) => state.regist);
+
   const [isLoading, setIsLoading] = useState({ google: false, basic: false });
+  const [shouldSearch, setShouldSearch] = useState(false);
   const { 
     register, 
     handleSubmit, 
     watch,
     trigger,
+    setValue,
     formState: { errors, isValid }
   } = useForm({
     resolver: zodResolver(signupSchema),
-    mode: 'onChange'
+    mode: 'onChange',
+      defaultValues: {
+      email: '',
+      emailConfirm: '',
+      password: '',
+      confirmPassword: '',
+      nickname: '',
+      terms: terms || '',   // 받아온 값 세팅
+      privacy: privacy || '' // 받아온 값 세팅
+    }
   });
+  const emailValue = watch("email");
+  const { useEmailSearch } = useUserQuery();
+  const { 
+    isLoading: isCheckLoading,
+    refetch 
+  } = useEmailSearch(emailValue, shouldSearch);
 
   const password = watch("password");
   const confirmPassword = watch("confirmPassword");
+
+  useEffect(() => {
+    if (terms) setValue('terms', terms, { shouldValidate: true });
+    if (privacy) setValue('privacy', privacy, { shouldValidate: true });
+  }, [terms, privacy, setValue]);
+
+  useEffect(() => {
+    setValue("emailConfirm", "");
+  }, [emailValue, setValue]);
 
   useEffect(() => {
     if (confirmPassword && confirmPassword.length > 0) {
@@ -89,11 +124,34 @@ const RegisterPage = () => {
     visibility: fieldError ? 'visible' : 'hidden'
   });
 
+  //이메일 중복 확인 핸들러
+  const onEmailConfirm = async () => {
+    const emailValue = watch("email");
+    if (!emailValue) {
+      alert("이메일을 입력해주세요.");
+      return;
+    }
+    try {      
+      setShouldSearch(true);
+      const result = await refetch();
+      if (result.data) {
+        alert("사용 가능한 이메일입니다.");
+          setValue("emailConfirm", "Y");
+        } else {
+          alert("이미 사용 중인 이메일입니다.");
+          setValue("emailConfirm", "N");
+      }
+    }catch (error) {
+        console.error("이메일 중복 확인 실패:", error);
+        alert("이메일 중복 확인 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+    }
+  };
+
   //일반 등록
-  const onRegister = async (data) => {
+  const onRegist = async (data) => {
     setIsLoading((prev) => ({ ...prev, basic: true }));
     try {
-      const result = await signInWithEmailAndPassword(auth, data.email, data.password);
+      const result = await createUserWithEmailAndPassword(auth, data.email, data.password);
       const token = await result.user.getIdToken();
       const user = {
         "email" : result.user.email,
@@ -104,9 +162,8 @@ const RegisterPage = () => {
         "termsAgreedYn" : terms,
         "privacyAgreedYn" : privacy,
       }
-      console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" , user);
-      //await regist(user, token);
-      //navigate("/", { replace: true });
+      await regist(user, token);
+      handleLoginRedirect(navigate, location);
     } catch (error) {
       console.error('로그인 실패:', error);
       alert('이메일 또는 비밀번호가 일치하지 않습니다.');
@@ -131,7 +188,7 @@ const RegisterPage = () => {
         "privacyAgreedYn" : privacy,
       }
       await regist(user, idToken);
-      navigate("", { replace: true });
+      handleLoginRedirect(navigate, location);
     } catch (error) {
       console.error(" 구글 상세 에러:", error.code, error.message);
       
@@ -162,14 +219,14 @@ const RegisterPage = () => {
                   </h2>
                 </div>
 
-                <CForm onSubmit={handleSubmit(onRegister)}>
+                <CForm onSubmit={handleSubmit(onRegist)}>
                   {/* 이메일 섹션 */}
                   <div className="mb-2">
                     <CFormLabel style={labelStyle}>이메일</CFormLabel>
                     <CInputGroup>
                       <CFormInput style={inputStyle} placeholder="example@job.kr" {...register('email')} invalid={!!errors.email} />
-                      <CButton type="button" style={{ backgroundColor: '#e9f5ee', color: '#3d6b4f', border: 'none', marginLeft: '10px', borderRadius: '8px', fontWeight: 'bold', fontSize: '13px' }}>
-                        사용 확인
+                      <CButton type="button" onClick={onEmailConfirm} disabled={isCheckLoading} style={{ backgroundColor: '#e9f5ee', color: '#3d6b4f', border: 'none', marginLeft: '10px', borderRadius: '8px', fontWeight: 'bold', fontSize: '13px' }}>
+                        {isCheckLoading ? <CSpinner size="sm"/> : '사용 확인'}
                       </CButton>
                     </CInputGroup>
                     <div style={errorSpaceStyle(errors.email)}>* {errors.email?.message || '해당 이메일은 사용 불가합니다'}</div>
@@ -190,14 +247,15 @@ const RegisterPage = () => {
                   </div>
 
                   {/* 닉네임 섹션 */}
-                  <div className="mb-4">
+                  <div className="mt-2">
                     <CFormLabel style={labelStyle}>닉네임</CFormLabel>
                     <CFormInput style={inputStyle} placeholder="" {...register('nickname')} />
                     <div style={errorSpaceStyle(errors.nickname)}>&nbsp;</div>
+                    <div style={errorSpaceStyle(errors.nickname)}>* {errors.nickname?.message || '닉네임은 2~20자 사이로 입력해주세요'}</div>
                   </div>
 
                   {/* 일반 회원가입 버튼 */}
-                  <div className="d-grid mt-4">
+                  <div className="d-grid mt-2">
                     <CButton 
                       size="lg" 
                       type="submit" 
@@ -250,4 +308,4 @@ const RegisterPage = () => {
   );
 };
 
-export default RegisterPage;
+export default RegistPage;

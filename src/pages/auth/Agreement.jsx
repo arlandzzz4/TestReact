@@ -108,7 +108,7 @@ const Agreement = () => {
                 fontWeight: '700',
                 transition: 'all 0.3s'
               }}
-              onClick={() => navigate('/Register', { 
+              onClick={() => navigate('/Regist', { 
                                                     replace: true,
                                                     state: {
                                                         terms : agreements.terms ? "Y" : "N",
