@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -25,6 +25,13 @@ export const signupSchema = z
         "대소문자, 숫자, 특수문자를 모두 포함해야 합니다."
       ),
     confirmPassword: z.string().min(1, "비밀번호 확인을 입력해주세요."),
+    nickname: z.string().min(2, "닉네임은 2자 이상이어야 합니다."),
+    terms: z.literal("Y", {
+      errorMap: () => ({ message: "이용약관에 동의해야 합니다." }),
+    }),
+    privacy: z.literal("Y", {
+      errorMap: () => ({ message: "개인정보 수집에 동의해야 합니다." }),
+    }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "비밀번호가 일치하지 않습니다.",
@@ -33,6 +40,8 @@ export const signupSchema = z
 
 
 const RegisterPage = () => {
+  const location = useLocation();
+  const { terms, privacy } = location.state || {};
   const navigate = useNavigate();
   const regist = useAuthStore((state) => state.login);
   const [isLoading, setIsLoading] = useState({ google: false, basic: false });
@@ -86,8 +95,18 @@ const RegisterPage = () => {
     try {
       const result = await signInWithEmailAndPassword(auth, data.email, data.password);
       const token = await result.user.getIdToken();
-      await regist(result.user, token);
-      navigate("/", { replace: true });
+      const user = {
+        "email" : result.user.email,
+        "password" : result.user.password,
+        "nickname" : result.user.nickname,
+        "providerCode" : "01",
+        "providerId" : result.user.uid,
+        "termsAgreedYn" : terms,
+        "privacyAgreedYn" : privacy,
+      }
+      console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" , user);
+      //await regist(user, token);
+      //navigate("/", { replace: true });
     } catch (error) {
       console.error('로그인 실패:', error);
       alert('이메일 또는 비밀번호가 일치하지 않습니다.');
@@ -107,7 +126,9 @@ const RegisterPage = () => {
         "email" : result.user.email,
         "nickname" : result.user.displayName,
         "providerCode" : "02",
-        "providerId" : result.user.uid
+        "providerId" : result.user.uid,
+        "termsAgreedYn" : terms,
+        "privacyAgreedYn" : privacy,
       }
       await regist(user, idToken);
       navigate("", { replace: true });
