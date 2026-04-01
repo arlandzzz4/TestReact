@@ -14,15 +14,23 @@ export const useLoginMutation = () => {
     onSuccess: (data) => { // response.data가 넘어오므로 이름을 data로 변경
       try {
         const { accessToken, user, success, message} = data;
+        if (accessToken) {
+          login(user, accessToken);
+
+          import('@/api/fcm/fcmService').then(({ requestForToken }) => {
+            requestForToken(accessToken).catch(err => console.error("FCM 지연 등록 실패:", err));
+          });
+        }
         if(success){
           if (!accessToken) {
             throw new Error("토큰이 응답에 포함되어 있지 않습니다.");
           }
 
-          login(user || null, accessToken);
+          
           handleLoginRedirect(navigate, location);
         }else{
-          alert(message);
+          if(message)
+            alert(message);
           navigate('/Agreement', { replace: true });
         }
       } catch (err) {
@@ -67,7 +75,6 @@ export const useLogoutMutation = () => {
 export const useRegistMutation = () => {
   const navigate = useNavigate();
   const login = useAuthStore((state) => state.login);
-
   return useMutation({
     mutationFn: registUser,
     onSuccess: (data) => {

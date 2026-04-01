@@ -43,6 +43,7 @@ export const useAuthStore = create(
       partialize: (state) => ({
         isLoggedIn: state.isLoggedIn,
         token: state.token, 
+        user: state.user
       }),
     }),
     { name: 'AuthStore', enabled: properties.isDev } // [변경]: properties.isDev 활용
