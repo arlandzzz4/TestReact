@@ -72,7 +72,7 @@ export default function WritePost() {
   };
 
   //@@@@@@@@@@테스트용 유저 이메일 하드코딩. 추후 로그인 시 이 값을 전달하도록 수정 필요 @@@@@@@@@@@@@
-  const user = "test@gmail.com";
+  const user = "arlandzzz4@gmail.com";
   
   // 카테고리 이름을 서버에서 요구하는 코드(01, 02, 03)로 변환하는 함수
   const getCategoryId = (name) => {
@@ -99,12 +99,31 @@ export default function WritePost() {
     setErrors({});
     
     try {
+      // 1. 게시글 먼저 등록 → post_id 반환
       const response = await instance.post('/api/postwrite/create', {
         userEmail: user,
         categoryCode: categoryCode,
         title: title,
         content: content
       });
+
+      const postId = response.data; // 반환된 post_id
+
+      // 2. 이미지가 있으면 post_id와 함께 업로드
+      if (images.length > 0) {
+        const formData = new FormData();
+        formData.append('postId', postId);
+        images.forEach((img) => {
+          formData.append('file', img.file);
+        });
+
+        await instance.post('/api/common/uploadList', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+      }
+
       console.log('게시글 등록 성공:', response.data);
       alert('게시글이 성공적으로 등록되었습니다.');
       navigate(-1); // 이전 페이지로 돌아가기
