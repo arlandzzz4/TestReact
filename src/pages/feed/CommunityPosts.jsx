@@ -55,9 +55,9 @@ const CommunityPosts = () => {
   //카테고리 변환 함수
   const getCategoryName = (id) => {
     switch (id) {
-      case 1: return '자유'
-      case 2: return '정보'
-      case 3: return '인원모집'
+      case '01': return '자유'
+      case '02': return '정보'
+      case '03': return '인원모집'
       default: return '공지사항'
     }
   }
@@ -71,12 +71,17 @@ const CommunityPosts = () => {
   // 백앤드 데이터 프론트에서 필요한 데이터로 변환
   const mappedPosts = posts.map(post => ({
     id: post.postId,
-    tag: getCategoryName(post.categoryId),
+    tag: getCategoryName(post.categoryCode),
     title: post.title,
     author: post.nickname,
     date: formatDate(post.createdAt),
     likes: post.likes,
     comments: post.comments,
+    image: post.thumbnail 
+      ? post.thumbnail.startsWith('http') 
+        ? post.thumbnail 
+        : `${instance.defaults.baseURL || ''}${post.thumbnail}`
+      : null
   }))
 
   // 탭 + 검색어 필터링

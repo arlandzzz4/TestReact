@@ -19,6 +19,7 @@ import { useNavigate } from 'react-router-dom'
 import { CCard, CCardBody, CCardImage } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilHeart, cilCommentSquare } from '@coreui/icons'
+import placeholderImg from '@/assets/images/placeholder.png' // 게시글에 이미지 없을 때 불러올 이미지
 
 // 태그별 색상 정의
 const TAG_STYLES = {
@@ -58,11 +59,11 @@ const PostCard = ({ post }) => {
       {/* 썸네일 영역 */}
       <div style={{ position: 'relative', height: '180px', overflow: 'hidden' }}>
         <CCardImage
-          src={image || 'https://picsum.photos/400/180'}
+          src={image || placeholderImg}
           alt={title}
            onError={(e) => {
               e.target.onerror = null  // ← 이거 추가! 무한루프 차단
-              e.target.src = 'https://picsum.photos/400/180' // 빈문자열도 이미지없는것으로 간주하여 플레이스홀더 처리
+              e.target.src = placeholderImg // 빈문자열도 이미지없는것으로 간주하여 플레이스홀더 처리
   }}
           style={{
             width: '100%',

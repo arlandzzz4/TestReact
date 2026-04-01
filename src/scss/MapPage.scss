@@ -432,6 +432,8 @@ $accent-beige:   #f0e6d3;   // 포인트 베이지 (사이드바 호버색)
 // ─────────────────────────────────────────
 // 반응형
 // ─────────────────────────────────────────
+
+// 태블릿 (1200px 이하)
 @media (max-width: 1200px) {
   .map-page {
     padding: 1.5rem 1rem 2rem;
@@ -441,6 +443,13 @@ $accent-beige:   #f0e6d3;   // 포인트 베이지 (사이드바 호버색)
     flex-direction: column;
   }
 
+  .map-container {
+    height: 450px;
+    min-width: 0;      // ✅ unset 대신 0 (호환성 더 좋음)
+    width: 100%;
+    flex: none;        // ✅ flex: 1 해제 - 이게 핵심!
+  }
+
   .gym-list {
     width: 100%;
     max-width: 100%;
@@ -448,5 +457,60 @@ $accent-beige:   #f0e6d3;   // 포인트 베이지 (사이드바 호버색)
 
   .gym-items {
     max-height: 400px;
+  }
+}
+
+// 모바일 (768px 이하)
+@media (max-width: 768px) {
+  .map-page {
+    padding: 1rem 0.75rem 2rem;
+  }
+
+  .search-box {
+    flex-wrap: wrap;   // ✅ 버튼들이 줄바꿈되게
+    max-width: 100%;
+  }
+
+  .search-input {
+    flex: 1 1 100%;    // ✅ 입력창이 한 줄 전체 차지
+    font-size: 14px;
+  }
+
+  .search-button,
+  .my-location-button {
+    flex: 1;           // ✅ 버튼 두 개가 나란히
+  }
+
+  .radius-slider {
+    max-width: 100%;
+  }
+
+  .map-container {
+    height: 350px;     // ✅ 모바일은 높이 더 줄임
+  }
+
+  .filter-section {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .select-all-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .gym-items {
+    max-height: 300px;
+  }
+}
+
+// 아주 작은 모바일 (480px 이하)
+@media (max-width: 480px) {
+  .map-container {
+    height: 280px;
+  }
+
+  .map-hero h2 {
+    font-size: 18px;
   }
 }
