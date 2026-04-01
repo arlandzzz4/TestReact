@@ -88,7 +88,7 @@ export const useRegistMutation = () => {
       }
     },
     onError: (error) => {
-      const errorMessage = error.response?.data?.message || '회원가입에 실패했습니다.';
+      const errorMessage = error.message || '회원가입에 실패했습니다.';
       alert(errorMessage);
     }
   });

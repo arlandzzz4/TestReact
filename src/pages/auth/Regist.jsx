@@ -93,7 +93,7 @@ const RegistPage = () => {
   }, [terms, privacy, setValue]);
 
   useEffect(() => {
-    setValue("emailConfirm", "");
+    setValue("emailConfirm", "", { shouldValidate: true });
   }, [emailValue, setValue]);
 
   useEffect(() => {
@@ -138,10 +138,10 @@ const RegistPage = () => {
       const result = await refetch();
       if (result.data.email == null) {
         alert("사용 가능한 이메일입니다.");
-          setValue("emailConfirm", "Y");
+          setValue("emailConfirm", "Y", { shouldValidate: true, shouldDirty: true });
         } else {
           alert("이미 사용 중인 이메일입니다.");
-          setValue("emailConfirm", "N");
+          setValue("emailConfirm", "N", { shouldValidate: true, shouldDirty: true });
       }
     }catch (error) {
         console.error("이메일 중복 확인 실패:", error);
