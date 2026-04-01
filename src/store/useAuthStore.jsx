@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { devtools, persist } from 'zustand/middleware'; // [변경]: persist 임포트 추가
+import { devtools, persist } from 'zustand/middleware';
 import { properties } from '../constants/properties.js';
 
 const initialState = {

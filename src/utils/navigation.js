@@ -4,7 +4,7 @@ export const handleLoginRedirect = (navigate, location, defaultPath = "/dashboar
     const from = location.state?.from || { pathname: defaultPath, search: "" };
     let destination = from.pathname + (from.search || "");
 
-    if (destination.includes("/login") || destination.includes("/signup") || destination.includes("/register")) {
+    if (destination.includes("/login") || destination.includes("/signup") || destination.includes("/regist") || destination.includes("/agreement")) {
         destination = defaultPath;
     }
 
