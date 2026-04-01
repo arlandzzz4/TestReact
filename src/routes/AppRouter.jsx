@@ -5,6 +5,7 @@ import DefaultLayout from '../layout/DefaultLayout';
 import AdminLayout from '../layout/AdminLayout';
 import AuthGuard from '../components/AuthGuard';
 import RouterErrorFallback from '../components/error/RouterErrorFallback';
+import PostDetail from '../pages/feed/PostDetail';
 
 const router = createBrowserRouter([
   {
@@ -29,6 +30,11 @@ const router = createBrowserRouter([
             path: 'post/:id',
             lazy: () => import('@/pages/feed/PostDetail').then(m => ({ Component: m.default })),
           },
+          { // [글 수정] 선택 시, 게시글작성 페이지로 이동
+            path: 'post/edit/:id',
+            lazy: () => import('@/pages/feed/WritePost').then(m => ({ Component: m.default })),
+          },
+
         
         //{ path: 'food-search', lazy: () => import('@/pages/food/FoodSearch').then(m => ({ Component: m.default })) },
         { path: 'calc', lazy: () => import('@/pages/calc/CalcPage').then(m => ({ Component: m.default })) },

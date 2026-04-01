@@ -25,12 +25,14 @@ const processQueue = (error, token = null) => {
 
 instance.interceptors.request.use(
   (config) => {
-    // Zustand 스토어에서 토큰 가져오기
-    const token = useAuthStore.getState().accessToken || useAuthStore.getState().token; 
-    
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    if (!config.headers.Authorization) {
+      const token = useAuthStore.getState().accessToken || useAuthStore.getState().token; 
+      
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
+    //config.withCredentials = true;
     return config;
   },
   (error) => Promise.reject(error)
@@ -81,8 +83,8 @@ instance.interceptors.response.use(
       } catch (refreshError) {
         processQueue(refreshError, null);
         alert('세션이 만료되었습니다. 다시 로그인해주세요.');
-        logout(); // Zustand 스토어 초기화 (persist 스토리지도 알아서 비워짐)
-        window.location.href = '/login';
+        //logout(); // Zustand 스토어 초기화 (persist 스토리지도 알아서 비워짐)
+        //window.location.href = '/login';
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

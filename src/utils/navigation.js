@@ -1,6 +1,6 @@
 
 //리다이렉트
-export const handleLoginRedirect = (navigate, location, defaultPath = "/dashboard") => {
+export const handleLoginRedirect = (navigate, location, defaultPath = "/feed") => {
     const from = location.state?.from || { pathname: defaultPath, search: "" };
     let destination = from.pathname + (from.search || "");
 
