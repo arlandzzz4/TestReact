@@ -3,7 +3,7 @@ import { messaging } from "../../config/firebase";
 import { instance } from '../axios';
 import { properties } from '../../constants/properties.js';
 
-export const requestForToken = async () => {
+export const requestForToken = async (accessToken) => {
   // 브라우저 미지원 케이스 방어
   if (!('Notification' in window)) {
     console.log("이 브라우저는 알림을 지원하지 않습니다.");
@@ -18,18 +18,25 @@ export const requestForToken = async () => {
       return null;
     }
 
-    const token = await getToken(messaging, { 
+    const fcmDeviceToken = await getToken(messaging, { 
       vapidKey: properties.vapidKey
     });
     
-    if (token) {
-      console.log("발급된 FCM 토큰:", token);
+    if (fcmDeviceToken) {
+      console.log(":", fcmDeviceToken);
       
-      await instance.post("/api/user/me/fcmToken", { fcmToken: token })
-        .then(() => console.log("서버에 토큰 등록 완료"))
-        .catch(err => console.error("서버 토큰 등록 실패:", err));
+      await instance.patch("/api/user/me/fcmToken", 
+        { fcmToken: fcmDeviceToken },
+        { 
+          headers: { 
+            Authorization: `Bearer ${accessToken}` 
+          } 
+        }
+      )
+      .then(() => console.log("서버에 토큰 등록 완료"))
+      .catch(err => console.error("서버 토큰 등록 실패:", err));
         
-      return token;
+      return fcmDeviceToken;
     } else {
       console.log("토큰을 받을 수 없습니다.");
       return null;

@@ -16,12 +16,9 @@ import { useLoginMutation } from '@/hooks/mutations/useAuthMutation';
 import { NavLink } from 'react-router-dom';
 import { handleLoginRedirect } from '@/utils/navigation';
 
-/**
- * 1. Zod 스키마 정의: 유효성 검사 규칙 설정
- */
 const loginSchema = z.object({
   email: z.string().min(1, '이메일을 입력해주세요.').email('올바른 이메일 형식이 아닙니다.'),
-  //password: z.string().min(6, '비밀번호는 최소 6자 이상이어야 합니다.'),
+  password: z.string().min(6, '비밀번호는 최소 6자 이상이어야 합니다.'),
 });
 
 const Login = () => {
@@ -30,31 +27,35 @@ const Login = () => {
   const loginMutation = useLoginMutation();
   const [isLoading, setIsLoading] = useState({ google: false, basic: false });
 
-  /**
-   * 2. react-hook-form 설정
-   */
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(loginSchema),
-    mode: 'onChange', // 실시간 검증 활성화
+    mode: 'onChange',
   });
 
   // 일반 이메일 로그인 핸들러
   const onBasicLogin = async (data) => {
+    console.log("전체 데이터:", data);
     setIsLoading((prev) => ({ ...prev, basic: true }));
     try {
       const result = await signInWithEmailAndPassword(auth, data.email, data.password);
       const token = await result.user.getIdToken();
+      const user = {
+          "email" : result.user.email,
+          "password" : data.password,
+          "providerCode" : "01",
+          "providerId" : result.user.uid
+        }
       loginMutation.mutate({ 
-        user: user, 
-        accessToken: token 
+        userData: { ...user }, 
+        token: token 
       });
       handleLoginRedirect(navigate, location);
     } catch (error) {
-      //console.error('로그인 실패:', error);
+      console.error('로그인 실패:', error);
       alert('이메일 또는 비밀번호가 일치하지 않습니다.');
     } finally {
       setIsLoading((prev) => ({ ...prev, basic: false }));
@@ -78,10 +79,8 @@ const Login = () => {
           "providerId" : result.user.uid
         }
         loginMutation.mutate({ 
-          email : result.user.email,
-          nickname : result.user.displayName,
-          providerCode : "02",
-          providerId : result.user.uid
+          userData: { ...user }, 
+          token: idToken 
         });
       }
     } catch (error) {
@@ -141,10 +140,13 @@ const Login = () => {
                         <CFormInput
                           type="password"
                           placeholder="비밀번호를 입력하세요."
-                          invalid={!!errors.password}
                           {...register('password')}
+                          invalid={!!errors.password}
+                          name="password"
                         />
-                        <CFormFeedback invalid>{errors.password?.message}</CFormFeedback>
+                        <CFormFeedback invalid className={errors.password ? 'd-block' : ''}>
+                          {errors.password?.message}
+                        </CFormFeedback>
                       </CInputGroup>
                     </div>
 

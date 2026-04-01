@@ -27,7 +27,7 @@ const Agreement = () => {
   };
 
   return (
-    <CContainer className="py-5" style={{ backgroundColor: '#FBF9F6', minHeight: '100vh' }}>
+    <CContainer className="py-5">
       <CRow className="justify-content-center">
         <CCol md={8} lg={6}>
           {/* 메인 제목 */}

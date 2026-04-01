@@ -8,12 +8,12 @@ import {
   CForm, CFormInput, CInputGroup, CInputGroupText, CRow, CSpinner, CFormFeedback,
   CFormLabel,
 } from '@coreui/react';
-import CIcon from '@coreui/icons-react';
-import { cilLockLocked, cilUser, cibGoogle } from '@coreui/icons';
 import { auth, googleProvider } from '@/config/firebase';
 import { signInWithPopup, createUserWithEmailAndPassword } from 'firebase/auth';
 import { useAuthStore } from '@/store/useAuthStore';
-import { useUserQuery } from '@/hooks/queries/useAuthQuery';
+import { useUserQuery } from '@/hooks/queries/useUserQuery';
+import { handleLoginRedirect } from '@/utils/navigation';
+import { useRegistMutation } from '@/hooks/mutations/useAuthMutation';
 
 export const signupSchema = z
   .object({
@@ -52,6 +52,8 @@ const RegistPage = () => {
   const { terms, privacy } = location.state || {};
   const navigate = useNavigate();
   const regist = useAuthStore((state) => state.regist);
+
+  const { mutate: registMutate } = useRegistMutation();
 
   const [isLoading, setIsLoading] = useState({ google: false, basic: false });
   const [shouldSearch, setShouldSearch] = useState(false);
@@ -134,7 +136,7 @@ const RegistPage = () => {
     try {      
       setShouldSearch(true);
       const result = await refetch();
-      if (result.data) {
+      if (result.data.email == null) {
         alert("사용 가능한 이메일입니다.");
           setValue("emailConfirm", "Y");
         } else {
@@ -153,20 +155,30 @@ const RegistPage = () => {
     try {
       const result = await createUserWithEmailAndPassword(auth, data.email, data.password);
       const token = await result.user.getIdToken();
-      const user = {
-        "email" : result.user.email,
-        "password" : result.user.password,
-        "nickname" : result.user.nickname,
-        "providerCode" : "01",
-        "providerId" : result.user.uid,
-        "termsAgreedYn" : terms,
-        "privacyAgreedYn" : privacy,
+      const userData = {
+        email : result.user.email,
+        password : data.password,
+        nickname : data.nickname,
+        providerCode : "01",
+        providerId : result.user.uid,
+        termsAgreedYn : terms,
+        privacyAgreedYn : privacy,
       }
-      await regist(user, token);
+      registMutate({ userData, token });
       handleLoginRedirect(navigate, location);
     } catch (error) {
-      console.error('로그인 실패:', error);
-      alert('이메일 또는 비밀번호가 일치하지 않습니다.');
+      console.error("실제 에러 객체:", error); // 객체 전체를 찍어서 확인해 보세요.
+    
+      const errorCode = error.code; // 정석은 .code 입니다.
+      const errorMessage = error.message;
+
+      console.log("Firebase Error Code:", errorCode);
+      
+      if (errorCode === 'auth/email-already-in-use') {
+        alert("이미 가입된 이메일입니다.");
+      } else {
+        alert(`가입 실패: ${errorMessage}`);
+      }
     } finally {
       setIsLoading((prev) => ({ ...prev, basic: false }));
     }
@@ -179,7 +191,7 @@ const RegistPage = () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const idToken = await result.user.getIdToken();
-      const user = {
+      const userData = {
         "email" : result.user.email,
         "nickname" : result.user.displayName,
         "providerCode" : "02",
@@ -187,7 +199,7 @@ const RegistPage = () => {
         "termsAgreedYn" : terms,
         "privacyAgreedYn" : privacy,
       }
-      await regist(user, idToken);
+      registMutate({ userData, idToken });
       handleLoginRedirect(navigate, location);
     } catch (error) {
       console.error(" 구글 상세 에러:", error.code, error.message);
