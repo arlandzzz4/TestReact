@@ -39,7 +39,7 @@ export const useLoginMutation = () => {
         alert('아이디 또는 비밀번호가 틀렸습니다.');
       } else if (status === 400 && serverMessage) {
         if (serverMessage.includes("회원가입")) {
-          navigate('/register', { replace: true });
+          navigate('/regist', { replace: true });
         }
         alert(serverMessage);
       } 
@@ -75,7 +75,7 @@ export const useRegistMutation = () => {
       
       if (data.accessToken && data.user) {
         login(data.user, data.accessToken);
-        navigate('/', { replace: true }); 
+        handleLoginRedirect(navigate, location);
       } else {
         navigate('/login', { replace: true });
       }

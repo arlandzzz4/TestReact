@@ -6,7 +6,7 @@ export const useAuth = () => {
   const { user, isLoggedIn, token, login, logout } = useAuthStore();
 
   // 1. 관리자 여부 판별 로직
-  const isAdmin = user?.role === 'ADMIN' || user?.role === 'ROLE_ADMIN';
+  const isAdmin = user?.role === '02' || user?.role === 'ROLE_ADMIN';
 
   // 2. 인증 여부 확인
   const isAuthenticated = isLoggedIn && !!token;
