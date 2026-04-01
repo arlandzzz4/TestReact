@@ -6,6 +6,7 @@
 // isLoggedIn = true  → 로그인 후 화면 테스트
 // =====================================================
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // ✅ [2번] 라우터 이동용
 import '../../scss/community.scss';
 
 const CATEGORY_MAP = {
@@ -53,7 +54,20 @@ const DUMMY_COMMENTS = [
 const isLoggedIn = true;       // 로그인 전: false / 로그인 후: true
 const currentUser = '홍길동';   // 나중에 user?.nickname으로 교체
 
+// ✅ [8번] 시간:분 까지만 포맷하는 함수
+const formatDate = () => {
+  const now = new Date();
+  const yyyy = now.getFullYear();
+  const mm   = String(now.getMonth() + 1).padStart(2, '0');
+  const dd   = String(now.getDate()).padStart(2, '0');
+  const hh   = String(now.getHours()).padStart(2, '0');
+  const min  = String(now.getMinutes()).padStart(2, '0');
+  return `${yyyy}.${mm}.${dd} ${hh}:${min}`;
+};
+
 const PostDetail = () => {
+  const navigate = useNavigate(); // ✅ [2번, 6번] 라우터 이동용
+  
   const [post, setPost] = useState(DUMMY_POST);
   const [postLiked, setPostLiked] = useState(false);
   const [comments, setComments] = useState(DUMMY_COMMENTS);
@@ -68,7 +82,7 @@ const PostDetail = () => {
 
   const requireLogin = () => {
     alert('로그인 후 이용해주세요.');
-    // TODO: 로그인 기능 완성 후 → navigate('/login') 으로 교체
+    navigate('/login'); // ✅ [2번] 로그인 페이지로 이동
   };
 
   const handlePostLike = () => {
@@ -108,7 +122,7 @@ const PostDetail = () => {
     const newComment = {
       id: Date.now(),
       author: currentUser,
-      date: new Date().toLocaleString('ko-KR'),
+      date: formatDate(),
       content: commentInput,
       likes: 0,
       isLiked: false,
@@ -131,7 +145,7 @@ const PostDetail = () => {
     const newReply = {
       id: Date.now(),
       author: currentUser,
-      date: new Date().toLocaleString('ko-KR'),
+      date: formatDate(),
       content: text,
       likes: 0,
       isLiked: false,
@@ -192,7 +206,7 @@ const PostDetail = () => {
                 <div className="comment-dropdown" style={{ display: 'block' }}>
                   {post.isMine ? (
                     <>
-                      <button onClick={() => { setOpenDropdown(null); alert('수정 페이지로 이동'); }}>글 수정</button>
+                      <button onClick={() => { setOpenDropdown(null); navigate(`/post/edit/${post.id}`); }}>글 수정</button>
                       <button onClick={() => { setOpenDropdown(null); window.confirm('게시글을 삭제할까요?') && alert('삭제되었습니다.'); }}>글 삭제</button>
                     </>
                   ) : (
@@ -208,7 +222,7 @@ const PostDetail = () => {
 
         <div className="post-detail-reaction">
           <button className={`pd-like-btn ${postLiked ? 'liked' : ''}`} onClick={handlePostLike}>
-            ♡ 좋아요 · {post.likes}
+            {postLiked ? '💚' : '🤍'} 좋아요 · {post.likes}
           </button>
           <span className="pd-comment-stat">💬 댓글 · {totalCommentCount}</span>
         </div>
@@ -256,7 +270,7 @@ const PostDetail = () => {
                       {comment.isMine ? (
                         <button onClick={() => { setOpenDropdown(null); handleCommentDelete(comment.id); }}>댓글 삭제</button>
                       ) : (
-                        <button onClick={() => openReport('comment')}>댓글 신고</button>
+                        <button style={{width: '89px'}} onClick={() => openReport('comment')}>댓글 신고</button>
                       )}
                     </div>
                   )}
@@ -268,7 +282,7 @@ const PostDetail = () => {
                   className={`pd-like-btn sm ${comment.isLiked ? 'liked' : ''}`}
                   onClick={() => handleCommentLike(comment.id)}
                 >
-                  ♡ {comment.likes}
+                  {comment.isLiked ? '💚' : '🤍'} {comment.likes}
                 </button>
                 <button className="pd-reply-btn"
                   onClick={() => setShowReplyInput(prev => ({ ...prev, [comment.id]: !prev[comment.id] }))}>
@@ -290,7 +304,18 @@ const PostDetail = () => {
                             {openDropdown === `reply-${reply.id}` && (
                               <div className="comment-dropdown" style={{ display: 'block' }}>
                                 {reply.isMine ? (
-                                  <button onClick={() => { setOpenDropdown(null); alert('대댓글 삭제'); }}>댓글 삭제</button>
+                                    <button style={{width: '89px'}} onClick={() => {
+                                        setOpenDropdown(null);
+                                        if (window.confirm('댓글을 삭제할까요?')) {
+                                            setComments(prev => prev.map(c =>
+                                                c.id === comment.id
+                                                    ? { ...c, replies: c.replies.filter(r => r.id !== reply.id) }
+                                                    : c
+                                            ));
+                                            alert('댓글이 삭제되었습니다.');
+                                        }
+                                        }}>댓글 삭제
+                                    </button>
                                 ) : (
                                   <button onClick={() => openReport('reply')}>댓글 신고</button>
                                 )}
@@ -304,7 +329,7 @@ const PostDetail = () => {
                             className={`pd-like-btn sm ${reply.isLiked ? 'liked' : ''}`}
                             onClick={() => handleReplyLike(comment.id, reply.id)}
                           >
-                            ♡ {reply.likes}
+                            {reply.isLiked ? '💚' : '🤍'} {reply.likes}
                           </button>
                           <button className="pd-reply-btn"
                             onClick={() => setShowReplyInput(prev => ({ ...prev, [comment.id]: !prev[comment.id] }))}>
