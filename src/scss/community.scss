@@ -98,3 +98,367 @@
   display: flex; align-items: center; gap: 3px;
   font-size: 11px; color: #8a8a80;
 }
+
+// ── 게시글 상세 페이지 ──
+.post-detail-wrap {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 32px 16px 80px;
+}
+
+.post-detail-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 32px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+  margin-bottom: 20px;
+}
+
+.post-detail-tag-row {
+  margin-bottom: 14px;
+}
+
+.post-detail-category {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  position: static;
+  // 색상은 인라인 style로 적용 (카테고리별로 다름)
+}
+
+.post-detail-title {
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.45;
+  margin: 0 0 20px;
+  color: #1a1a1a;
+}
+
+.post-detail-author-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #f0ede8;
+  margin-bottom: 24px;
+}
+
+.post-detail-author-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+}
+
+.pd-text-btn {
+  background: none;
+  border: none;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-family: inherit;
+
+  &.edit   { color: #4a7c59; border: 1px solid #4a7c59; }
+  &.delete { color: #e05252; border: 1px solid #e05252; }
+  &.report { color: #999;    border: 1px solid #ccc; }
+
+  &:hover { opacity: 0.75; }
+}
+
+.post-detail-content {
+  font-size: 15px;
+  line-height: 1.85;
+  color: #333;
+  white-space: pre-wrap;
+  margin-bottom: 28px;
+}
+
+.post-detail-reaction {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #f0ede8;
+}
+
+// liked 배경색 #D7E9D3으로 변경, 테두리/디자인 유지
+.pd-like-btn {
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 13px;
+  cursor: pointer;
+  color: #8a8a80;
+  transition: all 0.15s;
+
+  &.sm { font-size: 12px; padding: 3px 10px; }
+  &.liked { border-color: #2D6A4F; color: #2D6A4F; background: #D7E9D3; }
+  &:hover { border-color: #2D6A4F; color: #2D6A4F; }
+}
+
+.pd-comment-stat {
+  font-size: 13px;
+  color: #8a8a80;
+}
+
+// ── 댓글 섹션 ──
+.comment-section {
+  padding: 28px 32px;
+}
+
+.comment-section-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 20px;
+  color: #1a1a1a;
+}
+
+// 댓글 입력창
+.comment-input-wrap {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 28px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #f0ede8;
+}
+
+.comment-input-inner {
+  flex: 1;
+}
+
+.comment-textarea {
+  width: 100%;
+  border: 1px solid #e0ddd8;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 14px;
+  resize: none;
+  min-height: 80px;
+  font-family: inherit;
+  outline: none;
+  box-sizing: border-box;
+  transition: border 0.15s;
+  line-height: 1.6;
+  color: #333;
+
+  &.sm { min-height: 54px; font-size: 13px; }
+  &:focus { border-color: #4a7c59; }
+  &::placeholder { color: #bbb; }
+}
+
+.comment-input-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.comment-char-count {
+  font-size: 11px;
+  color: #bbb;
+}
+
+.pd-submit-btn {
+  background: #4a7c59;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+
+  &.sm { padding: 6px 14px; font-size: 12px; }
+  &:hover { background: #3d6b4f; }
+}
+
+// 댓글 아이템
+.comment-item {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #f5f3f0;
+
+  &:last-child { border-bottom: none; margin-bottom: 0; }
+}
+
+.comment-body {
+  flex: 1;
+}
+
+.comment-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  position: relative;
+}
+
+.comment-menu-wrap {
+  margin-left: auto;
+  position: relative;
+}
+
+.comment-menu-dot {
+  cursor: pointer;
+  font-size: 18px;
+  color: #bbb;
+  padding: 0 4px;
+
+  &:hover { color: #666; }
+}
+
+.comment-dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 24px;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  z-index: 10;
+  min-width: 80px;
+
+  button {
+    display: block;
+    width: 100%;
+    padding: 10px 16px;
+    background: none;
+    border: none;
+    font-size: 13px;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+    color: #333;
+
+    &:hover { background: #f5f3f0; }
+  }
+}
+
+.comment-content {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #333;
+  margin: 0 0 8px;
+  white-space: pre-wrap;
+}
+
+.comment-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pd-reply-btn {
+  background: none;
+  border: none;
+  font-size: 12px;
+  color: #4a7c59;
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0;
+  font-family: inherit;
+
+  &:hover { opacity: 0.7; }
+}
+
+// 대댓글
+.reply-list {
+  margin-top: 12px;
+  background: #f8f6f2;
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.reply-item {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+
+  &:last-child { margin-bottom: 0; }
+}
+
+.author-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #d4e8db, #6aab81);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: #3d6b4f;
+  flex-shrink: 0;
+
+  &.sm { width: 28px; height: 28px; font-size: 11px; }
+}
+
+.reply-input-wrap {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  align-items: flex-start;
+}
+
+// 신고 모달
+.pd-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.pd-modal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 32px;
+  width: 340px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+}
+
+.pd-modal-title {
+  font-size: 16px;
+  font-weight: 800;
+  margin: 0 0 18px;
+}
+
+.pd-report-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  margin-bottom: 12px;
+}
+
+.pd-modal-btns {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.pd-cancel-btn {
+  flex: 1;
+  padding: 9px;
+  border: 1px solid #ddd;
+  background: #fff;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+
+  &:hover { background: #f5f5f5; }
+}
+
+.pd-modal-btns .pd-submit-btn { flex: 1; }

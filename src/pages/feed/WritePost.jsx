@@ -22,9 +22,12 @@ import { cilArrowLeft, cilX } from '@coreui/icons';
 import { CModal, CModalHeader, CModalTitle, CModalBody, CModalFooter } from '@coreui/react';
 import { instance } from '@/api/axios';
 import '../../scss/WritePost.scss'; // SCSS 파일 import
+import { useParams } from 'react-router-dom';
 
 export default function WritePost() {
   const navigate = useNavigate();
+  const { id } = useParams();   // ← 추가 (게시글 수정 시, [수정완료]버튼)
+  const isEditMode = !!id;      // ← 추가 (게시글 수정 시, [수정완료]버튼)
   const [showModal, setShowModal] = useState(false); //모달창 표시
   const [isDirty, setIsDirty] = useState(false) //변경 추적
   const [category, setCategory] = useState('자유');
@@ -157,7 +160,9 @@ const handleImageRemove = (id) => {
         >
           <CIcon icon={cilArrowLeft} size="lg" />
         </CButton>
-        <h5 className="m-0 fw-bold" >게시글 작성</h5>
+        {/* 원래 <h5 className="m-0 fw-bold" >게시글 작성</h5> */}
+        {/* 수정 후 */}
+        <h5 className="m-0 fw-bold">{isEditMode ? '게시글 수정' : '게시글 작성'}</h5>
       </div>
 
       
@@ -237,11 +242,15 @@ const handleImageRemove = (id) => {
             <CButton className="form-cancel-btn" onClick={handleLeave}>
               취소
             </CButton>
+            {/* 원래 
             <CButton
               type="submit"
               className="form-submit-btn"
             >
               등록
+            </CButton> */}
+            <CButton type="submit" className="form-submit-btn">
+              {isEditMode ? '수정완료' : '등록'}
             </CButton>
           </div>
           </form>
