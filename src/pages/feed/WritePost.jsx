@@ -10,7 +10,7 @@
 // → 등록 버튼 클릭
 // → /api/common/uploadList 로 이미지 업로드 → S3 URL 반환
 // → 글 내용 + S3 URL 함께 DB 저장 API 호출
-
+// api에 전달 시 유저 이메일 , 카테고리 id, 제목, 컨텐츠, 작성시간 이렇게 보내줘야 함
 
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -20,10 +20,14 @@ import { CContainer, CButton, CFormInput } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { cilArrowLeft, cilX } from '@coreui/icons';
 import { CModal, CModalHeader, CModalTitle, CModalBody, CModalFooter } from '@coreui/react';
+import { instance } from '@/api/axios';
 import '../../scss/WritePost.scss'; // SCSS 파일 import
+import { useParams } from 'react-router-dom';
 
 export default function WritePost() {
   const navigate = useNavigate();
+  const { id } = useParams();   // ← 추가 (게시글 수정 시, [수정완료]버튼)
+  const isEditMode = !!id;      // ← 추가 (게시글 수정 시, [수정완료]버튼)
   const [showModal, setShowModal] = useState(false); //모달창 표시
   const [isDirty, setIsDirty] = useState(false) //변경 추적
   const [category, setCategory] = useState('자유');
@@ -70,17 +74,47 @@ export default function WritePost() {
     return newErrors;
   };
 
+  //@@@@@@@@@@테스트용 유저 이메일 하드코딩. 추후 로그인 시 이 값을 전달하도록 수정 필요 @@@@@@@@@@@@@
+  const user = "test@gmail.com";
+  
+  // 카테고리 이름을 서버에서 요구하는 코드(01, 02, 03)로 변환하는 함수
+  const getCategoryId = (name) => {
+    switch (name) {
+      case '자유':
+        return '01';
+      case '정보':
+        return '02';
+      case '인원모집':
+        return '03';
+      default:
+        return '01'; // 기본값으로 '자유' 설정
+    }
+  };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault(); // 브라우저 새로고침 방지
     const formErrors = validateForm();
+    const categoryCode = getCategoryId(category);
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors);
       return;
     }
     setErrors({});
-    console.log('폼 검증 통과 및 제출됨!', { category, title, content, images });
-    // TODO: 서버 전송 로직 추가
+    
+    try {
+      const response = await instance.post('/api/postwrite/create', {
+        userEmail: user,
+        categoryCode: categoryCode,
+        title: title,
+        content: content
+      });
+      console.log('게시글 등록 성공:', response.data);
+      alert('게시글이 성공적으로 등록되었습니다.');
+      navigate(-1); // 이전 페이지로 돌아가기
+    } catch (error) {
+      console.error('게시글 등록 실패:', error);
+      alert('게시글 등록에 실패했습니다. 잠시 후 다시 시도해 주세요.');
+    }
   };
 
   const handleImageAdd = (e) => {
@@ -124,9 +158,11 @@ const handleImageRemove = (id) => {
           className="text-dark position-absolute start-0 ms-4"
           onClick={handleLeave} 
         >
-          <CIcon icon={cilArrowLeft} size="md" />
+          <CIcon icon={cilArrowLeft} size="lg" />
         </CButton>
-        <h5 className="m-0 fw-bold" >게시글 작성</h5>
+        {/* 원래 <h5 className="m-0 fw-bold" >게시글 작성</h5> */}
+        {/* 수정 후 */}
+        <h5 className="m-0 fw-bold">{isEditMode ? '게시글 수정' : '게시글 작성'}</h5>
       </div>
 
       
@@ -206,11 +242,15 @@ const handleImageRemove = (id) => {
             <CButton className="form-cancel-btn" onClick={handleLeave}>
               취소
             </CButton>
+            {/* 원래 
             <CButton
               type="submit"
               className="form-submit-btn"
             >
               등록
+            </CButton> */}
+            <CButton type="submit" className="form-submit-btn">
+              {isEditMode ? '수정완료' : '등록'}
             </CButton>
           </div>
           </form>
