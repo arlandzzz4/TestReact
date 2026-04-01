@@ -1,0 +1,452 @@
+// src/pages/map/MapPage.scss
+// 운동시설 지도 검색 - CoreUI 테마 통일 버전
+
+// ✅ 프로젝트 테마 변수 (style.scss의 색상과 통일)
+$primary:        #3D6B4F;   // 메인 초록 (버튼, 포인트)
+$primary-dark:   #2e5440;   // 버튼 호버
+$primary-light:  #e8f0e4;   // 선택된 항목 배경
+$primary-hover:  #f0f6ee;   // 호버 배경
+$body-bg:        #F4F1EC;   // 전체 배경 (베이지)
+$card-bg:        #ffffff;   // 카드 배경
+$border-color:   #e0ddd4;   // 테두리
+$text-dark:      #1e1e1a;   // 진한 텍스트
+$text-muted:     #666;      // 연한 텍스트
+$accent-beige:   #f0e6d3;   // 포인트 베이지 (사이드바 호버색)
+
+// ─────────────────────────────────────────
+// 페이지 전체
+// ─────────────────────────────────────────
+.map-page {
+  padding: 2rem 2.5rem 3rem;
+  max-width: 100%;
+  margin: 0 auto;
+  width: 100%;
+  background-color: $body-bg;
+  min-height: 100vh;
+}
+
+// ─────────────────────────────────────────
+// 헤더 히어로 (계산기 페이지처럼)
+// ─────────────────────────────────────────
+.map-hero {
+  margin-bottom: 1.5rem;
+
+  h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: $text-dark;
+    margin-bottom: 4px;
+  }
+
+  p {
+    font-size: 14px;
+    color: $text-muted;
+    margin: 0;
+  }
+}
+
+// ─────────────────────────────────────────
+// 검색 박스
+// ─────────────────────────────────────────
+.search-box {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 1rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.search-input {
+  flex: 1;
+  padding: 12px 16px;
+  font-size: 16px;
+  border: 1px solid $border-color;
+  border-radius: 8px;
+  outline: none;
+  background: $card-bg;
+  color: $text-dark;
+  transition: border-color 0.2s;
+
+  &:focus {
+    border-color: $primary;
+  }
+
+  &:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+  }
+
+  &::placeholder {
+    color: #aaa;
+  }
+}
+
+.search-button {
+  padding: 12px 30px;
+  background-color: $primary;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+
+  &:hover:not(:disabled) {
+    background-color: $primary-dark;
+  }
+
+  &:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+  }
+}
+
+.my-location-button {
+  padding: 12px 20px;
+  background-color: $primary;   // ✅ 파란색 → 테마 초록으로 통일
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+
+  &:hover:not(:disabled) {
+    background-color: $primary-dark;
+  }
+
+  &:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+  }
+}
+
+// ─────────────────────────────────────────
+// 반경 슬라이더
+// ─────────────────────────────────────────
+.radius-slider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 800px;
+  margin: 0 auto 1.2rem auto;
+  font-size: 13px;
+  color: $text-muted;
+
+  input[type="range"] {
+    flex: 1;
+    accent-color: $primary;  // ✅ 테마 초록
+  }
+}
+
+// ─────────────────────────────────────────
+// 상태 메시지
+// ─────────────────────────────────────────
+.status {
+  text-align: center;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  background-color: #faf0e4;
+  color: #7a4a10;
+  font-size: 13px;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+
+  &.success {
+    background-color: $primary-light;
+    color: $primary;
+    font-weight: 500;
+  }
+}
+
+// ─────────────────────────────────────────
+// 필터 섹션
+// ─────────────────────────────────────────
+.filter-section {
+  max-width: 1600px;
+  margin: 0 auto 1.5rem auto;
+  background: $card-bg;
+  border-radius: 14px;
+  padding: 15px 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid $border-color;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.filter-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  flex: 1;
+}
+
+.filter-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 13px;
+  color: #888;
+  background-color: #f8f6f1;
+  border: 1.5px solid $border-color;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: $primary-hover;
+    border-color: $primary;
+    color: #555;
+  }
+
+  &.active {
+    color: $primary;
+    background-color: $primary-light;
+    border-color: $primary;
+    font-weight: 500;
+
+    .color-dot {
+      border-width: 2px;
+      box-shadow: 0 0 0 3px rgba(61, 107, 79, 0.1);
+    }
+  }
+}
+
+.color-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.select-all-btn {
+  background: none;
+  border: 1px solid #d0ccc0;
+  color: #666;
+  padding: 7px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  &:hover {
+    background: $accent-beige;
+    border-color: #b8a87a;
+    color: #555;
+  }
+}
+
+// ─────────────────────────────────────────
+// 지도 + 리스트 레이아웃
+// ─────────────────────────────────────────
+.content-wrapper {
+  display: flex;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.map-container {
+  flex: 1;
+  height: 600px;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  position: relative;
+  background-color: $card-bg;
+  overflow: hidden;
+  min-width: 400px;
+  border: 1px solid $border-color;
+}
+
+.loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 18px;
+  color: $primary;
+  font-weight: 400;
+}
+
+// ─────────────────────────────────────────
+// 리스트 영역
+// ─────────────────────────────────────────
+.gym-list {
+  width: 380px;
+  flex-shrink: 0;
+  background: $card-bg;
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid $border-color;
+  display: flex;
+  flex-direction: column;
+
+  h3 {
+    margin: 0 0 1rem 0;
+    color: $text-dark;
+    font-size: 16px;
+    font-weight: 500;
+  }
+}
+
+.no-results {
+  text-align: center;
+  color: #bbb;
+  padding: 40px 20px;
+  font-size: 13px;
+}
+
+.gym-items {
+  overflow-y: auto;
+  max-height: 530px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  // 스크롤바
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: #f8f6f1;
+    border-radius: 3px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #d0ccc0;
+    border-radius: 3px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: #b8a87a;
+  }
+}
+
+.gym-item {
+  padding: 12px 14px;
+  border: 1px solid $border-color;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: $card-bg;
+
+  &:hover {
+    border-color: $primary;
+    background-color: $primary-hover;
+    box-shadow: 0 1px 3px rgba(61, 107, 79, 0.1);
+  }
+
+  &.selected {
+    border-color: $primary;
+    background-color: $primary-light;
+    box-shadow: 0 1px 4px rgba(61, 107, 79, 0.15);
+  }
+}
+
+.gym-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+
+  h4 {
+    margin: 0;
+    color: $text-dark;
+    font-size: 14px;
+    font-weight: 500;
+    flex: 1;
+    padding-right: 10px;
+  }
+}
+
+.distance {
+  background-color: $primary;
+  color: white;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.category {
+  margin: 0 0 6px 0;
+  font-size: 11px;
+  color: #aaa;
+  letter-spacing: 0.02em;
+}
+
+.address {
+  margin: 0 0 5px 0;
+  font-size: 12px;
+  color: $text-muted;
+  line-height: 1.5;
+}
+
+.phone {
+  margin: 0;
+  font-size: 12px;
+  color: $primary;
+  font-weight: 400;
+}
+
+.kakao-link {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: $primary;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.current-location {
+  text-align: center;
+  color: $text-muted;
+  margin-bottom: 1rem;
+  font-size: 14px;
+
+  strong {
+    color: $primary;
+    font-weight: 500;
+  }
+}
+
+// ─────────────────────────────────────────
+// 반응형
+// ─────────────────────────────────────────
+@media (max-width: 1200px) {
+  .map-page {
+    padding: 1.5rem 1rem 2rem;
+  }
+
+  .content-wrapper {
+    flex-direction: column;
+  }
+
+  .gym-list {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .gym-items {
+    max-height: 400px;
+  }
+}
