@@ -82,6 +82,7 @@ const Login = () => {
           userData: { ...user }, 
           token: idToken 
         });
+        handleLoginRedirect(navigate, location);
       }
     } catch (error) {
       //console.error("구글 상세 에러:", error.code, error.message);

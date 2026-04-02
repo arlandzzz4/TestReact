@@ -65,7 +65,7 @@ export const useLogoutMutation = () => {
     // 성공하든 실패하든 클라이언트 상태는 무조건 지우고 로그인 페이지로 보냅니다.
     onSettled: () => {
       logout(); 
-      navigate('/login', { replace: true }); 
+      handleLoginRedirect(navigate, location);
     },
   });
 };
