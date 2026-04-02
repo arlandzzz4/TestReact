@@ -18,6 +18,12 @@ import {
   cilSearch,
   cilCalculator,
   cilMap,
+  cilDelete,
+  cilReportSlash,
+  cilCommentBubble,
+  cilUser,
+  cilMonitor,
+  cilClipboard,
 } from '@coreui/icons'
 import { CNavItem } from '@coreui/react'
 
@@ -26,38 +32,37 @@ const _navAdmin = [
     component: CNavItem,
     name: '대시보드',
     to: '/admin/dashboard',
-    icon: <CIcon icon={cilHome} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilMonitor} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: '회원관리',
     to: '/admin/user',
-    icon: <CIcon icon={cilCalendar} customClassName="nav-icon" />,
-    auth: true, // << 인증 필요 표시. AppSidebar.jsx에서 이 항목을 읽어 true일 시 > 로그인 전이면 비표시, 로그인후면 표시하도록 함
+    icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: '게시글 관리',
     to: '/admin/post',
-    icon: <CIcon icon={cilCalculator} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilClipboard} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: '댓글 관리',
     to: '/admin/comment',
-    icon: <CIcon icon={cilSearch} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilCommentBubble} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: '신고 관리',
     to: '/admin/report',
-    icon: <CIcon icon={cilSearch} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilReportSlash} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: '삭제 관리',
     to: '/admin/delete',
-    icon: <CIcon icon={cilMap} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilDelete} customClassName="nav-icon" />,
   },
 ]
 
