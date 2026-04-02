@@ -22,7 +22,7 @@ const GA_MEASUREMENT_ID = properties.gaMeasurementId
 if (GA_MEASUREMENT_ID) {
   ReactGA.initialize(GA_MEASUREMENT_ID);
 } else {
-  console.warn("⚠️ GA_MEASUREMENT_ID가 설정되지 않았습니다. 분석을 건너뜁니다.");
+  console.warn("GA_MEASUREMENT_ID가 설정되지 않았습니다. 분석을 건너뜁니다.");
 }
 
 const queryClient = new QueryClient({
@@ -35,7 +35,7 @@ const queryClient = new QueryClient({
 });
 
 function AuthWrapper({ children }) {
-  console.log("!!! AuthWrapper Component Mounted !!!"); // 👈 이게 찍히는지 확인
+  console.log("!!! AuthWrapper Component Mounted !!!");
   
   const { isLoggedIn, user, login, logout, token } = useAuthStore();
   console.log("Current Auth State:", { isLoggedIn, hasUser: !!user });
@@ -45,7 +45,7 @@ function AuthWrapper({ children }) {
     queryFn: async () => {
       console.log("Fetching /me with token:", token);
       
-      const { data } = await instance.get('/api/auth/me');
+      const { data } = await instance.get('/api/auth/');
       return data;
     },
     enabled: !!isLoggedIn && !user,

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { devtools, persist } from 'zustand/middleware'; // [변경]: persist 임포트 추가
+import { devtools, persist } from 'zustand/middleware';
 import { properties } from '../constants/properties.js';
 
 const initialState = {
@@ -22,15 +22,15 @@ const authStore = (set) => ({
   // 로그아웃 액션
   logout: () => 
     set(
-      { ...initialState }, // [변경]: initialState를 사용하여 한 번에 리셋
+      { ...initialState },
       false,
       'auth/logout'
     ),
 
-  // 등록(임시) 액션
-  regist: (userData) => 
+  // 등록 액션
+  regist: (userData, token) => 
     set(
-      { user: userData },
+      { user: userData, token: token, isLoggedIn: true},
       false,
       'auth/regist'
     ),
@@ -43,6 +43,7 @@ export const useAuthStore = create(
       partialize: (state) => ({
         isLoggedIn: state.isLoggedIn,
         token: state.token, 
+        user: state.user
       }),
     }),
     { name: 'AuthStore', enabled: properties.isDev } // [변경]: properties.isDev 활용

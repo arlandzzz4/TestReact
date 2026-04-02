@@ -1,0 +1,14 @@
+
+//리다이렉트
+export const handleLoginRedirect = (navigate, location, defaultPath = "/feed") => {
+    const from = location.state?.from || { pathname: defaultPath, search: "" };
+    let destination = from.pathname + (from.search || "");
+
+    if (destination.includes("/login") || destination.includes("/signup") || destination.includes("/regist") || destination.includes("/agreement")) {
+        destination = defaultPath;
+    }
+
+    console.log("리다이렉트 실행 목적지:", destination);
+    
+    navigate(destination, { replace: true });
+};
