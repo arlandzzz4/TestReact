@@ -174,7 +174,12 @@ const RegistPage = () => {
 
       console.log("Firebase Error Code:", errorCode);
       
-      if (errorCode === 'auth/email-already-in-use') {
+      if (error.code === 'auth/account-exists-with-different-credential') {
+        if (window.confirm("이미 구글 계정으로 가입된 이메일입니다. 구글로 연동하여 로그인하시겠습니까?")) {
+          // 바로 구글 로그인 함수 호출
+          onGoogleLogin(); 
+        }
+      } else if (errorCode === 'auth/email-already-in-use') {
         alert("이미 가입된 이메일입니다.");
       } else {
         alert(`가입 실패: ${errorMessage}`);
@@ -191,11 +196,13 @@ const RegistPage = () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const idToken = await result.user.getIdToken();
+      const fcmToken = await getFcmTokenOnly();
       const userData = {
         "email" : result.user.email,
         "nickname" : result.user.displayName,
         "providerCode" : "02",
         "providerId" : result.user.uid,
+        "fcmToken" : fcmToken,
         "termsAgreedYn" : terms,
         "privacyAgreedYn" : privacy,
       }
