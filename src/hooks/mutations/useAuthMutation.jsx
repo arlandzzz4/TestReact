@@ -58,13 +58,14 @@ export const useLoginMutation = () => {
 
 export const useLogoutMutation = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const logout = useAuthStore((state) => state.logout);
 
   return useMutation({
     mutationFn: logoutUser,
     // 성공하든 실패하든 클라이언트 상태는 무조건 지우고 로그인 페이지로 보냅니다.
     onSettled: () => {
+      sessionStorage.setItem('isLoggingOut', 'true');
+      
       logout(); 
       navigate('/', { replace: true });//handleLoginRedirect(navigate, location);
     },
