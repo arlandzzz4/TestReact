@@ -75,6 +75,13 @@ const AppHeader = () => {
   const isLoggedIn = !!user;
 
   const { mutate: logoutMutate } = useLogoutMutation();
+  const handleLogout = () => {
+    if (!user) {
+      console.warn("로그인 정보가 없어 바로 클라이언트 로그아웃을 진행합니다.");
+    }
+
+    logoutMutate(user); 
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -123,7 +130,7 @@ const AppHeader = () => {
         </CHeaderNav>
         <CHeaderNav className='ms-auto'>
           {isLoggedIn ?
-          <CButton onClick={() => logoutMutate()}
+          <CButton onClick={handleLogout}
                     style={{ backgroundColor: '#e1e1e1', color: 'black', border: 'none' }}
                         >Logout</CButton>
           : <CButton to="/login" as={NavLink}
