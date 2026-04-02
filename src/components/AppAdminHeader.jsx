@@ -108,17 +108,20 @@ const AppAdminHeader = () => {
             <CNavLink to="/admin/dashboard" as={NavLink}>대시보드</CNavLink>
           </CNavItem>
           <CNavItem>
-            <CNavLink to="/admin/users" as={NavLink}>회원관리</CNavLink>
+            <CNavLink to="/admin/user" as={NavLink}>회원관리</CNavLink>
           </CNavItem>
           <CNavItem>
-            <CNavLink to="/admin/reports" as={NavLink}>신고 관리</CNavLink>
+            <CNavLink to="/admin/post" as={NavLink}>게시글 관리</CNavLink>
           </CNavItem>
           <CNavItem>
-            <CNavLink to="/admin/posts" as={NavLink}>게시글 관리</CNavLink>
+            <CNavLink to="/admin/comment" as={NavLink}>댓글 관리</CNavLink>
           </CNavItem>
           <CNavItem>
-             <CNavLink to="/admin/settings" as={NavLink}>
-              사이트 설정
+            <CNavLink to="/admin/report" as={NavLink}>신고 관리</CNavLink>
+          </CNavItem>
+          <CNavItem>
+             <CNavLink to="/admin/delete" as={NavLink}>
+              삭제 관리
             </CNavLink>
           </CNavItem>
         </CHeaderNav>

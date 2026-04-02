@@ -31,26 +31,32 @@ const _navAdmin = [
   {
     component: CNavItem,
     name: '회원관리',
-    to: '/admin/users',
+    to: '/admin/user',
     icon: <CIcon icon={cilCalendar} customClassName="nav-icon" />,
     auth: true, // << 인증 필요 표시. AppSidebar.jsx에서 이 항목을 읽어 true일 시 > 로그인 전이면 비표시, 로그인후면 표시하도록 함
   },
   {
     component: CNavItem,
-    name: '신고 관리',
-    to: '/admin/reports',
-    icon: <CIcon icon={cilSearch} customClassName="nav-icon" />,
-  },
-  {
-    component: CNavItem,
     name: '게시글 관리',
-    to: '/admin/posts',
+    to: '/admin/post',
     icon: <CIcon icon={cilCalculator} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
-    name: '사이트 설정',
-    to: '/admin/settings',
+    name: '댓글 관리',
+    to: '/admin/comment',
+    icon: <CIcon icon={cilSearch} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: '신고 관리',
+    to: '/admin/report',
+    icon: <CIcon icon={cilSearch} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: '삭제 관리',
+    to: '/admin/delete',
     icon: <CIcon icon={cilMap} customClassName="nav-icon" />,
   },
 ]
