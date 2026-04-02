@@ -47,6 +47,8 @@ import {
 } from '@coreui/icons'
 
 import { AppHeaderDropdown } from './header/index'
+import { useAuthStore } from '@/store/useAuthStore';
+import { useLogoutMutation } from '@/hooks/mutations/useAuthMutation';
 
 /**
  * AppHeader functional component
@@ -68,6 +70,18 @@ const AppHeader = () => {
 
   const dispatch = useDispatch()
   const sidebarShow = useSelector((state) => state.sidebarShow)
+
+  const user = useAuthStore((state) => state.user);
+  const isLoggedIn = !!user;
+
+  const { mutate: logoutMutate } = useLogoutMutation();
+  const handleLogout = () => {
+    if (!user) {
+      console.warn("로그인 정보가 없어 바로 클라이언트 로그아웃을 진행합니다.");
+    }
+
+    logoutMutate(user); 
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -115,9 +129,14 @@ const AppHeader = () => {
           </CNavItem>
         </CHeaderNav>
         <CHeaderNav className='ms-auto'>
-          <CButton to="/login" as={NavLink}
+          {isLoggedIn ?
+          <CButton onClick={handleLogout}
+                    style={{ backgroundColor: '#e1e1e1', color: 'black', border: 'none' }}
+                        >Logout</CButton>
+          : <CButton to="/login" as={NavLink}
                     color="green"
                         >Join Us</CButton>
+          }
         </CHeaderNav>
       </CContainer>
     </CHeader>
