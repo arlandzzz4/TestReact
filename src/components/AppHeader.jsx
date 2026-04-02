@@ -64,7 +64,7 @@ const AppHeader = () => {
   const { colorMode, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
 
   const location = useLocation()
-  const isWritePage = location.pathname === '/write'
+  const isWritePage = location.pathname === '/write' || location.pathname.startsWith('/post/edit/')
 
   const dispatch = useDispatch()
   const sidebarShow = useSelector((state) => state.sidebarShow)
