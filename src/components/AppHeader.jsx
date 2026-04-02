@@ -73,6 +73,7 @@ const AppHeader = () => {
 
   const user = useAuthStore((state) => state.user);
   const isLoggedIn = !!user;
+  const isAdminIn = user?.roleCode === '02';
 
   const { mutate: logoutMutate } = useLogoutMutation();
   const handleLogout = () => {
@@ -137,6 +138,15 @@ const AppHeader = () => {
                     color="green"
                         >Join Us</CButton>
           }
+          {isAdminIn && (
+            <CButton 
+              to="/admin" as={NavLink}
+              color="green"
+              style={{ marginLeft: '10px' }}
+            >
+              관리자
+            </CButton>
+          )}
         </CHeaderNav>
       </CContainer>
     </CHeader>
