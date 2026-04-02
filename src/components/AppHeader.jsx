@@ -47,8 +47,8 @@ import {
 } from '@coreui/icons'
 
 import { AppHeaderDropdown } from './header/index'
-import { useAuthStore } from '@/store/useAuthStore';
 import { useLogoutMutation } from '@/hooks/mutations/useAuthMutation';
+import { useAuth } from '@/hooks/useAuth'
 
 /**
  * AppHeader functional component
@@ -62,6 +62,8 @@ import { useLogoutMutation } from '@/hooks/mutations/useAuthMutation';
  * @returns {React.ReactElement} Header component with navigation and controls
  */
 const AppHeader = () => {
+  const { user, isAuthenticated, isAdmin, isAuthLoading } = useAuth();
+  
   const headerRef = useRef()
   const { colorMode, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
 
@@ -70,10 +72,6 @@ const AppHeader = () => {
 
   const dispatch = useDispatch()
   const sidebarShow = useSelector((state) => state.sidebarShow)
-
-  const user = useAuthStore((state) => state.user);
-  const isLoggedIn = !!user;
-  const isAdminIn = user?.roleCode === '02';
 
   const { mutate: logoutMutate } = useLogoutMutation();
   const handleLogout = () => {
@@ -130,7 +128,7 @@ const AppHeader = () => {
           </CNavItem>
         </CHeaderNav>
         <CHeaderNav className='ms-auto'>
-          {isLoggedIn ?
+          {isAuthenticated ?
           <CButton onClick={handleLogout}
                     style={{ backgroundColor: '#e1e1e1', color: 'black', border: 'none' }}
                         >Logout</CButton>
@@ -138,7 +136,7 @@ const AppHeader = () => {
                     color="green"
                         >Join Us</CButton>
           }
-          {isAdminIn && (
+          {isAdmin && (
             <CButton 
               to="/admin" as={NavLink}
               color="green"
