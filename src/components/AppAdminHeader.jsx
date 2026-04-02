@@ -1,0 +1,144 @@
+/**
+ * AppHeader Component
+ *
+ * Main application header with navigation, theme switcher, and user menu.
+ * Features include:
+ * - Sidebar toggle button
+ * - Primary navigation links
+ * - Notification and action icons
+ * - Theme switcher (light/dark/auto)
+ * - User dropdown menu
+ * - Breadcrumb navigation
+ * - Sticky positioning with scroll shadow effect
+ *
+ * @component
+ * @example
+ * return (
+ *   <AppHeader />
+ * )
+ */
+
+import React, { useEffect, useRef } from 'react'
+import { NavLink, useLocation } from 'react-router-dom'
+import { useSelector, useDispatch } from 'react-redux'
+import {
+  CContainer,
+  CDropdown,
+  CDropdownItem,
+  CDropdownMenu,
+  CDropdownToggle,
+  CHeader,
+  CHeaderNav,
+  CHeaderToggler,
+  CNavLink,
+  CNavItem,
+  useColorModes,
+  CButton,
+} from '@coreui/react'
+import CIcon from '@coreui/icons-react'
+import {
+  cilBell,
+  cilContrast,
+  cilEnvelopeOpen,
+  cilList,
+  cilMenu,
+  cilMoon,
+  cilSun,
+} from '@coreui/icons'
+
+import { AppHeaderDropdown } from './header/index'
+import { useLogoutMutation } from '@/hooks/mutations/useAuthMutation';
+import { useAuth } from '@/hooks/useAuth'
+
+/**
+ * AppHeader functional component
+ *
+ * Manages header UI including:
+ * - Redux integration for sidebar state
+ * - Theme management with CoreUI useColorModes hook
+ * - Scroll-based shadow effect
+ * - Responsive navigation
+ *
+ * @returns {React.ReactElement} Header component with navigation and controls
+ */
+const AppAdminHeader = () => {
+  const { user, isAuthenticated, isAdmin, isAuthLoading } = useAuth();
+  
+  const headerRef = useRef()
+  const { colorMode, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
+
+  const location = useLocation()
+  const isWritePage = location.pathname === '/write'
+
+  const dispatch = useDispatch()
+  const sidebarShow = useSelector((state) => state.sidebarShow)
+
+  const { mutate: logoutMutate } = useLogoutMutation();
+  const handleLogout = () => {
+    if (!user) {
+      console.warn("로그인 정보가 없어 바로 클라이언트 로그아웃을 진행합니다.");
+    }
+
+    logoutMutate(user); 
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      headerRef.current &&
+        headerRef.current.classList.toggle('shadow-sm', document.documentElement.scrollTop > 0)
+    }
+
+    document.addEventListener('scroll', handleScroll)
+    return () => document.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  return (
+    <CHeader position="sticky" className={isWritePage ? 'p-0' : 'mb-4 p-0'} ref={headerRef}>
+      <CContainer className="border-bottom px-4" fluid>
+        <CHeaderToggler
+          onClick={() => dispatch({ type: 'set', sidebarShow: !sidebarShow })}
+          style={{ marginInlineStart: '-14px' }}
+        >
+          <CIcon icon={cilMenu} size="lg" />
+        </CHeaderToggler>
+        <CHeaderNav className="d-none d-md-flex nav-underline">
+
+          <h4 style={{ color: "#3D6B4F", marginRight: "50px"}}><b>IOB</b></h4>
+          <CNavItem>
+            <CNavLink to="/admin/dashboard" as={NavLink}>대시보드</CNavLink>
+          </CNavItem>
+          <CNavItem>
+            <CNavLink to="/admin/users" as={NavLink}>회원관리</CNavLink>
+          </CNavItem>
+          <CNavItem>
+            <CNavLink to="/admin/reports" as={NavLink}>신고 관리</CNavLink>
+          </CNavItem>
+          <CNavItem>
+            <CNavLink to="/admin/posts" as={NavLink}>게시글 관리</CNavLink>
+          </CNavItem>
+          <CNavItem>
+             <CNavLink to="/admin/settings" as={NavLink}>
+              사이트 설정
+            </CNavLink>
+          </CNavItem>
+        </CHeaderNav>
+        <CHeaderNav className='ms-auto'>
+          <CButton onClick={handleLogout}
+                    style={{ backgroundColor: '#e1e1e1', color: 'black', border: 'none' }}
+                        >Logout</CButton>
+          {isAdmin && (
+            <CButton 
+              to="/feed" as={NavLink}
+              color="green"
+              style={{ marginLeft: '10px' }}
+            >
+              사용자
+            </CButton>
+          )}
+        </CHeaderNav>
+      </CContainer>
+    </CHeader>
+  )
+}
+
+export default AppAdminHeader
