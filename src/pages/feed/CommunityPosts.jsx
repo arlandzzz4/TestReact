@@ -78,10 +78,10 @@ const CommunityPosts = () => {
     likes: post.likes,
     comments: post.comments,
     image: post.thumbnail 
-      ? post.thumbnail.startsWith('http') 
-        ? post.thumbnail 
-        : `${instance.defaults.baseURL || ''}${post.thumbnail}`
-      : null
+  ? post.thumbnail.startsWith('http') 
+    ? post.thumbnail 
+    : `${(instance.defaults.baseURL || '').replace(/\/$/, '')}${post.thumbnail}`
+  : null
   }))
 
   // 탭 + 검색어 필터링
