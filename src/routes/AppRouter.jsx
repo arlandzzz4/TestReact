@@ -48,12 +48,13 @@ const router = createBrowserRouter([
         //{ path: 'notifications', lazy: () => import('@/pages/notification/Notification').then(m => ({ Component: m.default })) },
       
         // 2. 일반 인증 구역
+        { path: 'calendar', lazy: () => import('@/pages/calendar/Calendar').then(m => ({ Component: m.default })) },
         {
           element: <AuthGuard />,
           children: [
             // { path: 'feed', lazy: () => import('@/pages/feed/Feed').then(m => ({ Component: m.default })) },
             { path: 'mypage', lazy: () => import('@/pages/user/MyPage').then(m => ({ Component: m.default })) },
-            { path: 'calendar', lazy: () => import('@/pages/calendar/Calendar').then(m => ({ Component: m.default })) },
+           // { path: 'calendar', lazy: () => import('@/pages/calendar/Calendar').then(m => ({ Component: m.default })) },
             { path: 'challenge', lazy: () => import('@/pages/challenge/ChallengePage').then(m => ({ Component: m.default })) },
           ]
         },
