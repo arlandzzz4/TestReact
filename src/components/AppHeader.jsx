@@ -138,7 +138,7 @@ const AppHeader = () => {
           }
           {isAdmin && (
             <CButton 
-              to="/admin" as={NavLink}
+              to="/admin/dashboard" as={NavLink}
               color="green"
               style={{ marginLeft: '10px' }}
             >
