@@ -337,6 +337,7 @@
     text-align: left;
     font-family: inherit;
     color: #333;
+    white-space: nowrap;
 
     &:hover { background: #f5f3f0; }
   }
@@ -405,7 +406,15 @@
   display: flex;
   gap: 8px;
   margin-top: 12px;
-  align-items: flex-start;
+  align-items: stretch;  // 수정함 - flex-start → stretch
+  
+  .comment-textarea {
+    flex: 1;              // 추가함 - textarea가 남은 공간 차지
+  }
+  
+  .pd-submit-btn {
+    flex-shrink: 0;       // 추가함 = (버튼이 찌그러지지 않게)
+  }
 }
 
 // 신고 모달
