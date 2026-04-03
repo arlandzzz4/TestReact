@@ -23,7 +23,7 @@ const CommunityPosts = () => {
   const [hasMore, setHasMore] = useState(true)     // 더 불러올 게시글이 있는지
   const [loading, setLoading] = useState(false)    // 로딩 중 여부
   const observerRef = useRef(null)                 // IntersectionObserver 타겟
-  const loadingRef = useRef(false)                 // loading을 ref로도 관리
+    const loadingRef = useRef(false)                 // loading을 ref로도 관리
   const hasMoreRef = useRef(true)                  // hasMore를 ref로도 관리
   const lastIdRef = useRef(null)                   // lastId를 ref로도 관리
   const navigate = useNavigate()

@@ -1,5 +1,6 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { instance } from '@/api/axios';
 import { 
   CButton, 
   CFormInput, 
@@ -29,6 +30,21 @@ const ChallengePage = () => {
   const [description, setDescription] = useState(''); //챌린지 설명 저장
   const [challenges, setChallenges] = useState([]); // 생성된 챌린지 목록을 저장할 배열
 
+  const userEmail = "test@test.com"; // 임시 유저 이메일
+
+  useEffect(() => {
+    fetchChallenges();
+  }, []);
+
+  const fetchChallenges = async () => {
+    try {
+      const response = await instance.get('/api/challenge', { params: { userEmail } });
+      setChallenges(response.data);
+    } catch (error) {
+      console.error("챌린지 목록 조회 실패:", error);
+    }
+  };
+
   // 목표 일 수 계산 (시작일과 종료일이 모두 선택되었을 때)
   let duration = 0;
   if (startDate && endDate) {
@@ -44,12 +60,18 @@ const ChallengePage = () => {
   }
 
   // 챌린지 삭제 함수
-  const handleDeleteChallenge = (id) => {
-    setChallenges(prev => prev.filter(challenge => challenge.id !== id));
+  const handleDeleteChallenge = async (id) => {
+    try {
+      await instance.delete(`/api/challenge/${id}`, { params: { userEmail } });
+      setChallenges(prev => prev.filter(challenge => challenge.id !== id));
+    } catch (error) {
+      console.error("챌린지 삭제 실패:", error);
+      alert("챌린지 삭제에 실패했습니다.");
+    }
   }
 
   // 추가하기 버튼을 눌렀을 때 실행디는 함수
-  const handleAddChallenge = () => {
+  const handleAddChallenge = async () => {
 
     if(duration <= 0){
       alert('종료일은 시작일과 같거나 그 이후여야 합니다.');
@@ -74,26 +96,31 @@ const ChallengePage = () => {
 
     // 1. 현재 state에 저장된 값들을 모아서 하나의 객체로 (백엔드 전송용)
     const newChallengeData = {
-      id: Date.now(), // 맵핑할 때 사용할 고유 키값 임시 생성
       title,
       description,
       startDate,
       endDate,
-      duration
+      duration,
+      userEmail
     };
     
-    // 2. 여기서 백엔드 API 호출
-    console.log('새로 추가될 챌린지 데이터:', newChallengeData);
+    try {
+      // 2. 백엔드 API 호출
+      await instance.post('/api/challenge', newChallengeData);
+      
+      // 3. 목록 새로고침
+      fetchChallenges();
 
-    // 3. 기존 챌린지 배열에 새 데이터를 추가
-    setChallenges((prev) => [...prev, newChallengeData]);
-
-    // 4. 모달 닫음 & 입력창 초기화.
-    setTitle('');
-    setDescription('');
-    setStartDate('');
-    setEndDate('');
-    setVisible(false);
+      // 4. 모달 닫음 & 입력창 초기화.
+      setTitle('');
+      setDescription('');
+      setStartDate('');
+      setEndDate('');
+      setVisible(false);
+    } catch (error) {
+      console.error('챌린지 등록 실패:', error);
+      alert('챌린지 등록에 실패했습니다.');
+    }
   }
 
 
@@ -116,7 +143,7 @@ const ChallengePage = () => {
 
   return (
     <div className="p-8" style={{padding: '2rem 2.5rem 3rem'}}>
-      <div class="d-flex justify-content-between align-items-center">
+      <div className="d-flex justify-content-between align-items-center">
         <h2 style={{fontSize:'22px', fontWeight:'700', color:'textDark', marginBottom:'4px'}}>도전! 1인 챌린지</h2>
         <CButton onClick={newChallenge} className='form-submit-btn'>+ 추가</CButton>
       </div>

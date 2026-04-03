@@ -13,6 +13,7 @@ import {
 import CIcon from '@coreui/icons-react'
 import { cilX } from '@coreui/icons'
 import { useState } from 'react';
+import { instance } from '@/api/axios';
 import { set } from 'react-hook-form';
 /**
  * 챌린지 정보를 받아 카드 형태로 표시하는 컴포넌트
@@ -21,8 +22,11 @@ import { set } from 'react-hook-form';
  */
 const ChallengeCard = ({ challenge, onDelete }) => {
 
-    const [checkCount, setCheckCount] = useState(0); //인증 체크 관련해서 얘를 어떻게 써야하지
-    const [lastCheckDate, setLastCheckDate] = useState(null);
+    const userEmail = "test@test.com"; // 임시 유저 이메일
+
+    // 백엔드에서 전달된 챌린지 객체의 인증 누적 횟수 및 날짜로 초기화(값이 없으면 0, null)
+    const [checkCount, setCheckCount] = useState(challenge.checkCount || 0); 
+    const [lastCheckDate, setLastCheckDate] = useState(challenge.lastCheckDate || null);
     // (1. 최근 인증날짜와 오늘 날짜 비교, 오늘 날짜와 인증날짜가 다르면 버튼 활성화 & 같으면 비활성화 - 인증 완료) -
     // 인증 클릭 -> 함수 실행
     //              checkCount 증가 / duration보다 크게 될 경우 자동으로 막히도록 ㅇㅇ
@@ -49,14 +53,20 @@ const ChallengeCard = ({ challenge, onDelete }) => {
     const todayDate = String(now.getDate()).padStart(2, '0');
     const todayStr = `${todayYear}-${todayMonth}-${todayDate}`;
     
-    const addCheckCount = () => {
+    const addCheckCount = async () => {
         // 이미 오늘 인증을 완료했다면 중단
         if (lastCheckDate === todayStr) {
             return;
         }
 
-        setCheckCount(checkCount + 1);
-        setLastCheckDate(todayStr); // 마지막 인증 날짜를 오늘로 갱신
+        try {
+            await instance.post(`/api/challenge/${challenge.id}/verify`, null, { params: { userEmail } });
+            setCheckCount(checkCount + 1);
+            setLastCheckDate(todayStr); // 마지막 인증 날짜를 오늘로 갱신
+        } catch (error) {
+            console.error("인증 실패:", error);
+            alert(error.response?.data || "인증 처리 중 오류가 발생했습니다.");
+        }
     }
 
     // 오늘 이미 인증을 했는지 여부 확인
