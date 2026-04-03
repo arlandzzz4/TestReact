@@ -23,7 +23,7 @@ const NewPosts = () => {
           </thead>
           <tbody>
             {data?.map((item, index) =>
-              <tr>
+              <tr key={item.id || index}>
               <td>{item.title}</td>
               <td>{item.nickname}</td>
               <td>{item.createdAt}</td>
