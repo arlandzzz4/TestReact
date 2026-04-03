@@ -10,3 +10,23 @@ export const searchEmail = async (email) => {
     throw error;
   }
 };
+
+export const searchUserTotalCount = async () => {
+  try {
+    const response = await instance.get(`/api/user/search/totalcnt`);
+    return response.data;
+  } catch (error) {
+    console.error("총 유저 조회 중 오류 발생:", error);
+    throw error;
+  }
+};
+
+export const searchUserTodayCount = async () => {
+  try {
+    const response = await instance.get(`/api/user/search/todaycnt`);
+    return response.data;
+  } catch (error) {
+    console.error("오늘 가입 유저 조회 중 오류 발생:", error);
+    throw error;
+  }
+};
