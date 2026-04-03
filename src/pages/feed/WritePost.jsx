@@ -75,8 +75,7 @@ export default function WritePost() {
   };
 
   //@@@@@@@@@@테스트용 유저 이메일 하드코딩. 추후 로그인 시 이 값을 전달하도록 수정 필요 @@@@@@@@@@@@@
-  const user = "test@test.com";
-  
+  const user = "arlandzzz4@gmail.com";
   // 카테고리 이름을 서버에서 요구하는 코드(01, 02, 03)로 변환하는 함수
   const getCategoryId = (name) => {
     switch (name) {
