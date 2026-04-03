@@ -22,6 +22,7 @@ import { cilArrowLeft, cilX } from '@coreui/icons';
 import { CModal, CModalHeader, CModalTitle, CModalBody, CModalFooter } from '@coreui/react';
 import { instance } from '@/api/axios';
 import '../../scss/WritePost.scss'; // SCSS 파일 import
+import '../../scss/style.scss'; // SCSS 파일 import
 import { useParams } from 'react-router-dom';
 
 export default function WritePost() {
