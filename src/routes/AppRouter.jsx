@@ -48,13 +48,12 @@ const router = createBrowserRouter([
         //{ path: 'notifications', lazy: () => import('@/pages/notification/Notification').then(m => ({ Component: m.default })) },
       
         // 2. 일반 인증 구역
-        { path: 'calendar', lazy: () => import('@/pages/calendar/Calendar').then(m => ({ Component: m.default })) },
         {
           element: <AuthGuard />,
           children: [
             // { path: 'feed', lazy: () => import('@/pages/feed/Feed').then(m => ({ Component: m.default })) },
             { path: 'mypage', lazy: () => import('@/pages/user/MyPage').then(m => ({ Component: m.default })) },
-           // { path: 'calendar', lazy: () => import('@/pages/calendar/Calendar').then(m => ({ Component: m.default })) },
+            { path: 'calendar', lazy: () => import('@/pages/calendar/Calendar').then(m => ({ Component: m.default })) },
             { path: 'challenge', lazy: () => import('@/pages/challenge/ChallengePage').then(m => ({ Component: m.default })) },
           ]
         },
@@ -70,12 +69,11 @@ const router = createBrowserRouter([
           </AuthGuard>
         ),
         children: [
-          { path: 'dashboard', lazy: () => import('@/pages/admin/Dashboard').then(m => ({ Component: m.default })) },
-          { path: 'user', lazy: () => import('@/pages/admin/user/UserManagement').then(m => ({ Component: m.default })) },
-          { path: 'post', lazy: () => import('@/pages/admin/post/PostManagement').then(m => ({ Component: m.default })) },
-          { path: 'comment', lazy: () => import('@/pages/admin/comment/CommentManagement').then(m => ({ Component: m.default })) },
-          { path: 'report', lazy: () => import('@/pages/admin/report/ReportManagement').then(m => ({ Component: m.default })) },
-          { path: 'delete', lazy: () => import('@/pages/admin/delete/DeleteManagement').then(m => ({ Component: m.default })) },
+          //{ index: true, lazy: () => import('@/pages/admin/Dashboard').then(m => ({ Component: m.default })) },
+          //{ path: 'users', lazy: () => import('@/pages/admin/UserManagement').then(m => ({ Component: m.default })) },
+          //{ path: 'reports', lazy: () => import('@/pages/admin/ReportManagement').then(m => ({ Component: m.default })) },
+          //{ path: 'posts', lazy: () => import('@/pages/admin/PostManagement').then(m => ({ Component: m.default })) },
+          //{ path: 'settings', lazy: () => import('@/pages/admin/SiteSettings').then(m => ({ Component: m.default })) },
         ]
       },
       

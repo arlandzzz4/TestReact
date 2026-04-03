@@ -52,7 +52,7 @@ const AppSidebar = () => {
   const dispatch = useDispatch()
   const unfoldable = useSelector((state) => state.sidebarUnfoldable)
   const sidebarShow = useSelector((state) => state.sidebarShow)
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated } = useAuth() // 👈 로그인 상태 확인
 
   // 로그인 상태에 따라 보여줄 메뉴를 필터링합니다.
   const filteredNav = useMemo(
