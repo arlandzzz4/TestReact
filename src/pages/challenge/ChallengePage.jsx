@@ -63,7 +63,7 @@ const ChallengePage = () => {
   const handleDeleteChallenge = async (id) => {
     try {
       await instance.delete(`/api/challenge/${id}`, { params: { userEmail } });
-      setChallenges(prev => prev.filter(challenge => challenge.id !== id));
+      setChallenges(prev => prev.filter(challenge => challenge.challengeId !== id));
     } catch (error) {
       console.error("챌린지 삭제 실패:", error);
       alert("챌린지 삭제에 실패했습니다.");
@@ -100,7 +100,6 @@ const ChallengePage = () => {
       description,
       startDate,
       endDate,
-      duration,
       userEmail
     };
     
@@ -158,7 +157,7 @@ const ChallengePage = () => {
               <p className="text-muted m-0">추가하기 버튼을 눌러 챌린지를 만들어보세요</p>
             </div>):
           challenges.map((challenge) => (
-          <ChallengeCard key={challenge.id} challenge={challenge} onDelete={handleDeleteChallenge} />
+          <ChallengeCard key={challenge.challengeId} challenge={challenge} onDelete={handleDeleteChallenge} />
         ))}
       </CRow>
 

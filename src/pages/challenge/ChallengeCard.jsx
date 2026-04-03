@@ -12,7 +12,7 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilX } from '@coreui/icons'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { instance } from '@/api/axios';
 import { set } from 'react-hook-form';
 /**
@@ -25,17 +25,13 @@ const ChallengeCard = ({ challenge, onDelete }) => {
     const userEmail = "test@test.com"; // 임시 유저 이메일
 
     // 백엔드에서 전달된 챌린지 객체의 인증 누적 횟수 및 날짜로 초기화(값이 없으면 0, null)
-    const [checkCount, setCheckCount] = useState(challenge.checkCount || 0); 
-    const [lastCheckDate, setLastCheckDate] = useState(challenge.lastCheckDate || null);
+    const [checkCount, setCheckCount] = useState(challenge.achieveCount || 0); 
+    const [lastCheckDate, setLastCheckDate] = useState(challenge.lastCheckedDate || null);
     // (1. 최근 인증날짜와 오늘 날짜 비교, 오늘 날짜와 인증날짜가 다르면 버튼 활성화 & 같으면 비활성화 - 인증 완료) -
     // 인증 클릭 -> 함수 실행
     //              checkCount 증가 / duration보다 크게 될 경우 자동으로 막히도록 ㅇㅇ
     //              인증 날짜도 useState함수 써서 클릭한 시기의 현재 날짜로 변경??
     //              날짜 비교 다시 진행해서 버튼 등 변경시키기
-
-    
-
-
 
     // 시간(시, 분, 초) 단위를 0으로 초기화하여 오직 날짜 기준으로만 계산
     const end = new Date(challenge.endDate);
@@ -43,6 +39,12 @@ const ChallengeCard = ({ challenge, onDelete }) => {
 
     const now = new Date();
     now.setHours(0, 0, 0, 0);
+
+    // 백엔드에서 goalDays가 0이나 undefined로 올 경우를 대비해 프론트엔드에서 목표 일수 안전하게 재계산
+    const startDay = new Date(challenge.startDate);
+    startDay.setHours(0, 0, 0, 0);
+    const calculatedGoalDays = Math.round((end.getTime() - startDay.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+    const targetDays = (challenge.goalDays > 0 ? challenge.goalDays : calculatedGoalDays) || 1;
 
     const diffTime = end.getTime() - now.getTime();
     const dday = Math.round(diffTime / (1000 * 60 * 60 * 24)); // 깔끔하게 날짜 차이만 계산되도록 ㅇㅇ
@@ -60,9 +62,15 @@ const ChallengeCard = ({ challenge, onDelete }) => {
         }
 
         try {
-            await instance.post(`/api/challenge/${challenge.id}/verify`, null, { params: { userEmail } });
-            setCheckCount(checkCount + 1);
-            setLastCheckDate(todayStr); // 마지막 인증 날짜를 오늘로 갱신
+            const res = await instance.post(
+                `/api/challenge/${challenge.challengeId}/verify`,
+                { checkedDate: todayStr },
+                { headers: { 'Content-Type': 'application/json' } }
+            );
+            // 백엔드 응답으로 state 업데이트
+            // 백엔드 응답이 다를 수 있으므로 옵셔널 체이닝으로 방어하고, 없을 시 로컬 값으로 +1 처리
+            setCheckCount(res.data?.totalAchieveCount !== undefined ? res.data.totalAchieveCount : checkCount + 1);
+            setLastCheckDate(res.data?.checkedDate !== undefined ? res.data.checkedDate : todayStr);
         } catch (error) {
             console.error("인증 실패:", error);
             alert(error.response?.data || "인증 처리 중 오류가 발생했습니다.");
@@ -72,7 +80,7 @@ const ChallengeCard = ({ challenge, onDelete }) => {
     // 오늘 이미 인증을 했는지 여부 확인
     const isCheckedToday = lastCheckDate === todayStr;
 
-    const progressValue = (checkCount / challenge.duration) * 100; //프로그래스바 값. (인증 횟수/목표일수) * 100 해줌
+    const progressValue = (checkCount / targetDays) * 100; //프로그래스바 값. (인증 횟수/목표일수) * 100 해줌
 
     // 챌린지 기간 종료 여부 
     // (주의: 종료일 당일(D-day)까지는 인증할 수 있도록 dday < 0 으로 설정했습니다.)
@@ -90,7 +98,7 @@ const ChallengeCard = ({ challenge, onDelete }) => {
 
     const handleDelete = () => {
         if (window.confirm("챌린지를 삭제하시겠습니까?")) {
-            onDelete(challenge.id);
+            onDelete(challenge.challengeId);
         }
     }
 
@@ -129,7 +137,7 @@ const ChallengeCard = ({ challenge, onDelete }) => {
                     </CProgress>
 
                         <CBadge style={{marginTop:'0.5rem', backgroundColor: '#F0EDE8', color: '#989c8f'}}>
-                            {challenge.startDate} ~ {challenge.endDate} · 목표 {challenge.duration}일
+                            {challenge.startDate} ~ {challenge.endDate} · 목표 {targetDays}일
                         </CBadge>
                     <div className="d-flex mt-3 gap-2 align-items-center">
                         <CCardText className="text-muted small mb-0">
