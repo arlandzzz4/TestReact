@@ -14,28 +14,22 @@ export const useUserQuery = () => {
   return { useEmailSearch };
 };
 
-export const useUserTotalCountQuery = () => {
-  const useTotalCountSearch = (enabled = false) => {
+export const useUserTotalCountQuery = (enabled = true) => {
     return useQuery({
-      queryKey: ['user', 'search'],
-      queryFn: () => searchUserTotalCount(),
-      enabled: !!email && enabled,
+      queryKey: ['totalCnt'],
+      queryFn: ()=>searchUserTotalCount(),
+      enabled: enabled,
       retry: false,
       staleTime: 1000 * 60 * 5,
     });
-  };
-  return { useTotalCountSearch };
 };
 
-export const useUserTodayCountQuery = () => {
-  const useTodayCountSearch = (enabled = false) => {
+export const useUserTodayCountQuery = (enabled = true) => {
     return useQuery({
-      queryKey: ['user', 'search'],
-      queryFn: () => searchUserTodayCount(),
-      enabled: !!email && enabled,
+      queryKey: ['todayCnt'],
+      queryFn: ()=>searchUserTodayCount(),
+      enabled: enabled,
       retry: false,
       staleTime: 1000 * 60 * 5,
     });
-  };
-  return { useTodayCountSearch };
 };
