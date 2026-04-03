@@ -16,9 +16,9 @@ import { useNavigate } from 'react-router-dom'
 const TABS = ['전체', '자유', '정보', '인원모집', '공지사항']
 
 const TAB_COLORS = {
-  '전체': { bg: '#3d6b4f', color: '#fff', shadow: 'rgba(61,107,79,0.35)' },
-  '자유': { bg: '#F0E6D3', color: '#B07D3A', shadow: 'rgba(176,125,58,0.35)' },
-  '정보': { bg: '#D3E8DF', color: '#2E6B4F', shadow: 'rgba(46,107,79,0.35)' },
+  '전체':    { bg: '#3d6b4f', color: '#fff',     shadow: 'rgba(61,107,79,0.35)' },
+  '자유':    { bg: '#F0E6D3', color: '#B07D3A',  shadow: 'rgba(176,125,58,0.35)' },
+  '정보':    { bg: '#D3E8DF', color: '#2E6B4F',  shadow: 'rgba(46,107,79,0.35)' },
   '인원모집': { bg: '#D9E4F5', color: '#2D4FA0', shadow: 'rgba(45,79,160,0.35)' },
   '공지사항': { bg: '#F7E6EA', color: '#A63A50', shadow: 'rgba(166,58,80,0.35)' },
 }

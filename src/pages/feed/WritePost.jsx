@@ -25,16 +25,15 @@ import '../../scss/WritePost.scss'; // SCSS 파일 import
 import '../../scss/style.scss'; // SCSS 파일 import
 import { useParams } from 'react-router-dom';
 
-const CATEGORY_COLORS = {
-  '자유': { bg: '#F0E6D3', color: '#B07D3A', shadow: 'rgba(176,125,58,0.35)' },
-  '정보': { bg: '#D3E8DF', color: '#2E6B4F', shadow: 'rgba(46,107,79,0.35)' },
-  '인원모집': { bg: '#D9E4F5', color: '#2D4FA0', shadow: 'rgba(45,79,160,0.35)' },
-}
-
 export default function WritePost() {
   const navigate = useNavigate();
   const { id } = useParams();   // ← 추가 (게시글 수정 시, [수정완료]버튼)
   const isEditMode = !!id;      // ← 추가 (게시글 수정 시, [수정완료]버튼)
+  const CATEGORY_COLORS = {
+    '자유': { bg: '#F0E6D3', color: '#B07D3A' },
+    '정보': { bg: '#D3E8DF', color: '#2E6B4F' },
+    '인원모집': { bg: '#D9E4F5', color: '#2D4FA0' },
+  }
   const [showModal, setShowModal] = useState(false); //모달창 표시
   const [isDirty, setIsDirty] = useState(false) //변경 추적
   const [category, setCategory] = useState('자유');
@@ -82,8 +81,7 @@ export default function WritePost() {
   };
 
   //@@@@@@@@@@테스트용 유저 이메일 하드코딩. 추후 로그인 시 이 값을 전달하도록 수정 필요 @@@@@@@@@@@@@
-  const user = "test@test.com";
-
+  const user = "arlandzzz4@gmail.com";
   // 카테고리 이름을 서버에서 요구하는 코드(01, 02, 03)로 변환하는 함수
   const getCategoryId = (name) => {
     switch (name) {
@@ -190,9 +188,6 @@ export default function WritePost() {
         {/* 수정 후 */}
         <h5 className="m-0 fw-bold">{isEditMode ? '게시글 수정' : '게시글 작성'}</h5>
       </div>
-
-
-
       {/* ── 에디터 및 본문 영역 ── */}
       <div className="d-flex justify-content-center mb-5 write-post-container">
         <div className="write-post-inner">
@@ -204,11 +199,11 @@ export default function WritePost() {
                 <CButton
                   key={cat}
                   className="category-btn"
+                  color="light"
                   style={{
-                    background: category === cat ? CATEGORY_COLORS[cat].bg : 'transparent',
+                    backgroundColor: category === cat ? CATEGORY_COLORS[cat].bg : '',
                     color: category === cat ? CATEGORY_COLORS[cat].color : '',
-                    boxShadow: category === cat ? `0 2px 8px ${CATEGORY_COLORS[cat].shadow}` : 'none',
-                    border: category === cat ? 'none' : '',
+                    border: category === cat ? `1px solid ${CATEGORY_COLORS[cat].color}` : '',
                   }}
                   onClick={() => setCategory(cat)}
                 >
