@@ -19,7 +19,7 @@
  * )
  */
 import React, { useMemo } from 'react'
-import { useAuth } from '@/hooks/useAuth' // 👈 인증 상태를 가져오기 위한 훅
+import { useAuth } from '@/hooks/useAuth'
 import { useSelector, useDispatch } from 'react-redux'
 
 import {
@@ -31,10 +31,10 @@ import {
   CSidebarToggler,
 } from '@coreui/react'
 
-import { AppSidebarNav } from './AppSidebarNav'
+import { AppAdminSidebarNav } from './AppAdminSidebarNav'
 
 // sidebar nav config
-import navigation from '../_nav'
+import navigation from '../_navAdmin'
 
 /**
  * AppSidebar functional component
@@ -48,7 +48,7 @@ import navigation from '../_nav'
  *
  * @returns {React.ReactElement} Sidebar with navigation
  */
-const AppSidebar = () => {
+const AppAdminSidebar = () => {
   const dispatch = useDispatch()
   const unfoldable = useSelector((state) => state.sidebarUnfoldable)
   const sidebarShow = useSelector((state) => state.sidebarShow)
@@ -100,7 +100,7 @@ const AppSidebar = () => {
       </CSidebarHeader>
       
       {/* 사이듣바 아이템 */}
-      <AppSidebarNav items={filteredNav} />
+      <AppAdminSidebarNav items={filteredNav} />
       <CSidebarFooter className="border-top d-none d-lg-flex">
         <CSidebarToggler
           onClick={() => dispatch({ type: 'set', sidebarUnfoldable: !unfoldable })}
@@ -110,4 +110,4 @@ const AppSidebar = () => {
   )
 }
 
-export default React.memo(AppSidebar)
+export default React.memo(AppAdminSidebar)

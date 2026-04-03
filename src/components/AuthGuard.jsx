@@ -15,8 +15,15 @@ const AuthGuard = ({ children, adminOnly = false }) => {
     if (!isAuthLoading) {
       if (!isAuthenticated) {
         isRedirecting.current = true; // 리다이렉트 플래그 설정
-        alert('로그인이 필요한 서비스입니다.');
-        navigate('/login', { replace: true });
+
+        const isLoggingOut = sessionStorage.getItem('isLoggingOut');
+        if (isLoggingOut){
+          sessionStorage.removeItem('isLoggingOut');
+          navigate('/', { replace: true });
+        }else{
+          alert('로그인이 필요한 서비스입니다.');
+          navigate('/login', { replace: true });
+        }
       } else if (adminOnly && !isAdmin) {
         isRedirecting.current = true; // 리다이렉트 플래그 설정
         alert('관리자 권한이 필요합니다.');
