@@ -26,7 +26,7 @@ import {
   cilClipboard,
 } from '@coreui/icons'
 import { CNavItem } from '@coreui/react'
-
+ 
 const _navAdmin = [
   {
     component: CNavItem,

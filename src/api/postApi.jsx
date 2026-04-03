@@ -39,3 +39,13 @@ export const searchCommentTodayCount = async () => {
     throw error;
   }
 };
+
+export const searchPost = async (data) => {
+  try {
+    const response = await instance.get(`/api/post/search/post`, {params : data});
+    return response.data;
+  } catch (error) {
+    console.error("게시글 조회 중 오류 발생:", error);
+    throw error;
+  }
+};
