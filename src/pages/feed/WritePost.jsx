@@ -22,6 +22,7 @@ import { cilArrowLeft, cilX } from '@coreui/icons';
 import { CModal, CModalHeader, CModalTitle, CModalBody, CModalFooter } from '@coreui/react';
 import { instance } from '@/api/axios';
 import '../../scss/WritePost.scss'; // SCSS 파일 import
+import '../../scss/style.scss'; // SCSS 파일 import
 import { useParams } from 'react-router-dom';
 
 export default function WritePost() {
@@ -81,7 +82,6 @@ export default function WritePost() {
 
   //@@@@@@@@@@테스트용 유저 이메일 하드코딩. 추후 로그인 시 이 값을 전달하도록 수정 필요 @@@@@@@@@@@@@
   const user = "arlandzzz4@gmail.com";
-
   // 카테고리 이름을 서버에서 요구하는 코드(01, 02, 03)로 변환하는 함수
   const getCategoryId = (name) => {
     switch (name) {
