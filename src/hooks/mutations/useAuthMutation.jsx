@@ -25,7 +25,9 @@ export const useLoginMutation = () => {
           if (!accessToken) {
             throw new Error("토큰이 응답에 포함되어 있지 않습니다.");
           }
-          //handleLoginRedirect(navigate, location);
+
+          
+          handleLoginRedirect(navigate, location);
         }else{
           if(message)
             alert(message);
@@ -64,25 +66,22 @@ export const useLogoutMutation = () => {
     mutationFn: logoutUser,
     // 성공하든 실패하든 클라이언트 상태는 무조건 지우고 로그인 페이지로 보냅니다.
     onSettled: () => {
-      sessionStorage.setItem('isLoggingOut', 'true');
-      
       logout(); 
-      navigate('/', { replace: true });//handleLoginRedirect(navigate, location);
+      navigate('/login', { replace: true }); 
     },
   });
 };
 
 export const useRegistMutation = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const login = useAuthStore((state) => state.login);
   return useMutation({
     mutationFn: registUser,
-    onSuccess: (data, variables) => {
+    onSuccess: (data) => {
       alert('회원가입이 완료되었습니다!');
       
-      if (variables.token && data) {
-        login(data.user, data.token);
+      if (data.accessToken && data.user) {
+        login(data.user, data.accessToken);
         handleLoginRedirect(navigate, location);
       } else {
         navigate('/login', { replace: true });
