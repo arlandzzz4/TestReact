@@ -25,7 +25,7 @@ const AuthGuard = ({ children, adminOnly = false }) => {
           navigate('/login', { replace: true });
         }
       } else if (adminOnly && !isAdmin) {
-        isRedirecting.current = true; // 리다이렉트 플래그 설정
+        isRedirecting.current = true; // 리다이렉트 플래그 설정됨
         alert('관리자 권한이 필요합니다.');
         navigate('/', { replace: true });
       }
