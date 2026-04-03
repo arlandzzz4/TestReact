@@ -47,6 +47,8 @@ import {
 } from '@coreui/icons'
 
 import { AppHeaderDropdown } from './header/index'
+import { useLogoutMutation } from '@/hooks/mutations/useAuthMutation';
+import { useAuth } from '@/hooks/useAuth'
 
 /**
  * AppHeader functional component
@@ -59,15 +61,26 @@ import { AppHeaderDropdown } from './header/index'
  *
  * @returns {React.ReactElement} Header component with navigation and controls
  */
-const AppHeader = () => {
+const AppAdminHeader = () => {
+  const { user, isAuthenticated, isAdmin, isAuthLoading } = useAuth();
+  
   const headerRef = useRef()
   const { colorMode, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
 
   const location = useLocation()
-  const isWritePage = location.pathname === '/write' || location.pathname.startsWith('/post/edit/')
+  const isWritePage = location.pathname === '/write'
 
   const dispatch = useDispatch()
   const sidebarShow = useSelector((state) => state.sidebarShow)
+
+  const { mutate: logoutMutate } = useLogoutMutation();
+  const handleLogout = () => {
+    if (!user) {
+      console.warn("로그인 정보가 없어 바로 클라이언트 로그아웃을 진행합니다.");
+    }
+
+    logoutMutate(user); 
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -92,36 +105,43 @@ const AppHeader = () => {
 
           <h4 style={{ color: "#3D6B4F", marginRight: "50px"}}><b>IOB</b></h4>
           <CNavItem>
-            <CNavLink to="/feed" as={NavLink}>
-              홈
+            <CNavLink to="/admin/dashboard" as={NavLink}>대시보드</CNavLink>
+          </CNavItem>
+          <CNavItem>
+            <CNavLink to="/admin/user" as={NavLink}>회원관리</CNavLink>
+          </CNavItem>
+          <CNavItem>
+            <CNavLink to="/admin/post" as={NavLink}>게시글 관리</CNavLink>
+          </CNavItem>
+          <CNavItem>
+            <CNavLink to="/admin/comment" as={NavLink}>댓글 관리</CNavLink>
+          </CNavItem>
+          <CNavItem>
+            <CNavLink to="/admin/report" as={NavLink}>신고 관리</CNavLink>
+          </CNavItem>
+          <CNavItem>
+             <CNavLink to="/admin/delete" as={NavLink}>
+              삭제 관리
             </CNavLink>
-          </CNavItem>
-          <CNavItem>
-            <CNavLink to="/calendar" as={NavLink}>캘린더</CNavLink>
-          </CNavItem>
-          <CNavItem>
-            <CNavLink to="/foodSearch" as={NavLink}>음식 검색</CNavLink>
-          </CNavItem>
-          <CNavItem>
-            <CNavLink to="/calc" as={NavLink}>계산기</CNavLink>
-          </CNavItem>
-          <CNavItem>
-             <CNavLink to="/map" as={NavLink}>
-              지도/루트
-            </CNavLink>
-          </CNavItem>
-          <CNavItem>
-            <CNavLink to="/challenge" as={NavLink}>챌린지</CNavLink>
           </CNavItem>
         </CHeaderNav>
         <CHeaderNav className='ms-auto'>
-          <CButton to="/login" as={NavLink}
-                    color="green"
-                        >Join Us</CButton>
+          <CButton onClick={handleLogout}
+                    style={{ backgroundColor: '#e1e1e1', color: 'black', border: 'none' }}
+                        >Logout</CButton>
+          {isAdmin && (
+            <CButton 
+              to="/feed" as={NavLink}
+              color="green"
+              style={{ marginLeft: '10px' }}
+            >
+              사용자
+            </CButton>
+          )}
         </CHeaderNav>
       </CContainer>
     </CHeader>
   )
 }
 
-export default AppHeader
+export default AppAdminHeader

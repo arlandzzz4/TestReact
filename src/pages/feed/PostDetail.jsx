@@ -13,7 +13,7 @@ const CATEGORY_MAP = {
   '01': { label: '자유',     bg: '#F0E6D3', color: '#B07D3A' },
   '02': { label: '정보',     bg: '#D3E8DF', color: '#2E6B4F' },
   '03': { label: '인원모집', bg: '#D9E4F5', color: '#2D4FA0' },
-  '04': { label: '공지사항', bg: '#F5D6DA', color: '#8B2C3A' },
+  '04': { label: '공지사항', bg: '#F7E6EA', color: '#A63A50' },
 };
 
 const DUMMY_POST = {

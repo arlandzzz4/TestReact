@@ -10,16 +10,6 @@ const MapPage = () => {
   const [selectedGym, setSelectedGym] = useState(null);
   const [loading, setLoading] = useState(false);
   const [currentLocation, setCurrentLocation] = useState(null);
-  const [isRegisterMode, setIsRegisterMode] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [clickedPosition, setClickedPosition] = useState(null);
-  const [customMarkers, setCustomMarkers] = useState([]);
-  const [modalForm, setModalForm] = useState({
-    nickname: "",
-    place_name: "",
-    facility_type: "",
-    comment: "",
-  });
 
   // 필터 상태
   const [filters, setFilters] = useState({
@@ -34,15 +24,12 @@ const MapPage = () => {
   const [radius, setRadius] = useState(2000); // 반경 state
 
   const mapContainer = useRef(null);
-  const isRegisterModeRef = useRef(false); // ✅ 추가
-  useEffect(() => {
-    isRegisterModeRef.current = isRegisterMode;
-  }, [isRegisterMode]);
   const mapInstance = useRef(null);
   const markers = useRef([]);
   const infowindow = useRef(null); // 인포윈도우 ref
   const flagMarker = useRef(null); // 검색 위치 마커
   const myMarker = useRef(null); // 현재 위치 마커
+
 
   // 카카오맵 SDK 동적 로드
   useEffect(() => {
@@ -84,26 +71,6 @@ const MapPage = () => {
       options,
     );
     console.log("✅ 지도 초기화 완료!");
-    // 지도 클릭 이벤트 (핀 등록 모드일 때만 작동)
-    window.kakao.maps.event.addListener(
-      mapInstance.current,
-      "click",
-      (mouseEvent) => {
-        if (isRegisterModeRef.current) {
-          const latlng = mouseEvent.latLng;
-          setClickedPosition({
-            lat: latlng.getLat(),
-            lng: latlng.getLng(),
-          });
-          setShowModal(true);
-        }
-      },
-    );
-  }, [mapLoaded]);
-  // 페이지 열릴 때 DB에서 핀 목록 불러오기
-  useEffect(() => {
-    if (!mapLoaded) return;
-    fetchCustomPins();
   }, [mapLoaded]);
 
   // 인포윈도우 닫기
@@ -249,66 +216,68 @@ const MapPage = () => {
     console.log(`🔍 필터 적용: ${filtered.length}개 표시`);
   };
 
-  // 주변 검색
-  const handleMyLocation = () => {
-    if (!mapLoaded) return;
-    if (!navigator.geolocation) {
-      alert("위치 정보를 지원하지 않는 브라우저예요");
-      return;
-    }
+// 내 주변 검색
+const handleMyLocation = () => {
+  if (!mapLoaded) return;
+  if (!navigator.geolocation) {
+    alert('위치 정보를 지원하지 않는 브라우저예요');
+    return;
+  }
 
-    setLoading(true);
-    setGyms([]);
-    setFilteredGyms([]);
-    setSelectedGym(null);
+  setLoading(true);
+  setGyms([]);
+  setFilteredGyms([]);
+  setSelectedGym(null);
 
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const lat = pos.coords.latitude;
-        const lng = pos.coords.longitude;
-        const myPosition = new window.kakao.maps.LatLng(lat, lng);
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+      const myPosition = new window.kakao.maps.LatLng(lat, lng);
 
-        // 지도 중심 이동
-        mapInstance.current.setCenter(myPosition);
-        mapInstance.current.setLevel(5);
+      // 지도 중심 이동
+      mapInstance.current.setCenter(myPosition);
+      mapInstance.current.setLevel(5);
 
-        // 기존 내 위치 마커 제거 후 새로 표시
-        if (myMarker.current) myMarker.current.setMap(null);
-        const svg = `
+      // 기존 내 위치 마커 제거 후 새로 표시
+      if (myMarker.current) myMarker.current.setMap(null);
+      const svg = `
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
           <circle cx="10" cy="10" r="8" fill="#4A90E2" stroke="white" stroke-width="2"/>
           <circle cx="10" cy="10" r="3" fill="white"/>
         </svg>
       `;
-        const blob = new Blob([svg], { type: "image/svg+xml" });
-        const url = URL.createObjectURL(blob);
-        const myImage = new window.kakao.maps.MarkerImage(
-          url,
-          new window.kakao.maps.Size(20, 20),
-          { offset: new window.kakao.maps.Point(10, 10) },
-        );
-        myMarker.current = new window.kakao.maps.Marker({
-          position: myPosition,
-          map: mapInstance.current,
-          image: myImage,
-          zIndex: 10,
-        });
+      const blob = new Blob([svg], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(blob);
+      const myImage = new window.kakao.maps.MarkerImage(
+        url,
+        new window.kakao.maps.Size(20, 20),
+        { offset: new window.kakao.maps.Point(10, 10) }
+      );
+      myMarker.current = new window.kakao.maps.Marker({
+        position: myPosition,
+        map: mapInstance.current,
+        image: myImage,
+        zIndex: 10,
+      });
 
-        setCurrentLocation({ lat, lng, name: "내 현재 위치" });
+      setCurrentLocation({ lat, lng, name: '내 현재 위치' });
 
-        // 깃발 제거
-        if (flagMarker.current) flagMarker.current.setMap(null);
+      // 깃발 제거
+      if (flagMarker.current) flagMarker.current.setMap(null);
 
-        searchNearbyGyms(lat, lng);
-      },
-      () => {
-        alert(
-          "위치 정보를 가져올 수 없어요. 브라우저 위치 권한을 확인해주세요.",
-        );
-        setLoading(false);
-      },
-    );
-  };
+      searchNearbyGyms(lat, lng);
+    },
+    () => {
+      alert('위치 정보를 가져올 수 없어요. 브라우저 위치 권한을 확인해주세요.');
+      setLoading(false);
+    }
+  );
+};
+
+
+
+
 
   // 검색 실행
   const handleSearch = () => {
@@ -470,8 +439,8 @@ const MapPage = () => {
       let markerColor = filterColorMap[place._matchedFilter] || "#FF0000";
 
       // SVG 마커 생성
-      const label = place.place_name.slice(0, 3); // 앞 3글자
-      const svgMarker = `
+     const label = place.place_name.slice(0, 3); // 앞 3글자
+const svgMarker = `
   <svg xmlns="http://www.w3.org/2000/svg" width="50" height="62" viewBox="0 0 50 62">
     <path d="M25,0 C11.2,0 0,11.2 0,25 C0,43.8 25,62 25,62 S50,43.8 50,25 C50,11.2 38.8,0 25,0 Z"
           fill="${markerColor}" stroke="white" stroke-width="2"/>
@@ -485,7 +454,7 @@ const MapPage = () => {
       const url = URL.createObjectURL(svgBlob);
 
       const imageSize = new window.kakao.maps.Size(36, 45); // 마커 실제 크기 (가로, 세로) - 숫자 줄이면 마커 작아짐
-      const imageOption = { offset: new window.kakao.maps.Point(18, 45) }; // 마커 기준점 (가로중앙, 세로끝) - imageSize 절반, 전체높이와 맞춰야함
+const imageOption = { offset: new window.kakao.maps.Point(18, 45) }; // 마커 기준점 (가로중앙, 세로끝) - imageSize 절반, 전체높이와 맞춰야함
       const markerImage = new window.kakao.maps.MarkerImage(
         url,
         imageSize,
@@ -672,22 +641,15 @@ const MapPage = () => {
           {loading ? "검색중..." : "검색"}
         </button>
         <button
-          onClick={handleMyLocation}
-          className="my-location-button"
-          disabled={loading}
-        >
-          📍 내 주변
-        </button>
-        <button
-          onClick={() => {
-            setIsRegisterMode((prev) => !prev);
-            setShowModal(false);
-          }}
-          className={`pin-register-button ${isRegisterMode ? "active" : ""}`}
-          disabled={loading}
-        >
-          {isRegisterMode ? "📌 등록 취소" : "📌 핀 등록"}
-        </button>
+  onClick={handleMyLocation}
+  className="my-location-button"
+  disabled={loading}
+>
+  📍 내 주변
+</button>
+
+
+
       </div>
 
       {/* 검색 반경 슬라이더 */}
@@ -756,106 +718,7 @@ const MapPage = () => {
           </button>
         </div>
       )}
-      {/* 핀 등록 모드 안내 문구 */}
-      {isRegisterMode && (
-        <div className="register-mode-banner">
-          📌 지도를 클릭해서 장소를 등록하세요! 취소하려면 "등록 취소" 버튼을
-          누르세요.
-        </div>
-      )}
 
-      {/* 핀 등록 모달 */}
-      {showModal && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="modal-box" onClick={(e) => e.stopPropagation()}>
-            <h3>📌 운동장소 등록</h3>
-
-            <div className="modal-field">
-              <label>닉네임 *</label>
-              <input
-                type="text"
-                placeholder="닉네임을 입력하세요"
-                value={modalForm.nickname}
-                onChange={(e) =>
-                  setModalForm((prev) => ({
-                    ...prev,
-                    nickname: e.target.value,
-                  }))
-                }
-              />
-            </div>
-
-            <div className="modal-field">
-              <label>시설명 *</label>
-              <input
-                type="text"
-                placeholder="예: 강남 헬스장"
-                value={modalForm.place_name}
-                onChange={(e) =>
-                  setModalForm((prev) => ({
-                    ...prev,
-                    place_name: e.target.value,
-                  }))
-                }
-              />
-            </div>
-
-            <div className="modal-field">
-              <label>시설종류 *</label>
-              <select
-                value={modalForm.facility_type}
-                onChange={(e) =>
-                  setModalForm((prev) => ({
-                    ...prev,
-                    facility_type: e.target.value,
-                  }))
-                }
-              >
-                <option value="">선택하세요</option>
-                <option value="헬스/피트니스">헬스/피트니스</option>
-                <option value="요가/필라테스">요가/필라테스</option>
-                <option value="복싱">복싱</option>
-                <option value="크로스핏">크로스핏</option>
-                <option value="MMA">MMA</option>
-                <option value="태권도">태권도</option>
-              </select>
-            </div>
-
-            <div className="modal-field">
-              <label>한줄평</label>
-              <textarea
-                placeholder="추천하는 이유를 적어주세요 (선택)"
-                value={modalForm.comment}
-                onChange={(e) =>
-                  setModalForm((prev) => ({ ...prev, comment: e.target.value }))
-                }
-                rows={3}
-              />
-            </div>
-
-            <div className="modal-buttons">
-              <button
-                className="modal-cancel-btn"
-                onClick={() => {
-                  setShowModal(false);
-                  setIsRegisterMode(false);
-                  setModalForm({
-                    nickname: "",
-                    place_name: "",
-                    facility_type: "",
-                    comment: "",
-                  });
-                }}
-              >
-                취소
-              </button>
-              <button className="modal-submit-btn" onClick={handlePinSubmit}>
-                등록
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
       <div className="content-wrapper">
         {/* 지도 영역 */}
         <div ref={mapContainer} className="map-container">

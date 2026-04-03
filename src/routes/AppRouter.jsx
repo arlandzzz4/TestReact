@@ -43,18 +43,17 @@ const router = createBrowserRouter([
         
         //테스트 용도로 비인증구역에 넣음. 추후에 인증구역으로 이동 필요
         { path: 'write', lazy: () => import('@/pages/feed/WritePost').then(m => ({ Component: m.default })) },
-        
+        // { path: 'calendar', lazy: () => import('@/pages/calendar/Calendar').then(m => ({ Component: m.default })) }, 
         
         //{ path: 'notifications', lazy: () => import('@/pages/notification/Notification').then(m => ({ Component: m.default })) },
       
         // 2. 일반 인증 구역
-        { path: 'calendar', lazy: () => import('@/pages/calendar/Calendar').then(m => ({ Component: m.default })) },
         {
           element: <AuthGuard />,
           children: [
             // { path: 'feed', lazy: () => import('@/pages/feed/Feed').then(m => ({ Component: m.default })) },
             { path: 'mypage', lazy: () => import('@/pages/user/MyPage').then(m => ({ Component: m.default })) },
-           // { path: 'calendar', lazy: () => import('@/pages/calendar/Calendar').then(m => ({ Component: m.default })) },
+            { path: 'calendar', lazy: () => import('@/pages/calendar/Calendar').then(m => ({ Component: m.default })) },
             { path: 'challenge', lazy: () => import('@/pages/challenge/ChallengePage').then(m => ({ Component: m.default })) },
           ]
         },
