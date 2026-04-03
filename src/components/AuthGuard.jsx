@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import PageLoader from './PageLoader';
-
+ 
 const AuthGuard = ({ children, adminOnly = false }) => {
   const { isAuthenticated, isAdmin, isAuthLoading } = useAuth();
   const navigate = useNavigate();

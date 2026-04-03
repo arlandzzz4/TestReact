@@ -1,6 +1,6 @@
 import { instance } from './axios.jsx';
 
-
+ 
 export const searchEmail = async (email) => {
   try {
     const response = await instance.get(`/api/user/search/${email}`);

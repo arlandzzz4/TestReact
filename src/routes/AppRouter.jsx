@@ -6,7 +6,7 @@ import AdminLayout from '../layout/AdminLayout';
 import AuthGuard from '../components/AuthGuard';
 import RouterErrorFallback from '../components/error/RouterErrorFallback';
 import PostDetail from '../pages/feed/PostDetail';
-
+ 
 const router = createBrowserRouter([
   {
     path: '/',

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 
 import SimpleBar from 'simplebar-react'
 import 'simplebar-react/dist/simplebar.min.css'
-
+ 
 import { CBadge, CNavLink, CSidebarNav } from '@coreui/react'
 
 export const AppAdminSidebarNav = ({ items }) => {

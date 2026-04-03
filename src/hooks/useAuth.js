@@ -1,6 +1,6 @@
 import { useAuthStore } from '../store/useAuthStore';
 import { useState, useEffect } from 'react';
-
+ 
 export const useAuth = () => {
   const user = useAuthStore((state) => state.user);
   const token = useAuthStore((state) => state.token);

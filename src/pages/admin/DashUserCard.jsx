@@ -7,7 +7,7 @@
 import React from 'react'
 import { CCol, CCard, CCardBody } from '@coreui/react'
 import { useUserTotalCountQuery, useUserTodayCountQuery } from '@/hooks/queries/useUserQuery';
-
+ 
 const DashUserCard = () => {
     const {data: totalCnt} = useUserTotalCountQuery();
     const {data: todayCnt} = useUserTodayCountQuery();

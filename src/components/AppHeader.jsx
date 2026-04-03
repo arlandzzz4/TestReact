@@ -50,7 +50,7 @@ import { AppHeaderDropdown } from './header/index'
 import { useLogoutMutation } from '@/hooks/mutations/useAuthMutation';
 import { useAuth } from '@/hooks/useAuth'
 
-/**
+/** 
  * AppHeader functional component
  *
  * Manages header UI including:

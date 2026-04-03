@@ -1,6 +1,6 @@
 /**
  * AppHeader Component
- *
+ * 
  * Main application header with navigation, theme switcher, and user menu.
  * Features include:
  * - Sidebar toggle button

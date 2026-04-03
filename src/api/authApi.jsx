@@ -1,5 +1,4 @@
 import { instance } from './axios';
-import { requestForToken } from './fcm/fcmService';
 
 export const loginUser = async ({ userData, token }) => {
   const response = await instance.post('/api/auth/login', userData, {

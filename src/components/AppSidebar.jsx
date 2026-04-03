@@ -16,7 +16,7 @@
  * @example
  * return (
  *   <AppSidebar />
- * )
+ * ) 
  */
 import React, { useMemo } from 'react'
 import { useAuth } from '@/hooks/useAuth' // 👈 인증 상태를 가져오기 위한 훅

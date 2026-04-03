@@ -1,7 +1,7 @@
 import React from 'react'
 import { CCol, CCard, CCardBody } from '@coreui/react'
 import { usePostTotalCountQuery, usePostTodayCountQuery } from '@/hooks/queries/usePostQuery';
-
+ 
 const DashPostCard = () => {
     const {data: totalCnt} = usePostTotalCountQuery();
     const {data: todayCnt} = usePostTodayCountQuery();
