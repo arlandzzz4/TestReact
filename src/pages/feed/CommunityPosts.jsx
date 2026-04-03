@@ -175,7 +175,6 @@ const mappedPosts = posts.map(post => ({
 
           {/* 글쓰기 버튼 */}
           <CButton
-<<<<<<< HEAD
           size="sm"
           style={{
             background: '#c8a96e',
@@ -193,25 +192,6 @@ const mappedPosts = posts.map(post => ({
           글쓰기
         </CButton>
           
-=======
-            size="sm"
-            style={{
-              background: '#c8a96e',
-              border: 'none',
-              borderRadius: '40px',
-              fontWeight: 700,
-              color: '#fff',
-              padding: '6px 16px',
-            }}
-            onClick={() => navigate('/write')}
-          // 새 창에 여는 코드는 밑에.
-          // onClick={() => window.open('/write', '_blank', 'noopener,noreferrer')}
-          >
-            <CIcon icon={cilPlus} className="me-1" />
-            글쓰기
-          </CButton>
-
->>>>>>> dev
         </div>
 
       </div>
