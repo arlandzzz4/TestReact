@@ -21,7 +21,7 @@ export const useDietByMonth = (year, month) =>
 export const useSaveDiet = () => {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: ({ dateKey, meals, weight }) => saveDiet(dateKey, meals, weight),
+    mutationFn: ({ dateKey, meals, weight, userEmail }) => saveDiet(dateKey, meals, weight, userEmail),
     onSuccess: (_, { dateKey }) => {
       const [y, m] = dateKey.split('-').map(Number)
       qc.invalidateQueries({ queryKey: ['diet', y, m] })
@@ -33,7 +33,7 @@ export const useSaveDiet = () => {
 export const useSaveWeight = () => {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: ({ dateKey, weight }) => saveWeight(dateKey, weight),
+    mutationFn: ({ dateKey, weight, userEmail }) => saveWeight(dateKey, weight, userEmail),
     onSuccess: (_, { dateKey }) => {
       const [y, m] = dateKey.split('-').map(Number)
       qc.invalidateQueries({ queryKey: ['diet', y, m] })
@@ -60,18 +60,7 @@ export const useFoodSearch = (query) =>
     queryFn: () => searchFood(query),
     enabled: !!query,
     // API 연결 전 더미 데이터 (연결 후 삭제)
-    placeholderData: [
-      { name: '현미밥', kcal: 300, unit: '1공기(200g)' },
-      { name: '닭가슴살 구이', kcal: 165, unit: '100g' },
-      { name: '계란후라이', kcal: 90, unit: '1개' },
-      { name: '바나나', kcal: 89, unit: '1개(100g)' },
-      { name: '고구마', kcal: 128, unit: '100g' },
-      { name: '아메리카노', kcal: 10, unit: '1잔(350ml)' },
-      { name: '김치찌개', kcal: 180, unit: '1인분' },
-      { name: '된장찌개', kcal: 150, unit: '1인분' },
-      { name: '비빔밥', kcal: 570, unit: '1인분' },
-      { name: '불고기', kcal: 280, unit: '100g' },
-    ],
+    
   })
 
 // ── 즐겨 먹는 식단 ──

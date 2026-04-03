@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useDietByMonth, useSaveExercise } from '../../hooks/useDiet'
+import { useAuth } from '../../hooks/useAuth'
 import DietDetail from './DietDetail'
 import '../../scss/calendar.scss'
 
@@ -21,6 +22,7 @@ const TODAY = {
 }
 
 export default function CalendarPage() {
+  const { user } = useAuth()  // ← 추가
   const [year, setYear] = useState(TODAY.y)
   const [month, setMonth] = useState(TODAY.m)
   const [detailKey, setDetailKey] = useState(null)
@@ -56,6 +58,7 @@ export default function CalendarPage() {
         dateKey={detailKey}
         initialData={dietData[detailKey]}
         prevWeight={getPrevWeight(detailKey)}
+        userEmail={user?.email}
         onBack={handleBack}
       />
     )

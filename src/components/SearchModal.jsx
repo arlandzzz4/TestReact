@@ -69,7 +69,7 @@ export default function SearchModal({ isOpen, mealKey, onClose, onAdd }) {
             results.map(food => {
               const isAdded = added.includes(food.name)
               return (
-                <div key={food.name} className="iob-search-result-item">
+                <div key={food.foodId} className="iob-search-result-item">
                   <div className="iob-result-info">
                     <div className="iob-result-name">{food.name}</div>
                     <div className="iob-result-detail">{food.unit} · {food.kcal}kcal</div>

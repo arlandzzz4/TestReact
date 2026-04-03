@@ -11,7 +11,7 @@ const MEAL_LABELS = { breakfast: '아침', lunch: '점심', dinner: '저녁', sn
 const totalKcal = (meals) =>
   Object.values(meals).flat().reduce((s, i) => s + (parseInt(i.kcal) || 0), 0)
 
-export default function DietDetail({ dateKey, initialData, prevWeight, onBack }) {
+export default function DietDetail({ dateKey, initialData, prevWeight, userEmail, onBack }) {
   const [meals, setMeals] = useState(
     initialData?.meals ?? { breakfast: [], lunch: [], dinner: [], snack: [] }
   )
@@ -42,11 +42,11 @@ export default function DietDetail({ dateKey, initialData, prevWeight, onBack })
     }))
   }
 
-  const handleSaveWeight = () => saveWeight({ dateKey, weight })
+  const handleSaveWeight = () => saveWeight({ dateKey, weight, userEmail: userEmail})
 
   const handleBack = () => {
     const hasMeal = Object.values(meals).some(arr => arr.length > 0)
-    if (hasMeal || weight) saveDiet({ dateKey, meals, weight })
+    if (hasMeal || weight) saveDiet({ dateKey, meals, weight, userEmail: userEmail})
     onBack()
   }
 
