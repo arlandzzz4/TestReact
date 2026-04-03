@@ -143,6 +143,35 @@ body {
   }
 }
 
+.form-cancel-btn {
+  border: 1px solid #ccc !important;
+  border-radius: 40px !important;
+  background: #fff !important;
+  color: #333 !important;
+  padding: 8px 32px !important;
+  font-weight: 500;
+
+  &:hover{
+        background-color: #ac1f1f !important;
+        border-color: #ac1f1f !important;
+        color: #fff !important;
+  }
+}
+
+.form-submit-btn {
+  background: #3d6b4f !important;
+  border: none !important;
+  border-radius: 40px !important;
+  color: #fff !important;
+  padding: 8px 32px !important;
+  font-weight: 700;
+
+  &:hover{
+        background-color: #1e4e30 !important;
+        border-color: #1e4e30 !important;
+  }
+}
+
 // @include color-mode(dark) {
 //   body {
 //     background-color: #F4F1EC !important;

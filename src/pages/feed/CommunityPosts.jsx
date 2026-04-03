@@ -16,9 +16,9 @@ import { useNavigate } from 'react-router-dom'
 const TABS = ['전체', '자유', '정보', '인원모집', '공지사항']
 
 const TAB_COLORS = {
-  '전체':    { bg: '#3d6b4f', color: '#fff',     shadow: 'rgba(61,107,79,0.35)' },
-  '자유':    { bg: '#F0E6D3', color: '#B07D3A',  shadow: 'rgba(176,125,58,0.35)' },
-  '정보':    { bg: '#D3E8DF', color: '#2E6B4F',  shadow: 'rgba(46,107,79,0.35)' },
+  '전체': { bg: '#3d6b4f', color: '#fff', shadow: 'rgba(61,107,79,0.35)' },
+  '자유': { bg: '#F0E6D3', color: '#B07D3A', shadow: 'rgba(176,125,58,0.35)' },
+  '정보': { bg: '#D3E8DF', color: '#2E6B4F', shadow: 'rgba(46,107,79,0.35)' },
   '인원모집': { bg: '#D9E4F5', color: '#2D4FA0', shadow: 'rgba(45,79,160,0.35)' },
   '공지사항': { bg: '#F7E6EA', color: '#A63A50', shadow: 'rgba(166,58,80,0.35)' },
 }
@@ -98,7 +98,7 @@ const CommunityPosts = () => {
   //날짜 포멧
   const formatDate = (dateStr) => {
     const d = new Date(dateStr)
-    return `${d.getFullYear().toString().slice(2)}.${(d.getMonth()+1).toString().padStart(2,'0')}.${d.getDate().toString().padStart(2,'0')}`
+    return `${d.getFullYear().toString().slice(2)}.${(d.getMonth() + 1).toString().padStart(2, '0')}.${d.getDate().toString().padStart(2, '0')}`
   }
 
   // 백앤드 데이터 프론트에서 필요한 데이터로 변환
@@ -205,8 +205,8 @@ const mappedPosts = posts.map(post => ({
               padding: '6px 16px',
             }}
             onClick={() => navigate('/write')}
-            // 새 창에 여는 코드는 밑에.
-            // onClick={() => window.open('/write', '_blank', 'noopener,noreferrer')}
+          // 새 창에 여는 코드는 밑에.
+          // onClick={() => window.open('/write', '_blank', 'noopener,noreferrer')}
           >
             <CIcon icon={cilPlus} className="me-1" />
             글쓰기
