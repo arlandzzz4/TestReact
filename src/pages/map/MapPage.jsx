@@ -106,6 +106,37 @@ const MapPage = () => {
     fetchCustomPins();
   }, [mapLoaded]);
 
+  // 인포윈도우 닫기
+  const closeInfowindow = () => {
+    if (infowindow.current) infowindow.current.close();
+  };
+
+  window.deletePin = async (pinId) => {
+    if (!window.confirm("정말 삭제할까요?")) return;
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/map/pins/${pinId}`,
+        {
+          method: "DELETE",
+        },
+      );
+      if (response.ok) {
+        alert("핀이 삭제됐어요!");
+        if (infowindow.current) infowindow.current.close();
+        window.location.reload();
+      } else {
+        alert("삭제에 실패했어요.");
+      }
+    } catch (error) {
+      console.error("❌ 삭제 실패:", error);
+      alert("서버 연결에 실패했어요.");
+    }
+  };
+
+  window.closeInfowindow = () => {
+    if (infowindow.current) infowindow.current.close();
+  };
+
   const fetchCustomPins = async () => {
     try {
       const response = await fetch("http://localhost:8080/api/map/pins");
@@ -152,13 +183,20 @@ const MapPage = () => {
       window.kakao.maps.event.addListener(marker, "click", () => {
         if (infowindow.current) infowindow.current.close();
         const content = `
-        <div style="padding:12px 16px; font-size:13px; min-width:200px; line-height:1.8;">
-          <strong style="font-size:15px;">📌 ${pin.placeName}</strong><br/>
-          <span style="color:#3D6B4F;">🏷️ ${pin.facilityType}</span><br/>
-          ${pin.comment ? `💬 ${pin.comment}<br/>` : ""}
-          <span style="color:#aaa; font-size:11px;">등록자: ${pin.nickname || "익명"}</span>
-        </div>
-      `;
+    <div style="padding:12px 16px; font-size:13px; min-width:200px; line-height:1.8; position:relative;">
+      <button onclick="window.closeInfowindow()"
+        style="position:absolute; top:4px; right:8px; background:none; border:none; font-size:16px; cursor:pointer; color:#aaa;">✕</button>
+      <strong style="font-size:15px;">📌 ${pin.placeName}</strong><br/>
+      <span style="color:#3D6B4F;">🏷️ ${pin.facilityType}</span><br/>
+      ${pin.comment ? `💬 ${pin.comment}<br/>` : ""}
+      <span style="color:#aaa; font-size:11px;">등록자: ${pin.nickname || "익명"}</span><br/>
+      <button
+        onclick="window.deletePin(${pin.pinId}, this)"
+        style="margin-top:8px; padding:4px 12px; background:#ff4444; color:white; border:none; border-radius:6px; cursor:pointer; font-size:12px;">
+        🗑️ 삭제
+      </button>
+    </div>
+  `;
         infowindow.current = new window.kakao.maps.InfoWindow({ content });
         infowindow.current.open(mapInstance.current, marker);
       });
@@ -472,12 +510,15 @@ const MapPage = () => {
         // 인포윈도우
         if (infowindow.current) infowindow.current.close();
         const content = `
-    <div style="padding:8px 12px; font-size:13px; min-width:150px;">
-      <strong>${place.place_name}</strong><br/>
-      <span style="color:#888;">${place.distance}m</span><br/>
-      ${place.phone ? `📞 ${place.phone}` : ""}
-    </div>
-  `;
+  <div style="padding:8px 12px; font-size:13px; min-width:150px; position:relative;">
+    <button onclick="window.closeInfowindow()"
+      style="position:absolute; top:4px; right:8px; background:none; border:none; font-size:16px; cursor:pointer; color:#aaa;">✕</button>
+    <strong>${place.place_name}</strong><br/>
+    <span style="color:#888;">${place.distance}m</span><br/>
+    ${place.phone ? `📞 ${place.phone}` : ""}
+  </div>
+`;
+
         infowindow.current = new window.kakao.maps.InfoWindow({ content });
         infowindow.current.open(mapInstance.current, marker);
       });
@@ -488,44 +529,44 @@ const MapPage = () => {
     console.log(`📍 ${places.length}개 마커 표시 완료!`);
   };
   // 핀 등록 처리
-const handlePinSubmit = async () => {
-  // 필수값 체크
-  if (!modalForm.nickname.trim()) {
-    alert("닉네임을 입력해주세요");
-    return;
-  }
-  if (!modalForm.place_name.trim()) {
-    alert("시설명을 입력해주세요");
-    return;
-  }
-  if (!modalForm.facility_type) {
-    alert("시설종류를 선택해주세요");
-    return;
-  }
+  const handlePinSubmit = async () => {
+    // 필수값 체크
+    if (!modalForm.nickname.trim()) {
+      alert("닉네임을 입력해주세요");
+      return;
+    }
+    if (!modalForm.place_name.trim()) {
+      alert("시설명을 입력해주세요");
+      return;
+    }
+    if (!modalForm.facility_type) {
+      alert("시설종류를 선택해주세요");
+      return;
+    }
 
-  // DB에 저장할 데이터
-  const pinData = {
-    userEmail: modalForm.nickname + "@temp.com", // 임시 (나중에 Firebase로 교체)
-    placeName: modalForm.place_name,
-    facilityType: modalForm.facility_type,
-    comment: modalForm.comment,
-    latitude: clickedPosition.lat,
-    longitude: clickedPosition.lng,
-  };
+    // DB에 저장할 데이터
+    const pinData = {
+      userEmail: modalForm.nickname + "@temp.com", // 임시 (나중에 Firebase로 교체)
+      placeName: modalForm.place_name,
+      facilityType: modalForm.facility_type,
+      comment: modalForm.comment,
+      latitude: clickedPosition.lat,
+      longitude: clickedPosition.lng,
+    };
 
-  try {
-    // DB에 저장
-    const response = await fetch("http://localhost:8080/api/map/pins", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(pinData),
-    });
+    try {
+      // DB에 저장
+      const response = await fetch("http://localhost:8080/api/map/pins", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(pinData),
+      });
 
-    if (response.ok) {
-      console.log("📌 DB 저장 성공!");
+      if (response.ok) {
+        console.log("📌 DB 저장 성공!");
 
-      // 지도에 마커 표시
-      const svgMarker = `
+        // 지도에 마커 표시
+        const svgMarker = `
         <svg xmlns="http://www.w3.org/2000/svg" width="50" height="62" viewBox="0 0 50 62">
           <path d="M25,0 C11.2,0 0,11.2 0,25 C0,43.8 25,62 25,62 S50,43.8 50,25 C50,11.2 38.8,0 25,0 Z"
                 fill="#FF6B35" stroke="white" stroke-width="2"/>
@@ -534,53 +575,64 @@ const handlePinSubmit = async () => {
                 fill="white" font-family="sans-serif">${pinData.placeName.slice(0, 3)}</text>
         </svg>
       `;
-      const svgBlob = new Blob([svgMarker], { type: "image/svg+xml" });
-      const url = URL.createObjectURL(svgBlob);
-      const imageSize = new window.kakao.maps.Size(36, 45);
-      const imageOption = { offset: new window.kakao.maps.Point(18, 45) };
-      const markerImage = new window.kakao.maps.MarkerImage(url, imageSize, imageOption);
+        const svgBlob = new Blob([svgMarker], { type: "image/svg+xml" });
+        const url = URL.createObjectURL(svgBlob);
+        const imageSize = new window.kakao.maps.Size(36, 45);
+        const imageOption = { offset: new window.kakao.maps.Point(18, 45) };
+        const markerImage = new window.kakao.maps.MarkerImage(
+          url,
+          imageSize,
+          imageOption,
+        );
 
-      const position = new window.kakao.maps.LatLng(
-        clickedPosition.lat,
-        clickedPosition.lng
-      );
-      const marker = new window.kakao.maps.Marker({
-        position,
-        map: mapInstance.current,
-        image: markerImage,
-        zIndex: 11,
-      });
+        const position = new window.kakao.maps.LatLng(
+          clickedPosition.lat,
+          clickedPosition.lng,
+        );
+        const marker = new window.kakao.maps.Marker({
+          position,
+          map: mapInstance.current,
+          image: markerImage,
+          zIndex: 11,
+        });
 
-      // 마커 클릭 시 인포윈도우
-      window.kakao.maps.event.addListener(marker, "click", () => {
-        if (infowindow.current) infowindow.current.close();
-        const content = `
-          <div style="padding:12px 16px; font-size:13px; min-width:200px; line-height:1.8;">
+        // 마커 클릭 시 인포윈도우
+        window.kakao.maps.event.addListener(marker, "click", () => {
+          if (infowindow.current) infowindow.current.close();
+          const content = `
+          <div style="padding:12px 16px; font-size:13px; min-width:200px; line-height:1.8; position:relative;">
+           <button onclick="window.closeInfowindow()"
+             style="position:absolute; top:4px; right:8px; background:none; border:none; font-size:16px; cursor:pointer; color:#aaa;">✕</button>
             <strong style="font-size:15px;">📌 ${pinData.placeName}</strong><br/>
             <span style="color:#3D6B4F;">🏷️ ${pinData.facilityType}</span><br/>
-            ${pinData.comment ? `💬 ${pinData.comment}<br/>` : ""}
-            <span style="color:#aaa; font-size:11px;">등록자: ${modalForm.nickname}</span>
-          </div>
-        `;
-        infowindow.current = new window.kakao.maps.InfoWindow({ content });
-        infowindow.current.open(mapInstance.current, marker);
-      });
+             ${pinData.comment ? `💬 ${pinData.comment}<br/>` : ""}
+           <span style="color:#aaa; font-size:11px;">등록자: ${modalForm.nickname}</span>
+           </div>
+            `;
+          infowindow.current = new window.kakao.maps.InfoWindow({ content });
+          infowindow.current.open(mapInstance.current, marker);
+        });
 
-      alert("📌 핀이 등록됐어요!");
-    } else {
-      alert("핀 등록에 실패했어요. 다시 시도해주세요.");
+        alert("📌 핀이 등록됐어요!");
+      } else {
+        alert("핀 등록에 실패했어요. 다시 시도해주세요.");
+      }
+    } catch (error) {
+      console.error("❌ 핀 등록 실패:", error);
+      alert("서버 연결에 실패했어요.");
     }
-  } catch (error) {
-    console.error("❌ 핀 등록 실패:", error);
-    alert("서버 연결에 실패했어요.");
-  }
 
-  // 초기화
-  setShowModal(false);
-  setIsRegisterMode(false);
-  setModalForm({ nickname: "", place_name: "", facility_type: "", comment: "" });
-  setClickedPosition(null);
-};
+    // 초기화
+    setShowModal(false);
+    setIsRegisterMode(false);
+    setModalForm({
+      nickname: "",
+      place_name: "",
+      facility_type: "",
+      comment: "",
+    });
+    setClickedPosition(null);
+  };
   // 리스트 아이템 클릭
   const handleGymClick = (gym) => {
     setSelectedGym(gym);
@@ -593,7 +645,7 @@ const handlePinSubmit = async () => {
     <div className="map-page">
       <div className="map-hero">
         <h2>주변 운동시설 검색</h2>
-        <p>주변 운동 시설을 검색하고, 추천하는 운동시설을 공유해보아요</p>
+        <p>주변 운동 시설을 검색하고, 추천하는 운동시설을 공유해 보아요</p>
       </div>
 
       {currentLocation && (
