@@ -1,6 +1,6 @@
 /**
  * AppSidebar Component
- *
+ * 
  * Collapsible navigation sidebar with branding, menu items, and toggle controls.
  *
  * Features:

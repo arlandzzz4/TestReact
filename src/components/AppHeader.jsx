@@ -47,8 +47,10 @@ import {
 } from '@coreui/icons'
 
 import { AppHeaderDropdown } from './header/index'
+import { useLogoutMutation } from '@/hooks/mutations/useAuthMutation';
+import { useAuth } from '@/hooks/useAuth'
 
-/**
+/** 
  * AppHeader functional component
  *
  * Manages header UI including:
@@ -60,14 +62,25 @@ import { AppHeaderDropdown } from './header/index'
  * @returns {React.ReactElement} Header component with navigation and controls
  */
 const AppHeader = () => {
+  const { user, isAuthenticated, isAdmin, isAuthLoading } = useAuth();
+  
   const headerRef = useRef()
   const { colorMode, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
 
   const location = useLocation()
-  const isWritePage = location.pathname === '/write' || location.pathname.startsWith('/post/edit/')
+  const isWritePage = location.pathname === '/write'
 
   const dispatch = useDispatch()
   const sidebarShow = useSelector((state) => state.sidebarShow)
+
+  const { mutate: logoutMutate } = useLogoutMutation();
+  const handleLogout = () => {
+    if (!user) {
+      console.warn("로그인 정보가 없어 바로 클라이언트 로그아웃을 진행합니다.");
+    }
+
+    logoutMutate(user); 
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -115,9 +128,23 @@ const AppHeader = () => {
           </CNavItem>
         </CHeaderNav>
         <CHeaderNav className='ms-auto'>
-          <CButton to="/login" as={NavLink}
+          {isAuthenticated ?
+          <CButton onClick={handleLogout}
+                    style={{ backgroundColor: '#e1e1e1', color: 'black', border: 'none' }}
+                        >Logout</CButton>
+          : <CButton to="/login" as={NavLink}
                     color="green"
                         >Join Us</CButton>
+          }
+          {isAdmin && (
+            <CButton 
+              to="/admin/dashboard" as={NavLink}
+              color="green"
+              style={{ marginLeft: '10px' }}
+            >
+              관리자
+            </CButton>
+          )}
         </CHeaderNav>
       </CContainer>
     </CHeader>

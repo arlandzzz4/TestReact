@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { searchEmail, searchUserTotalCount, searchUserTodayCount } from '@/api/userApi';
-
+ 
 export const useUserQuery = () => {
   const useEmailSearch = (email, enabled = false) => {
     return useQuery({
