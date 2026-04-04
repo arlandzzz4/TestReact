@@ -19,3 +19,13 @@ export const searchReportTodayCount = async () => {
     throw error;
   }
 };
+
+export const searchReport = async (data) => {
+  try {
+    const response = await instance.get(`/api/report/search/report`, {params : data});
+    return response.data;
+  } catch (error) {
+    console.error("신고 조회 중 오류 발생:", error);
+    throw error;
+  }
+};

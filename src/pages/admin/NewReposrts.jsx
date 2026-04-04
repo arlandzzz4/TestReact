@@ -1,7 +1,8 @@
 import { CCard, CCardHeader, CCardBody, CTable, CBadge, CLink } from '@coreui/react'
+import { useReportList } from '@/hooks/queries/useReportQuery';
 
 const NewReposrts = () => {
-
+  const {data} = useReportList({size:5});
   return (
     <CCard className="mb-4 border-0 shadow-sm">
           <CCardHeader className="bg-white border-0 d-flex justify-content-between align-items-center pt-3">
@@ -19,12 +20,15 @@ const NewReposrts = () => {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>건강러버</td>
-                  <td>health@email.com</td>
-                  <td>2026-03-25</td>
-                  <td className="text-center"><CBadge color="info-soft" className="text-info">활성</CBadge></td>
-                </tr>
+                {data?.map((item, index) =>
+                <tr key={item.id || index}>
+                <td>{item.detail}</td>
+                <td>{item.reason_code}</td>
+                <td>{item.createdAt}</td>
+                <td>{item.reportStatusCode}</td>
+                <td className="text-center"><CBadge color="info-soft" className="text-info">{item.delYn}</CBadge></td>
+              </tr>
+              )}
               </tbody>
             </CTable>
           </CCardBody>

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { searchReportTotalCount, searchReportTodayCount } from '@/api/reportApi';
+import { searchReportTotalCount, searchReportTodayCount, searchReport } from '@/api/reportApi';
 
 export const useReportTotalCountQuery = (enabled = true) => {
     return useQuery({
@@ -15,6 +15,16 @@ export const useReportTodayCountQuery = (enabled = true) => {
     return useQuery({
       queryKey: ['reportTodayCnt'],
       queryFn: ()=>searchReportTodayCount(),
+      enabled: enabled,
+      retry: false,
+      staleTime: 1000 * 60 * 5,
+    });
+};
+
+export const useReportList = (searchParams, enabled = true) => {
+    return useQuery({
+      queryKey: ['reports', searchParams],
+      queryFn: ()=>searchReport(searchParams),
       enabled: enabled,
       retry: false,
       staleTime: 1000 * 60 * 5,
