@@ -40,3 +40,12 @@ export const searchUserList = async (data) => {
     throw error;
   }
 }
+
+export const updateUserStatusCode = async (data) => {
+  try {
+    await instance.put(`/api/user/updateUserStatusCode`, data);
+  } catch (error) {
+    console.error("유저 상태 코드 업데이트 중 오류 발생:", error);
+    throw error;
+  }
+}

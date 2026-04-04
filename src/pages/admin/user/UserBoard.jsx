@@ -21,8 +21,10 @@ import StatusBadge from '../common/StatusBadge';
 import { useUserTotalCountQuery } from '@/hooks/queries/useUserQuery';
 import CommonPagination from '../comment/CommonPagination';
 import UserStatusModal from './UserStatusModal';
+import { useUpdateUserStatusCodeMutation } from '@/hooks/mutations/useUserMutation';
 
 const UserBoard = () => {
+    const updateUserStatus = useUpdateUserStatusCodeMutation();
     const [size, setSize] = useState(10);
     const [offset, setOffset] = useState(0);
     const [userStatus, setUserStatus] = useState('');
@@ -44,7 +46,8 @@ const UserBoard = () => {
     }
     // 상태 필터링
     const handleUserStatusChange = (value) => {
-        setUserStatus(value)
+        setUserStatus(value);
+        setOffset(0);
         console.log("선택된 상태값:", value);
     }
     // 상세보기 모달
@@ -68,20 +71,24 @@ const UserBoard = () => {
     }
 
     const handleApplyStatus = (newStatus) => {
-        try {
-            // 사용자 상태변경
-            // TODO: API 호출로 상태 변경 로직 구현 (예: await updateUserStatus(selectedUser.id, newStatus))
-
-            // API 호출이 성공하면 모달을 닫습니다.
+        if (!selectedUser || selectedUser.userStatusCode === newStatus) {
             setIsModalOpen(false);
-
-            // 재조회
-            refetch();
-
-        } catch (error) {
-            console.error('상태 변경 실패:', error);
-            alert('상태 변경 중 오류가 발생했습니다.');
+            return;
         }
+        // 사용자 상태변경 API 호출
+        updateUserStatus.mutate(
+          { email: selectedUser.email, userStatusCode: newStatus },
+          {
+              onSuccess: () => {
+                  setIsModalOpen(false);
+                  refetch();
+              },
+              onError: (error) => {
+                  console.error('상태 변경 실패:', error);
+                  alert('상태 변경 중 오류가 발생했습니다.');
+              }
+          }
+      );
     }
     
     return (
