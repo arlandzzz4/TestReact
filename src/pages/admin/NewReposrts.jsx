@@ -34,7 +34,6 @@ const NewReposrts = () => {
                     <CTableDataCell>{item.detail}</CTableDataCell>
                     <CTableDataCell>{item.reason_code}</CTableDataCell>
                     <CTableDataCell>{item.createdAt}</CTableDataCell>
-                    <CTableDataCell>{item.reportStatusCode}</CTableDataCell>
                     <CTableDataCell className="text-center">
                       <CBadge color="info-soft" className="text-info">
                         {statusCodes?.[item.reportStatusCode] || item.reportStatusCode}
