@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { searchPostTotalCount, searchPostTodayCount, searchCommentTotalCount, searchCommentTodayCount, searchPost} from '@/api/postApi';
+import { searchPostTotalCount, searchPostTodayCount, searchCommentTotalCount, searchCommentTodayCount, searchPostList} from '@/api/postApi';
 
 export const usePostTotalCountQuery = (enabled = true) => {
     return useQuery({
@@ -44,7 +44,7 @@ export const useCommentTodayCountQuery = (enabled = true) => {
 export const usePostList = (searchParams, enabled = true) => {
     return useQuery({
       queryKey: ['posts', searchParams],
-      queryFn: ()=>searchPost(searchParams),
+      queryFn: ()=>searchPostList(searchParams),
       enabled: enabled,
       retry: false,
       staleTime: 1000 * 60 * 5,

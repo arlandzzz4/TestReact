@@ -40,7 +40,7 @@ export const searchCommentTodayCount = async () => {
   }
 };
 
-export const searchPost = async (data) => {
+export const searchPostList = async (data) => {
   try {
     const response = await instance.get(`/api/post/search/post`, {params : data});
     return response.data;

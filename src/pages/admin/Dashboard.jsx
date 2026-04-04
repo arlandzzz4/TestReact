@@ -1,5 +1,5 @@
 import TotalCount from './TotalCount'
-import NewMemebers from './NewMemebers.jsx'
+import NewUsers from './NewUsers.jsx'
 import NewReposrts from './NewReposrts.jsx'
 import NewPosts from './NewPosts.jsx'
 
@@ -17,7 +17,7 @@ const Dashboard = () => {
     </p>
     </div>
     <TotalCount />
-    <NewMemebers />
+    <NewUsers />
     <NewReposrts />
     <NewPosts /> 
     </>

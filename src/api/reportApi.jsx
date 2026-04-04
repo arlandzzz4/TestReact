@@ -20,7 +20,7 @@ export const searchReportTodayCount = async () => {
   }
 };
 
-export const searchReport = async (data) => {
+export const searchReportList = async (data) => {
   try {
     const response = await instance.get(`/api/report/search/report`, {params : data});
     return response.data;

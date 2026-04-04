@@ -2,7 +2,7 @@ import { CCard, CCardHeader, CCardBody, CTable, CBadge, CLink } from '@coreui/re
 import { usePostList } from '@/hooks/queries/usePostQuery';
 
 const NewPosts = () => {
-  const {data} = usePostList({limit:5});
+  const {data, isLoading} = usePostList({size:5});
 
   return (
     <CCard className="mb-4 border-0 shadow-sm">
@@ -22,7 +22,14 @@ const NewPosts = () => {
             </tr>
           </thead>
           <tbody>
-            {data?.map((item, index) =>
+            {isLoading ? (
+              <tr>
+                <td colSpan="5" className="text-center py-4 text-muted">
+                  데이터를 불러오는 중입니다...
+                </td>
+              </tr>
+            ) : Array.isArray(data) && data.length > 0 ? (
+              data.map((item, index) => (
               <tr key={item.id || index}>
               <td>{item.title}</td>
               <td>{item.nickname}</td>
@@ -30,7 +37,14 @@ const NewPosts = () => {
               <td>{item.comments}</td>
               <td className="text-center"><CBadge color="info-soft" className="text-info">{item.delYn}</CBadge></td>
             </tr>
-            )}
+            ))
+                ) : (
+                  <tr>
+                    <td colSpan="5" className="text-center text-muted py-3">
+                      데이터가 없습니다.
+                    </td>
+                  </tr>
+                )}
           </tbody>
         </CTable>
       </CCardBody>

@@ -30,3 +30,13 @@ export const searchUserTodayCount = async () => {
     throw error;
   }
 };
+
+export const searchUserList = async (data) => {
+  try {
+    const response = await instance.get(`/api/user/search/user`, {params : data});
+    return response.data;
+  } catch (error) {
+    console.error("유저 조회 중 오류 발생:", error);
+    throw error;
+  }
+};
