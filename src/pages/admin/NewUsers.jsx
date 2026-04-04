@@ -37,7 +37,7 @@ const NewUsers = () => {
                       <CTableDataCell>{item.email}</CTableDataCell>
                       <CTableDataCell>{item.createdAt}</CTableDataCell>
                       <CTableDataCell className="text-center">
-                        <CBadge color="info-soft" className="text-info"><StatusBadge status={statusCodes?.[item.userStatusCode] || item.userStatusCode} /></CBadge>
+                        <StatusBadge status={statusCodes?.[item.userStatusCode] || item.userStatusCode} />
                       </CTableDataCell>
                     </CTableRow>
                   ))

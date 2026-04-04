@@ -38,7 +38,7 @@ const NewPosts = () => {
               <CTableDataCell>{item.createdAt}</CTableDataCell>
               <CTableDataCell>{item.comments}</CTableDataCell>
               <CTableDataCell className="text-center">
-                <CBadge color="info-soft" className="text-info"><StatusBadge status={[item.delYn] || item.delYn} /></CBadge>
+                <StatusBadge status={[item.delYn] || item.delYn} />
               </CTableDataCell>
             </CTableRow>
             ))
