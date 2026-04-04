@@ -52,4 +52,5 @@ const NewPosts = () => {
   )
 }
 
+
 export default NewPosts

@@ -1,5 +1,6 @@
 import { CCard, CCardHeader, CCardBody, CTable, CBadge, CLink } from '@coreui/react'
 import { useUserList } from '@/hooks/queries/useUserQuery';
+
 const NewUsers = () => {
   const {data, isLoading} = useUserList({size:5});
   return (

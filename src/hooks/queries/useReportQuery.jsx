@@ -29,4 +29,4 @@ export const useReportList = (searchParams, enabled = true) => {
       retry: false,
       staleTime: 1000 * 60 * 5,
     });
-};
+}

@@ -4,7 +4,6 @@ import NewReposrts from './NewReposrts.jsx'
 import NewPosts from './NewPosts.jsx'
 
 const Dashboard = () => {
-
   return (
     <>
     <div className="mb-4">

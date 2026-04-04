@@ -39,4 +39,4 @@ export const searchUserList = async (data) => {
     console.error("유저 조회 중 오류 발생:", error);
     throw error;
   }
-};
+}
