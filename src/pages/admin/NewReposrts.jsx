@@ -1,13 +1,15 @@
-import { CCard, CCardHeader, CCardBody, CTable, CBadge, CLink } from '@coreui/react'
+import { CCard, CCardHeader, CCardBody, CTable, CBadge, CNavLink } from '@coreui/react'
 import { useReportList } from '@/hooks/queries/useReportQuery';
-
+import { useCodeGroupSearch } from '@/hooks/queries/useCommonQuery';
+import { NavLink } from 'react-router-dom'
 const NewReposrts = () => {
   const {data, isLoading} = useReportList({size:5});
+  const {data: statusCodes} = useCodeGroupSearch('REPORT_STATUS', true);
   return (
     <CCard className="mb-4 border-0 shadow-sm">
           <CCardHeader className="bg-white border-0 d-flex justify-content-between align-items-center pt-3">
             <h5 className="mb-0 fw-bold">최근 신고</h5>
-            <CLink to="/admin/report" className="small text-decoration-none text-muted">전체 보기</CLink>
+            <CNavLink to="/admin/report" as={NavLink} className="small text-decoration-none text-muted">전체 보기</CNavLink>
           </CCardHeader>
           <CCardBody>
             <CTable hover responsive align="middle" className="mb-0 small">
@@ -33,7 +35,7 @@ const NewReposrts = () => {
                   <td>{item.reason_code}</td>
                   <td>{item.createdAt}</td>
                   <td>{item.reportStatusCode}</td>
-                  <td className="text-center"><CBadge color="info-soft" className="text-info">{item.delYn}</CBadge></td>
+                  <td className="text-center"><CBadge color="info-soft" className="text-info">{statusCodes?.[item.reportStatusCode] || item.reportStatusCode}</CBadge></td>
                 </tr>
                   ))
                 ) : (

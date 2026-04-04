@@ -1,14 +1,15 @@
-import { CCard, CCardHeader, CCardBody, CTable, CBadge, CLink } from '@coreui/react'
+import { CCard, CCardHeader, CCardBody, CTable, CBadge, CNavLink } from '@coreui/react'
 import { usePostList } from '@/hooks/queries/usePostQuery';
-
+//import { useCodeGroupSearch } from '@/hooks/queries/useCommonQuery';
+import { NavLink } from 'react-router-dom'
 const NewPosts = () => {
   const {data, isLoading} = usePostList({size:5});
-
+  //const {data: statusCodes} = useCodeGroupSearch('USER_STATUS', true);
   return (
     <CCard className="mb-4 border-0 shadow-sm">
       <CCardHeader className="bg-white border-0 d-flex justify-content-between align-items-center pt-3">
         <h5 className="mb-0 fw-bold">최근 게시글</h5>
-        <CLink to="/admin/post" className="small text-decoration-none text-muted">전체 보기</CLink>
+        <CNavLink to="/admin/post" as={NavLink} className="small text-decoration-none text-muted">전체 보기</CNavLink>
       </CCardHeader>
       <CCardBody>
         <CTable hover responsive align="middle" className="mb-0 small">
