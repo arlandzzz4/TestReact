@@ -1,7 +1,6 @@
 import { CCard, CCardHeader, CCardBody, CTable, CBadge, CNavLink, CTableHead, CTableRow, CTableHeaderCell, CTableBody, CTableDataCell } from '@coreui/react'
 import { usePostList } from '@/hooks/queries/usePostQuery';
 //import { useCodeGroupSearch } from '@/hooks/queries/useCommonQuery';
-import { NavLink } from 'react-router-dom'
 import ViewAllButton from './ViewAllButton';
 const NewPosts = () => {
   const {data, isLoading} = usePostList({size:5});

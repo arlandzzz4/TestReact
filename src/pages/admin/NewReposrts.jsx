@@ -1,7 +1,6 @@
 import { CCard, CCardHeader, CCardBody, CTable, CBadge, CNavLink, CTableHead, CTableRow, CTableHeaderCell, CTableBody, CTableDataCell } from '@coreui/react'
 import { useReportList } from '@/hooks/queries/useReportQuery';
 import { useCodeGroupSearch } from '@/hooks/queries/useCommonQuery';
-import { NavLink } from 'react-router-dom'
 import ViewAllButton from './ViewAllButton';
 const NewReposrts = () => {
   const {data, isLoading} = useReportList({size:5});

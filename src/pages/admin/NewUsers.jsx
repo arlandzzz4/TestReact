@@ -4,7 +4,6 @@ import { useCodeGroupSearch } from '@/hooks/queries/useCommonQuery';
 import StatusBadge from './StatusBadge';
 import ViewAllButton from './ViewAllButton';
 
-import { NavLink } from 'react-router-dom'
 const NewUsers = () => {
   const {data, isLoading} = useUserList({size:5});
   const {data: statusCodes} = useCodeGroupSearch('USER_STATUS', true);
