@@ -1,5 +1,5 @@
  import React from 'react'
- import AdminTitle from './common/AdminTitle'
+ import AdminTitle from '../common/AdminTitle'
  
  const ReportManagement = () => {
    return (
