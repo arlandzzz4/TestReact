@@ -10,6 +10,7 @@ const StatusBadge = ({ status }) => {
       break;
     case '처리완료':
     case '정상':
+    case 'N':
       color = 'success'; // 초록색계열 (정상 상태)
       break;
     case '정지':

@@ -1,8 +1,8 @@
 import { CCard, CCardHeader, CCardBody, CTable, CBadge, CNavLink, CTableHead, CTableRow, CTableHeaderCell, CTableBody, CTableDataCell } from '@coreui/react'
 import { useUserList } from '@/hooks/queries/useUserQuery';
 import { useCodeGroupSearch } from '@/hooks/queries/useCommonQuery';
-import StatusBadge from './StatusBadge';
-import ViewAllButton from './ViewAllButton';
+import StatusBadge from './common/StatusBadge';
+import ViewAllButton from './common/ViewAllButton';
 
 const NewUsers = () => {
   const {data, isLoading} = useUserList({size:5});

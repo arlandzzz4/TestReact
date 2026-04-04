@@ -1,7 +1,8 @@
 import { CCard, CCardHeader, CCardBody, CTable, CBadge, CNavLink, CTableHead, CTableRow, CTableHeaderCell, CTableBody, CTableDataCell } from '@coreui/react'
 import { useReportList } from '@/hooks/queries/useReportQuery';
 import { useCodeGroupSearch } from '@/hooks/queries/useCommonQuery';
-import ViewAllButton from './ViewAllButton';
+import StatusBadge from './common/StatusBadge';
+import ViewAllButton from './common/ViewAllButton';
 const NewReposrts = () => {
   const {data, isLoading} = useReportList({size:5});
   const {data: statusCodes} = useCodeGroupSearch('REPORT_STATUS', true);
@@ -36,7 +37,7 @@ const NewReposrts = () => {
                     <CTableDataCell>{item.createdAt}</CTableDataCell>
                     <CTableDataCell className="text-center">
                       <CBadge color="info-soft" className="text-info">
-                        {statusCodes?.[item.reportStatusCode] || item.reportStatusCode}
+                        <StatusBadge status={statusCodes?.[item.reportStatusCode] || item.reportStatusCode} />
                       </CBadge>
                     </CTableDataCell>
                   </CTableRow>

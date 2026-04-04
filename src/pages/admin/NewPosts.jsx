@@ -1,7 +1,8 @@
 import { CCard, CCardHeader, CCardBody, CTable, CBadge, CNavLink, CTableHead, CTableRow, CTableHeaderCell, CTableBody, CTableDataCell } from '@coreui/react'
 import { usePostList } from '@/hooks/queries/usePostQuery';
 //import { useCodeGroupSearch } from '@/hooks/queries/useCommonQuery';
-import ViewAllButton from './ViewAllButton';
+import StatusBadge from './common/StatusBadge';
+import ViewAllButton from './common/ViewAllButton';
 const NewPosts = () => {
   const {data, isLoading} = usePostList({size:5});
   //const {data: statusCodes} = useCodeGroupSearch('USER_STATUS', true);
@@ -9,7 +10,7 @@ const NewPosts = () => {
     <CCard className="mb-4 border-0 shadow-sm">
       <CCardHeader className="bg-white border-0 d-flex justify-content-between align-items-center pt-3">
         <h5 className="mb-0 fw-bold">최근 게시글</h5>
-        <ViewAllButton to="/admin/posts" />
+        <ViewAllButton to="/admin/post" />
       </CCardHeader>
       <CCardBody>
         <CTable hover responsive align="middle" className="mb-0 small">
@@ -36,7 +37,9 @@ const NewPosts = () => {
               <CTableDataCell>{item.nickname}</CTableDataCell>
               <CTableDataCell>{item.createdAt}</CTableDataCell>
               <CTableDataCell>{item.comments}</CTableDataCell>
-              <CTableDataCell className="text-center"><CBadge color="info-soft" className="text-info">{item.delYn}</CBadge></CTableDataCell>
+              <CTableDataCell className="text-center">
+                <CBadge color="info-soft" className="text-info"><StatusBadge status={[item.delYn] || item.delYn} /></CBadge>
+              </CTableDataCell>
             </CTableRow>
             ))
                 ) : (
