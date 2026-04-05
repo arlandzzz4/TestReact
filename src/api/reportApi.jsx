@@ -1,8 +1,8 @@
 import { instance } from './axios.jsx';
 
-export const searchReportTotalCount = async () => {
+export const searchReportTotalCount = async (data) => {
   try {
-    const response = await instance.get(`/api/report/search/totalcnt`);
+    const response = await instance.get(`/api/report/search/totalcnt`, { params: data });
     return response.data;
   } catch (error) {
     console.error("미처리 신고 중 오류 발생:", error);

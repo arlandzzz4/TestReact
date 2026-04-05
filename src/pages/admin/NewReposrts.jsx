@@ -6,6 +6,7 @@ import ViewAllButton from './common/ViewAllButton';
 const NewReposrts = () => {
   const {data, isLoading} = useReportList({size:5});
   const {data: statusCodes} = useCodeGroupSearch('REPORT_STATUS', true);
+  const {data: reasonCodes} = useCodeGroupSearch('REPORT_REASON', true);
   return (
     <CCard className="mb-4 border-0 shadow-sm">
           <CCardHeader className="bg-white border-0 d-flex justify-content-between align-items-center pt-3">
@@ -33,7 +34,7 @@ const NewReposrts = () => {
                   data.map((item, index) => (
                   <CTableRow key={index}>
                     <CTableDataCell>{item.detail}</CTableDataCell>
-                    <CTableDataCell>{item.reason_code}</CTableDataCell>
+                    <CTableDataCell>{reasonCodes?.[item.reasonCode] || item.reasonCode}</CTableDataCell>
                     <CTableDataCell>{item.createdAt}</CTableDataCell>
                     <CTableDataCell className="text-center">
                       <CBadge color="info-soft" className="text-info">

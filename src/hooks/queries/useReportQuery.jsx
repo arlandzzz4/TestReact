@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { searchReportTotalCount, searchReportTodayCount, searchReportList } from '@/api/reportApi';
 
-export const useReportTotalCountQuery = (enabled = true) => {
+export const useReportTotalCountQuery = (searchParams, enabled = true) => {
     return useQuery({
-      queryKey: ['reportTotalCnt'],
-      queryFn: ()=>searchReportTotalCount(),
-      enabled: enabled,
+      queryKey: ['reportTotalCnt', searchParams],
+      queryFn: ()=>searchReportTotalCount(searchParams),
+      enabled: !!searchParams?.targetCode && enabled,
       retry: false,
       staleTime: 1000 * 60 * 5,
     });
