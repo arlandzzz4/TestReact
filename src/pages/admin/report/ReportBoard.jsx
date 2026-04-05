@@ -90,38 +90,10 @@ const ReportBoard = () => {
       });
     });
   }
-/*
-  const confirmModalOnConfirm = (data) => {
-    if (activeKey === 1) {
-      deletePostMutation.mutate(data, {
-        onSuccess: () => {
-          refetchPosts();
-          setIsModalOpen(false);
-        },
-        onError: (error) => {
-          console.error('게시글 삭제 실패:', error);
-          setIsModalOpen(false);
-        },
-      });
-    }
-    else if (activeKey === 2) {
-      deleteCommentMutation.mutate(data, {
-        onSuccess: () => {
-          refetchComments();
-          setIsModalOpen(false);
-        },
-        onError: (error) => {
-          console.error('댓글 삭제 실패:', error);
-          setIsModalOpen(false);
-        },
-      });
-    }
 
-  }*/
-
-  return (
-    <div className="report-container mt-2">
-      <CNav variant="tabs" className="border-0 mb-3">
+return (
+    <div className="report-container mt-2 p-3" style={{ backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
+      <CNav variant="tabs" className="border-0 mb-0">
         <CNavItem>
           <CNavLink
             active={activeKey === 1}
@@ -129,10 +101,13 @@ const ReportBoard = () => {
                 e.preventDefault();
                 setActiveKey(1);
             }}
-            className={`py-2 px-4 border-0 ${
-              activeKey === 1 ? 'border-bottom border-success border-3 text-dark fw-bold' : 'text-secondary'
+            className={`py-2 px-4 border-0 rounded-top ${
+              activeKey === 1 ? 'text-success fw-bold' : 'text-secondary'
             }`}
-            style={{ backgroundColor: 'transparent' }}
+            style={{ 
+              backgroundColor: activeKey === 1 ? 'white' : 'transparent',
+              borderBottom: activeKey === 1 ? '3px solid #198754 !important' : 'none'
+            }}
           >
             게시글 신고 ({postTotalCnt})
           </CNavLink>
@@ -144,41 +119,53 @@ const ReportBoard = () => {
                 e.preventDefault();
                 setActiveKey(2);
             }}
-            className={`py-2 px-4 border-0 ${
-              activeKey === 2 ? 'border-bottom border-success border-3 text-dark fw-bold' : 'text-secondary'
+            className={`py-2 px-4 border-0 rounded-top ${
+              activeKey === 2 ? 'text-success fw-bold' : 'text-secondary'
             }`}
-            style={{ backgroundColor: 'transparent' }}
+            style={{ 
+              backgroundColor: activeKey === 2 ? 'white' : 'transparent',
+              borderBottom: activeKey === 2 ? '3px solid #198754 !important' : 'none'
+            }}
           >
             댓글 신고 ({commentTotalCnt})
           </CNavLink>
         </CNavItem>
       </CNav>
 
-      <CTabContent>
-        {activeKey === 1 && (
-        <PostReport
-          activeKey={activeKey}
-          postReports={postReportsData} 
-          isLoading={isPostLoading}
-          onPageChange={handlePostPageChange}
-          postTotalPages={postTotalPages}
-          postCurrentPage={postCurrentPage}
-          onDeleteClick={handlePostDeleteClick}
-        />
-        )}
-        
-        {activeKey === 2 && (
-        <CommentReport
-          activeKey={activeKey}
-          commentReports={commentReportsData} 
-          isLoading={isCommentLoading}
-          onPageChange={handleCommentPageChange}
-          commentTotalPages={commentTotalPages}
-          commentCurrentPage={commentCurrentPage}
-          onDeleteClick={handleCommentDeleteClick}
-        />
-        )}
-      </CTabContent>
+      <div 
+        className="bg-white p-4 shadow-sm" 
+        style={{ 
+          borderRadius: '0 15px 15px 15px',
+          border: '1px solid #e0e0e0'
+        }}
+      >
+        <CTabContent>
+          {activeKey === 1 && (
+          <PostReport
+            activeKey={activeKey}
+            postReports={postReportsData} 
+            isLoading={isPostLoading}
+            onPageChange={handlePostPageChange}
+            postTotalPages={postTotalPages}
+            postCurrentPage={postCurrentPage}
+            onDeleteClick={handlePostDeleteClick}
+          />
+          )}
+          
+          {activeKey === 2 && (
+          <CommentReport
+            activeKey={activeKey}
+            commentReports={commentReportsData} 
+            isLoading={isCommentLoading}
+            onPageChange={handleCommentPageChange}
+            commentTotalPages={commentTotalPages}
+            commentCurrentPage={commentCurrentPage}
+            onDeleteClick={handleCommentDeleteClick}
+          />
+          )}
+        </CTabContent>
+      </div>
+
       <CommonConfirmModal
         visible={isModalOpen}
         onClose={() => setIsModalOpen(false)}

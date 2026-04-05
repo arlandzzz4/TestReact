@@ -1,8 +1,5 @@
 import React from 'react'
 import {
-  CCard,
-  CCardBody,
-  CTabPane,
   CTable,
   CTableHead,
   CTableRow,
@@ -13,6 +10,8 @@ import {
   CRow,
   CCol,
 } from '@coreui/react'
+import CIcon from '@coreui/icons-react'
+import {cilClipboard} from '@coreui/icons'
 import { useCodeGroupSearch } from '@/hooks/queries/useCommonQuery';
 import CommonPagination from '../comment/CommonPagination';
 
@@ -29,7 +28,7 @@ const CommentReport = ({
 
   return (
     <>
-      <CRow className="mb-2 align-items-center">
+      <CRow className="mb-3 align-items-center">
         <CCol>
           <div className="ms-1 small text-body-secondary">
             총 <strong>{commentReports?.length || 0}</strong>건
@@ -37,46 +36,45 @@ const CommentReport = ({
         </CCol>
       </CRow>
 
-      <CCard className="border-0 shadow-sm" style={{ borderRadius: '15px' }}>
-        <CCardBody className="p-0">
-          <CTable hover responsive align="middle" className="mb-0">
-            <CTableHead color="light">
-              <CTableRow className="text-secondary small">
-                <CTableHeaderCell className="border-0 text-center" style={{ width: '60px' }}>No.</CTableHeaderCell>
-                <CTableHeaderCell className="border-0">신고된 댓글 내용</CTableHeaderCell>
-                <CTableHeaderCell className="border-0">작성자</CTableHeaderCell>
-                <CTableHeaderCell className="border-0">신고자</CTableHeaderCell>
-                <CTableHeaderCell className="border-0">신고 사유</CTableHeaderCell>
-                <CTableHeaderCell className="border-0">접수일</CTableHeaderCell>
-                <CTableHeaderCell className="border-0 text-center" style={{ width: '100px' }}>관리</CTableHeaderCell>
-              </CTableRow>
-            </CTableHead>
+      <CTable hover responsive align="middle" className="mb-0 custom-table">
+        <CTableHead>
+          <CTableRow className="text-secondary small" style={{ borderBottom: '2px solid #e0e0e0' }}>
+            <CTableHeaderCell className="border-0 text-center py-3" style={{ width: '60px' }}>No.</CTableHeaderCell>
+            <CTableHeaderCell className="border-0 py-3">신고된 댓글 내용</CTableHeaderCell>
+            <CTableHeaderCell className="border-0 py-3">작성자</CTableHeaderCell>
+            <CTableHeaderCell className="border-0 py-3">신고자</CTableHeaderCell>
+            <CTableHeaderCell className="border-0 py-3">신고 사유</CTableHeaderCell>
+            <CTableHeaderCell className="border-0 py-3">접수일</CTableHeaderCell>
+            <CTableHeaderCell className="border-0 text-center py-3" style={{ width: '100px' }}>관리</CTableHeaderCell>
+          </CTableRow>
+        </CTableHead>
             <CTableBody>
               {isLoading ? (
                 <CTableRow>
-                  <CTableDataCell colSpan="7" className="text-center py-4 text-muted">
+                  <CTableDataCell colSpan="7" className="text-center py-5 text-muted bg-white">
+                    <div className="spinner-border spinner-border-sm text-success me-2" role="status"></div>
                     데이터를 불러오는 중입니다...
                   </CTableDataCell>
                 </CTableRow>
               ) : Array.isArray(commentReports) && commentReports.length > 0 ? (
                 commentReports.map((report, index) => (
                   <CTableRow key={report.id || index} className="small">
-                    <CTableDataCell className="text-center text-secondary">
+                    <CTableDataCell className="text-center text-secondary py-3">
                       {(commentCurrentPage - 1) * 10 + index + 1}
                     </CTableDataCell>
                     
-                    <CTableDataCell className="fw-bold" style={{ maxWidth: '300px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <CTableDataCell className="fw-bold text-dark py-3" style={{ maxWidth: '300px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {report.content}
                     </CTableDataCell>
                     
-                    <CTableDataCell>{report.targetNickname}</CTableDataCell>
-                    <CTableDataCell>{report.reporterNickname}</CTableDataCell>
-                    <CTableDataCell>
+                    <CTableDataCell className="py-3">{report.targetNickname}</CTableDataCell>
+                    <CTableDataCell className="py-3">{report.reporterNickname}</CTableDataCell>
+                    <CTableDataCell className="py-3">
+                      <span className="badge bg-light text-dark rounded-pill px-2 py-1"></span>
                       {statusCodes?.[report.reasonCode] || report.reasonCode}
                     </CTableDataCell>
-                    <CTableDataCell className="text-secondary">{report.createdAt}</CTableDataCell>
-                    
-                    <CTableDataCell className="text-center">
+                    <CTableDataCell className="text-secondary py-3">{report.createdAt}</CTableDataCell>
+                    <CTableDataCell className="text-center py-3">
                       <CButton 
                         variant="outline" 
                         color="danger" 
@@ -92,7 +90,8 @@ const CommentReport = ({
                 ))
               ) : (
                 <CTableRow>
-                  <CTableDataCell colSpan="7" className="text-center text-muted py-5">
+                  <CTableDataCell colSpan="7" className="text-center text-muted py-5 bg-white">
+                    <CIcon icon={cilClipboard} size="xl" className="mb-2 text-secondary opacity-50" /><br />
                     신고된 댓글 내역이 없습니다.
                   </CTableDataCell>
                 </CTableRow>
@@ -107,8 +106,6 @@ const CommentReport = ({
               onPageChange={onPageChange}
             />
           </div>
-        </CCardBody>
-      </CCard>
     </>
   )
 }
