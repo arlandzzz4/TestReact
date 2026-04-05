@@ -52,7 +52,7 @@ export const searchPostList = async (data) => {
 
 export const deletePost = async (data) => {
   try {
-    const response = await instance.delete(`/api/post/delete`, { data });
+    const response = await instance.patch(`/api/post/delete`, data );
     return response.data;
   } catch (error) {
     console.error("게시글 삭제 중 오류 발생:", error);

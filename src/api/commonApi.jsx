@@ -13,7 +13,7 @@ export const searchCodeGroup = async (codeGroup) => {
 
 export const deleteComment = async (data) => {
   try {
-    const response = await instance.delete(`/api/post/comment/delete`, { data });
+    const response = await instance.patch(`/api/post/comment/delete`, data);
     return response.data;
   } catch (error) {
     console.error("댓글 삭제 중 오류 발생:", error);

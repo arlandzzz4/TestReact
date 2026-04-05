@@ -1,9 +1,9 @@
 import { useMutation } from '@tanstack/react-query';
 import { deleteComment } from '@/api/commonApi';
 
-export const useDeleteCommentMutation = (data) => {
+export const useDeleteCommentMutation = () => {
     return useMutation({
-        mutationFn: () => deleteComment(data),
+        mutationFn: (data) => deleteComment(data),
         onSuccess: () => {
             alert('댓글이 성공적으로 삭제되었습니다.');
         },

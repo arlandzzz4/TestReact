@@ -1,9 +1,9 @@
 import { useMutation } from '@tanstack/react-query';
 import { deletePost } from '@/api/postApi';
 
-export const useDeletePostMutation = (data) => {
+export const useDeletePostMutation = () => {
     return useMutation({
-        mutationFn: () => deletePost(data),
+        mutationFn: (data) => deletePost(data),
         onSuccess: () => {
             alert('게시글이 성공적으로 삭제되었습니다.');
         },

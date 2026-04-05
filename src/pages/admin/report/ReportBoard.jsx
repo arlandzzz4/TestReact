@@ -6,13 +6,20 @@ import { useReportTotalCountQuery, useReportList } from '@/hooks/queries/useRepo
 import { useDeletePostMutation } from '@/hooks/mutations/usePostMutation'
 import { useDeleteCommentMutation } from '@/hooks/mutations/useCommentMutation' 
 import { useAuth } from '../../../hooks/useAuth'
+import CommonConfirmModal from '../common/CommonConfirmModal'
 
 const ReportBoard = () => {
   const [size] = useState(10)
   const [activeKey, setActiveKey] = useState(1)
   const deletePostMutation = useDeletePostMutation()
   const deleteCommentMutation = useDeleteCommentMutation()
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { user } = useAuth();
+  const [confirmModalTitle, setConfirmModalTitle] = useState('신고된 게시글을 삭제하시겠습니까?');
+  const [confirmModalContent, setConfirmModalContent] = useState('');
+  const [confirmModalGuide, setConfirmModalGuide] = useState('삭제 후 삭제 관리 페이지에 저장됩니다.');
+  const [confirmModalWriter, setConfirmModalWriter] = useState('');
+  const [confirmModalOnConfirm , setConfirmModalOnConfirm] = useState(() => () => {});
 
   const [postParams, setPostParams] = useState({ size, offset: 0, targetCode: '01' })
   const { data: postReportsData, isLoading: isPostLoading, refetch: refetchPosts } = useReportList(postParams)
@@ -37,39 +44,79 @@ const ReportBoard = () => {
   }
 
   const handlePostDeleteClick = (report) => {
-    console.log('삭제 ID:', user)
-    if (window.confirm('해당 게시글 신고를 삭제하시겠습니까?')) {
-      deletePostMutation.mutate(
-        { postId: report.postId,
-          deletedId: user ? user.email : null,
-          delYn : 'Y'
-         }, 
-        { onSuccess: () => refetchPosts(),
-          onError: (error) => {
-            console.error('게시글 삭제 에러:', error);
-            alert('게시글 삭제 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-          }
-         }
-      );
-    }
+    setIsModalOpen(true);
+    setConfirmModalTitle('신고된 게시글을 삭제하시겠습니까?');
+    setConfirmModalContent(report.content.length > 100 ? report.content.slice(0, 100) + '...' : report.content);
+    setConfirmModalWriter(report.targetNickname);
+    const deleteData = {
+        postId: report.targetId,
+        deletedId: user.email,
+        delYn: 'Y',
+      };
+      console.log("삭제할 게시글 데이터:", deleteData);
+    setConfirmModalOnConfirm(() => () => {
+      deletePostMutation.mutate(deleteData, {
+        onSuccess: () => {          refetchPosts();
+          setIsModalOpen(false);
+        },
+        onError: (error) => {
+          console.error('게시글 삭제 실패:', error);
+          setIsModalOpen(false);
+        },
+      });
+    });
   }
 
   const handleCommentDeleteClick = (report) => {
-    if (window.confirm('해당 댓글 신고를 삭제하시겠습니까?')) {
-      console.log('삭제 ID:', report.id)
-      deleteCommentMutation.mutate(
-        { id: report.commentId,
-          delYn : 'Y'
-         },
-        { onSuccess: () => refetchComments(),
-          onError: (error) => {
-            console.error('댓글 삭제 에러:', error);
-            alert('댓글 삭제 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-          }
-        }
-      );
-    }
+    setIsModalOpen(true);
+    setConfirmModalTitle('신고된 댓글을 삭제하시겠습니까?');
+    setConfirmModalContent(report.content.length > 100 ? report.content.slice(0, 100) + '...' : report.content);
+    setConfirmModalWriter(report.targetNickname);
+    const deleteData = {
+        commentId: report.targetId,
+        delYn: 'Y',
+      };
+    setConfirmModalOnConfirm(() => () => {
+      deleteCommentMutation.mutate(deleteData, {
+        onSuccess: () => {          
+          refetchComments();
+          setIsModalOpen(false);
+        },
+        onError: (error) => {
+          console.error('댓글 삭제 실패:', error);
+          setIsModalOpen(false);
+        },
+      });
+    });
   }
+/*
+  const confirmModalOnConfirm = (data) => {
+    if (activeKey === 1) {
+      deletePostMutation.mutate(data, {
+        onSuccess: () => {
+          refetchPosts();
+          setIsModalOpen(false);
+        },
+        onError: (error) => {
+          console.error('게시글 삭제 실패:', error);
+          setIsModalOpen(false);
+        },
+      });
+    }
+    else if (activeKey === 2) {
+      deleteCommentMutation.mutate(data, {
+        onSuccess: () => {
+          refetchComments();
+          setIsModalOpen(false);
+        },
+        onError: (error) => {
+          console.error('댓글 삭제 실패:', error);
+          setIsModalOpen(false);
+        },
+      });
+    }
+
+  }*/
 
   return (
     <div className="report-container mt-2">
@@ -131,6 +178,15 @@ const ReportBoard = () => {
         />
         )}
       </CTabContent>
+      <CommonConfirmModal
+        visible={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title={confirmModalTitle}
+        targetContent={confirmModalContent}
+        guide={confirmModalGuide}
+        writer={confirmModalWriter}
+        onConfirm={confirmModalOnConfirm}
+      />
     </div>
   )
 }
