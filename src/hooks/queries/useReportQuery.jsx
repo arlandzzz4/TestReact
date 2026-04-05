@@ -11,10 +11,10 @@ export const useReportTotalCountQuery = (searchParams, enabled = true) => {
     });
 };
 
-export const useReportTodayCountQuery = (enabled = true) => {
+export const useReportTodayCountQuery = (searchParams, enabled = true) => {
     return useQuery({
-      queryKey: ['reportTodayCnt'],
-      queryFn: ()=>searchReportTodayCount(),
+      queryKey: ['reportTodayCnt', searchParams],
+      queryFn: ()=>searchReportTodayCount(searchParams),
       enabled: enabled,
       retry: false,
       staleTime: 1000 * 60 * 5,

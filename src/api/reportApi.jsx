@@ -10,12 +10,12 @@ export const searchReportTotalCount = async (data) => {
   }
 };
 
-export const searchReportTodayCount = async () => {
+export const searchReportTodayCount = async (data) => {
   try {
-    const response = await instance.get(`/api/report/search/todaycnt`);
+    const response = await instance.get(`/api/report/search/todaycnt`, { params: data });
     return response.data;
   } catch (error) {
-    console.error("오늘 게시글 조회 중 오류 발생:", error);
+    console.error("오늘 신고 조회 중 오류 발생:", error);
     throw error;
   }
 };

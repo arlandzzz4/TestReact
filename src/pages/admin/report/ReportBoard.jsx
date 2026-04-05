@@ -3,10 +3,16 @@ import { CNav, CNavItem, CNavLink, CTabContent, CTabPane } from '@coreui/react'
 import PostReport from './PostReport'
 import CommentReport from './CommentReport'
 import { useReportTotalCountQuery, useReportList } from '@/hooks/queries/useReportQuery'
+import { useDeletePostMutation } from '@/hooks/mutations/usePostMutation'
+import { useDeleteCommentMutation } from '@/hooks/mutations/useCommentMutation' 
+import { useAuth } from '../../../hooks/useAuth'
 
 const ReportBoard = () => {
   const [size] = useState(10)
   const [activeKey, setActiveKey] = useState(1)
+  const deletePostMutation = useDeletePostMutation()
+  const deleteCommentMutation = useDeleteCommentMutation()
+  const { user } = useAuth();
 
   const [postParams, setPostParams] = useState({ size, offset: 0, targetCode: '01' })
   const { data: postReportsData, isLoading: isPostLoading, refetch: refetchPosts } = useReportList(postParams)
@@ -31,16 +37,37 @@ const ReportBoard = () => {
   }
 
   const handlePostDeleteClick = (report) => {
+    console.log('삭제 ID:', user)
     if (window.confirm('해당 게시글 신고를 삭제하시겠습니까?')) {
-      console.log('삭제 ID:', report.id)
-      // deleteMutation.mutate(report.id, { onSuccess: () => refetchPosts() });
+      deletePostMutation.mutate(
+        { postId: report.postId,
+          deletedId: user ? user.email : null,
+          delYn : 'Y'
+         }, 
+        { onSuccess: () => refetchPosts(),
+          onError: (error) => {
+            console.error('게시글 삭제 에러:', error);
+            alert('게시글 삭제 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+          }
+         }
+      );
     }
   }
 
   const handleCommentDeleteClick = (report) => {
     if (window.confirm('해당 댓글 신고를 삭제하시겠습니까?')) {
       console.log('삭제 ID:', report.id)
-      // deleteMutation.mutate(report.id, { onSuccess: () => refetchComments() });
+      deleteCommentMutation.mutate(
+        { id: report.commentId,
+          delYn : 'Y'
+         },
+        { onSuccess: () => refetchComments(),
+          onError: (error) => {
+            console.error('댓글 삭제 에러:', error);
+            alert('댓글 삭제 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+          }
+        }
+      );
     }
   }
 
