@@ -50,10 +50,10 @@ const ReportBoard = () => {
     setConfirmModalWriter(report.targetNickname);
     const deleteData = {
         postId: report.targetId,
+        reportId: report.reportId,
         deletedId: user.email,
         delYn: 'Y',
       };
-      console.log("삭제할 게시글 데이터:", deleteData);
     setConfirmModalOnConfirm(() => () => {
       deletePostMutation.mutate(deleteData, {
         onSuccess: () => {          refetchPosts();
@@ -74,6 +74,7 @@ const ReportBoard = () => {
     setConfirmModalWriter(report.targetNickname);
     const deleteData = {
         commentId: report.targetId,
+        reportId: report.reportId,
         delYn: 'Y',
       };
     setConfirmModalOnConfirm(() => () => {

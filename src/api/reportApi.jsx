@@ -29,3 +29,13 @@ export const searchReportList = async (data) => {
     throw error;
   }
 };
+
+export const updateReportStatusCode = async (data) => {
+  try {
+    const response = await instance.patch(`/api/report/updateReportStatusCode`, data );
+    return response.data;
+  } catch (error) {
+    console.error("신고 상태 코드 업데이트 중 오류 발생:", error);
+    throw error;
+  }
+};
