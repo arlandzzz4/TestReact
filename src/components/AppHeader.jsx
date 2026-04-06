@@ -34,6 +34,7 @@ import {
   CNavItem,
   useColorModes,
   CButton,
+  CBadge,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
@@ -45,10 +46,12 @@ import {
   cilMoon,
   cilSun,
 } from '@coreui/icons'
+import { IoNotifications } from 'react-icons/io5'
 
 import { AppHeaderDropdown } from './header/index'
 import { useLogoutMutation } from '@/hooks/mutations/useAuthMutation';
 import { useAuth } from '@/hooks/useAuth'
+
 
 /** 
  * AppHeader functional component
@@ -129,9 +132,47 @@ const AppHeader = () => {
         </CHeaderNav>
         <CHeaderNav className='ms-auto'>
           {isAuthenticated ?
-          <CButton onClick={handleLogout}
-                    style={{ backgroundColor: '#e1e1e1', color: 'black', border: 'none' }}
-                        >Logout</CButton>
+          <div className="d-flex align-items-center gap-3">
+            <CNavLink
+              as={NavLink}
+              to="/notifications"
+              className="position-relative text-decoration-none" 
+              style={{ 
+                cursor: 'pointer', 
+                fontSize: '24px', 
+                lineHeight: 1, 
+                padding: '4px 8px' 
+              }}>
+              🔔
+            </CNavLink>
+            {/* 유저 프로필 동그라미 (클릭 시 마이페이지 이동) */}
+            <CNavLink
+              as={NavLink}
+              to="/mypage"
+              title={`${user?.nickname}님의 마이페이지`}
+              className="text-decoration-none"
+              style={{
+                width: 36,
+                height: 36,
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, #d4e8db, #6aab81)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '14px',
+                fontWeight: 700,
+                color: '#3d6b4f',
+                flexShrink: 0,
+                border: 'none',
+              }}
+            >
+              {user?.nickname ? user.nickname[0] : 'U'}
+            </CNavLink>
+            <CButton onClick={handleLogout}
+                     style={{ backgroundColor: '#f0f0f0', color: '#5c5c5c', border: '1px solid #e1e1e1', borderRadius: '40px'}}
+            >Logout</CButton>
+          </div>
+
           : <CButton to="/login" as={NavLink}
                     color="green"
                         >Join Us</CButton>
