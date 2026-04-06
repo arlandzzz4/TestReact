@@ -71,7 +71,7 @@ return (
                 </span>
               </CTableDataCell>
               <CTableDataCell >{report.createdAt}</CTableDataCell>
-              <CTableDataCell >
+              <CTableDataCell className="text-center align-middle">
                 <CButton 
                   variant="outline" 
                   color="danger" 
@@ -79,6 +79,7 @@ return (
                   className="px-3 py-1 rounded-pill" 
                   style={{ fontSize: '12px' }}
                   onClick={() => onDeleteClick?.(report)}
+                  active
                 >
                   삭제
                 </CButton>

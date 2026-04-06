@@ -56,7 +56,8 @@ const ReportBoard = () => {
       };
     setConfirmModalOnConfirm(() => () => {
       deletePostMutation.mutate(deleteData, {
-        onSuccess: () => {          refetchPosts();
+        onSuccess: () => {          
+          refetchPosts();
           setIsModalOpen(false);
         },
         onError: (error) => {

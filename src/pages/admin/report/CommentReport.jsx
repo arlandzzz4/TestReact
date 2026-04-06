@@ -73,8 +73,8 @@ const CommentReport = ({
                       <span className="badge bg-light text-dark rounded-pill px-2 py-1"></span>
                       {statusCodes?.[report.reasonCode] || report.reasonCode}
                     </CTableDataCell>
-                    <CTableDataCell className="">{report.createdAt}</CTableDataCell>
-                    <CTableDataCell className="">
+                    <CTableDataCell >{report.createdAt}</CTableDataCell>
+                    <CTableDataCell className="text-center align-middle">
                       <CButton 
                         variant="outline" 
                         color="danger" 
@@ -82,6 +82,7 @@ const CommentReport = ({
                         className="px-3 py-1 rounded-pill" 
                         style={{ fontSize: '12px', opacity: 0.7 }}
                         onClick={() => onDeleteClick?.(report)}
+                        active
                       >
                         삭제
                       </CButton>

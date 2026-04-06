@@ -19,17 +19,52 @@ import { useCodeGroupSearch } from '@/hooks/queries/useCommonQuery';
 import StatusBadge from '../common/StatusBadge';
 import CommonPagination from '../comment/CommonPagination';
 import { usePostList, usePostTotalCountQuery } from '@/hooks/queries/usePostQuery';
+import CommonConfirmModal from '../common/CommonConfirmModal'
+import { useDeletePostMutation } from '@/hooks/mutations/usePostMutation'
+import { useAuth } from '../../../hooks/useAuth'
 
 const PostBoard = () => {
     const [size, setSize] = useState(10);
     const [offset, setOffset] = useState(0);
     const [searchInput, setSearchInput] = useState(''); 
     const [searchWord, setSearchWord] = useState('');
+    const { user } = useAuth();
+    const deletePostMutation = useDeletePostMutation();
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
+    const [confirmModalTitle, setConfirmModalTitle] = useState('게시글을 삭제하시겠습니까?');
+    const [confirmModalContent, setConfirmModalContent] = useState('');
+    const [confirmModalGuide, setConfirmModalGuide] = useState('삭제된 게시글은 복구할 수 없습니다.\n해당 게시글의 댓글도 함께 삭제됩니다.');
+    const [confirmModalWriter, setConfirmModalWriter] = useState('');
+    const [confirmModalOnConfirm , setConfirmModalOnConfirm] = useState(() => () => {});
 
     const {data: totalCnt= 0} = usePostTotalCountQuery({word: searchWord});
     const {data, isLoading, refetch} = usePostList({size, offset, word: searchWord});
     const {data: statusCodes} = useCodeGroupSearch('REPORT_STATUS', true);
+
+    const onDeleteClick = (post) => {
+      setIsModalOpen(true);
+      setConfirmModalContent(post.title.length > 100 ? post.title.slice(0, 100) + '...' : post.title);
+      setConfirmModalWriter(post.nickname);
+      const deleteData = {
+        postId: post.postId,
+        reportId: post.reporterId,
+        deletedId: user.email,
+        delYn: 'Y',
+      };
+      setConfirmModalOnConfirm(() => () => {
+        deletePostMutation.mutate(deleteData, {
+            onSuccess: () => {          
+            refetch();
+            setIsModalOpen(false);
+            },
+            onError: (error) => {
+            console.error('게시글 삭제 실패:', error);
+            setIsModalOpen(false);
+            },
+        });
+      });
+    };
 
     //리셋
     const handleReset = () => {
@@ -93,7 +128,7 @@ const PostBoard = () => {
                 </CCol>
               
               <CCol md={8} className="text-end">
-                <span className="small text-body-secondary">총 <strong>{totalCnt}</strong>명</span>
+                <span className="small text-body-secondary">총 <strong>{totalCnt}</strong>개</span>
               </CCol>
             </CRow>
           </CCardHeader>
@@ -108,12 +143,13 @@ const PostBoard = () => {
                   <CTableHeaderCell>가입일</CTableHeaderCell>
                   <CTableHeaderCell>댓글</CTableHeaderCell>
                   <CTableHeaderCell className="text-center">상태</CTableHeaderCell>
+                  <CTableHeaderCell className="text-center">관리</CTableHeaderCell>
                 </CTableRow>
               </CTableHead>
               <CTableBody>
                 {isLoading ? (
                   <CTableRow>
-                    <CTableDataCell colSpan="6" className="text-center py-4 text-muted">
+                    <CTableDataCell colSpan="7" className="text-center py-4 text-muted">
                       데이터를 불러오는 중입니다...
                     </CTableDataCell>
                   </CTableRow>
@@ -128,11 +164,24 @@ const PostBoard = () => {
                       <CTableDataCell className="text-center">
                         <StatusBadge status={statusCodes?.[item.reportStatusCode] || '정상'} />
                       </CTableDataCell>
+                      <CTableDataCell className="text-center align-middle">
+                        <CButton
+                        variant="outline" 
+                        color="danger" 
+                        size="sm" 
+                        className="px-3 py-1 rounded-pill" 
+                        style={{ fontSize: '12px' }}
+                        onClick={() => onDeleteClick?.(item)}
+                        active
+                        >
+                        삭제
+                        </CButton>
+                    </CTableDataCell>
                     </CTableRow>
                   ))
                 ) : (
                   <CTableRow>
-                    <CTableDataCell colSpan="6" className="text-center text-muted py-3">
+                    <CTableDataCell colSpan="7" className="text-center text-muted py-3">
                       데이터가 없습니다.
                     </CTableDataCell>
                   </CTableRow>
@@ -149,6 +198,15 @@ const PostBoard = () => {
           </CCardBody>
         </CCard>
       </CCol>
+      <CommonConfirmModal
+        visible={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title={confirmModalTitle}
+        targetContent={confirmModalContent}
+        guide={confirmModalGuide}
+        writer={confirmModalWriter}
+        onConfirm={confirmModalOnConfirm}
+      />
     </CRow>
   )
 }
