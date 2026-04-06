@@ -24,6 +24,7 @@ import { instance } from '@/api/axios';
 import '../../scss/WritePost.scss'; // SCSS 파일 import
 import '../../scss/style.scss'; // SCSS 파일 import
 import { useParams } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function WritePost() {
   const navigate = useNavigate();
@@ -42,6 +43,7 @@ export default function WritePost() {
   const [errors, setErrors] = useState({});
   const [images, setImages] = useState([]); //이미지용
   const MaxImages = 3; //최대 3장까지만 첨부 가능
+  const { user } = useAuth(); // 로그인한 유저 정보 가져오기
 
   const modules = { //react-quill 상단 툴바 기능
     toolbar: {
@@ -80,8 +82,6 @@ export default function WritePost() {
     return newErrors;
   };
 
-  //@@@@@@@@@@테스트용 유저 이메일 하드코딩. 추후 로그인 시 이 값을 전달하도록 수정 필요 @@@@@@@@@@@@@
-  const user = "test@test.com";
   // 카테고리 이름을 서버에서 요구하는 코드(01, 02, 03)로 변환하는 함수
   const getCategoryId = (name) => {
     switch (name) {
@@ -109,7 +109,7 @@ export default function WritePost() {
     try {
       // 1. 게시글 먼저 등록 → post_id 반환
       const response = await instance.post('/api/postwrite/create', {
-        userEmail: user,
+        userEmail: user?.email,
         categoryCode: categoryCode,
         title: title,
         content: content

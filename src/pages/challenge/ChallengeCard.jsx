@@ -15,6 +15,8 @@ import { cilX } from '@coreui/icons'
 import { useState, useEffect } from 'react';
 import { instance } from '@/api/axios';
 import { set } from 'react-hook-form';
+import { useAuth } from '@/hooks/useAuth';
+
 /**
  * 챌린지 정보를 받아 카드 형태로 표시하는 컴포넌트
  * @param {object} challenge - 챌린지 데이터 객체
@@ -22,7 +24,7 @@ import { set } from 'react-hook-form';
  */
 const ChallengeCard = ({ challenge, onDelete }) => {
 
-    const userEmail = "test@test.com"; // 임시 유저 이메일
+    // const userEmail = "test@test.com"; // 임시 유저 이메일
 
     // 백엔드에서 전달된 챌린지 객체의 인증 누적 횟수 및 날짜로 초기화(값이 없으면 0, null)
     const [checkCount, setCheckCount] = useState(challenge.achieveCount || 0); 
