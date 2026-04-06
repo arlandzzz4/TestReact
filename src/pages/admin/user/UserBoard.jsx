@@ -27,28 +27,27 @@ const UserBoard = () => {
     const updateUserStatus = useUpdateUserStatusCodeMutation();
     const [size, setSize] = useState(10);
     const [offset, setOffset] = useState(0);
-    const [userStatus, setUserStatus] = useState('');
+    const [userStatusCode, setUserStatusCode] = useState('');
     const [emailInput, setEmailInput] = useState(''); 
     const [searchEmail, setSearchEmail] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
     const {data: totalCnt= 0} = useUserTotalCountQuery();
-    const {data, isLoading, refetch} = useUserList({size, offset, userStatus, email: searchEmail});
+    const {data, isLoading, refetch} = useUserList({size, offset, userStatusCode, email: searchEmail});
     const {data: statusCodes} = useCodeGroupSearch('USER_STATUS', true);
 
     //리셋
     const handleReset = () => {
         setSize(10);
         setOffset(0);
-        setUserStatus('');
+        setUserStatusCode('');
         setEmailInput('');
         setSearchEmail('');
     }
     // 상태 필터링
-    const handleUserStatusChange = (value) => {
-        setUserStatus(value);
+    const handleUserStatusCodeChange = (value) => {
+        setUserStatusCode(value);
         setOffset(0);
-        console.log("선택된 상태값:", value);
     }
     // 상세보기 모달
     const handleDetailClick = (user) => {
@@ -112,6 +111,7 @@ const UserBoard = () => {
                     size="sm" 
                     color="success" 
                     className="text-white me-1 text-nowrap px-3"
+                    active
                     onClick={onUserSearch}
                     >
                     검색
@@ -121,6 +121,7 @@ const UserBoard = () => {
                     color="secondary" 
                     variant="outline"
                     className="text-nowrap"
+                    active
                     onClick={handleReset}
                     >
                     초기화
@@ -131,9 +132,9 @@ const UserBoard = () => {
               {/* 오른쪽: 필터 및 총 인원 */}
               <CCol md={8} className="text-end">
                 <CButtonGroup className="me-3">
-                  <CButton color="dark" variant="outline" active={userStatus === ''} onClick={() => handleUserStatusChange('')} size="sm">전체</CButton>
-                  <CButton color="dark" variant="outline" active={userStatus === '01'} onClick={() => handleUserStatusChange('01')} size="sm">활성</CButton>
-                  <CButton color="dark" variant="outline" active={userStatus === '02'} onClick={() => handleUserStatusChange('02')} size="sm">정지</CButton>
+                  <CButton color="dark" variant="outline" active={userStatusCode === ''} onClick={() => handleUserStatusCodeChange('')} size="sm" className="px-3 text-white border-dark">전체</CButton>
+                  <CButton color="dark" variant="outline" active={userStatusCode === '01'} onClick={() => handleUserStatusCodeChange('01')} size="sm" className="px-3 text-white border-dark">활성</CButton>
+                  <CButton color="dark" variant="outline" active={userStatusCode === '02'} onClick={() => handleUserStatusCodeChange('02')} size="sm" className="px-3 text-white border-dark">정지</CButton>
                 </CButtonGroup>
                 <span className="small text-body-secondary">총 <strong>{totalCnt}</strong>명</span>
               </CCol>

@@ -11,7 +11,7 @@ const NewUsers = () => {
     <CCard className="mb-4 border-0 shadow-sm">
           <CCardHeader className="bg-white border-0 d-flex justify-content-between align-items-center pt-3">
             <h5 className="mb-0 fw-bold">최근 가입 회원</h5>
-            <ViewAllButton to="/admin/users" />
+            <ViewAllButton to="/admin/user" />
           </CCardHeader>
           <CCardBody>
             <CTable hover responsive align="middle" className="mb-0 small">
