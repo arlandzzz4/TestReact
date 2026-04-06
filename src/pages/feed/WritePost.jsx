@@ -20,7 +20,7 @@ import { CContainer, CButton, CFormInput } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { cilArrowLeft, cilX } from '@coreui/icons';
 import { CModal, CModalHeader, CModalTitle, CModalBody, CModalFooter } from '@coreui/react';
-import { instance } from '@/api/axios';
+import { createPost, uploadPostImages } from '@/api/postApi';
 import '../../scss/WritePost.scss'; // SCSS 파일 import
 import '../../scss/style.scss'; // SCSS 파일 import
 import { useParams } from 'react-router-dom';
@@ -34,6 +34,7 @@ export default function WritePost() {
     '자유': { bg: '#F0E6D3', color: '#B07D3A' },
     '정보': { bg: '#D3E8DF', color: '#2E6B4F' },
     '인원모집': { bg: '#D9E4F5', color: '#2D4FA0' },
+    '공지사항': { bg: '#F7E6EA', color: '#A63A50' },
   }
   const [showModal, setShowModal] = useState(false); //모달창 표시
   const [isDirty, setIsDirty] = useState(false) //변경 추적
@@ -43,7 +44,7 @@ export default function WritePost() {
   const [errors, setErrors] = useState({});
   const [images, setImages] = useState([]); //이미지용
   const MaxImages = 3; //최대 3장까지만 첨부 가능
-  const { user } = useAuth(); // 로그인한 유저 정보 가져오기
+  const { user, isAdmin } = useAuth(); // 로그인한 유저 정보 및 관리자 여부 가져오기
 
   const modules = { //react-quill 상단 툴바 기능
     toolbar: {
@@ -91,6 +92,8 @@ export default function WritePost() {
         return '02';
       case '인원모집':
         return '03';
+      case '공지사항':
+        return '04';
       default:
         return '01'; // 기본값으로 '자유' 설정
     }
@@ -108,14 +111,12 @@ export default function WritePost() {
 
     try {
       // 1. 게시글 먼저 등록 → post_id 반환
-      const response = await instance.post('/api/postwrite/create', {
+      const postId = await createPost({
         userEmail: user?.email,
         categoryCode: categoryCode,
         title: title,
         content: content
       });
-
-      const postId = response.data; // 반환된 post_id
 
       // 2. 이미지가 있으면 post_id와 함께 업로드
       if (images.length > 0) {
@@ -125,14 +126,10 @@ export default function WritePost() {
           formData.append('file', img.file);
         });
 
-        await instance.post('/api/photo/uploadList', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
+        await uploadPostImages(formData);
       }
 
-      console.log('게시글 등록 성공:', response.data);
+      console.log('게시글 등록 성공:', postId);
       alert('게시글이 성공적으로 등록되었습니다.');
       navigate(-1); // 이전 페이지로 돌아가기
     } catch (error) {
@@ -195,7 +192,7 @@ export default function WritePost() {
             {/* ── 카테고리 선택 영역 ── */}
             <p className="form-section-title  mt-3">카테고리 <span className="required-star">*</span></p>
             <div className="d-flex gap-2 mb-3">
-              {['자유', '정보', '인원모집'].map((cat) => (
+              {(isAdmin ? ['자유', '정보', '인원모집', '공지사항'] : ['자유', '정보', '인원모집']).map((cat) => (
                 <CButton
                   key={cat}
                   className="category-btn"

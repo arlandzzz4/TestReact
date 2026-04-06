@@ -69,3 +69,25 @@ export const deletePost = async (data) => {
     throw error;
   }
 };
+
+export const createPost = async (postData) => {
+  try {
+    const response = await instance.post('/api/postwrite/create', postData);
+    return response.data; // 반환된 post_id
+  } catch (error) {
+    console.error("게시글 등록 중 오류 발생:", error);
+    throw error;
+  }
+};
+
+export const uploadPostImages = async (formData) => {
+  try {
+    const response = await instance.post('/api/photo/uploadList', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("게시글 이미지 업로드 중 오류 발생:", error);
+    throw error;
+  }
+};
