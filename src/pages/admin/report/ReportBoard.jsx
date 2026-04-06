@@ -136,7 +136,7 @@ return (
         className="bg-white p-4 shadow-sm" 
         style={{ 
           borderRadius: '0 15px 15px 15px',
-          border: '1px solid #e0e0e0'
+          border: '1px solid #ffffff'
         }}
       >
         <CTabContent>
