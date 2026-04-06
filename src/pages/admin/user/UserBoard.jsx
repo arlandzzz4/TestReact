@@ -15,10 +15,9 @@ import {
   CButton,
   CButtonGroup,
 } from '@coreui/react'
-import { useUserList } from '@/hooks/queries/useUserQuery';
+import { useUserList, useUserTotalCountQuery } from '@/hooks/queries/useUserQuery';
 import { useCodeGroupSearch } from '@/hooks/queries/useCommonQuery';
 import StatusBadge from '../common/StatusBadge';
-import { useUserTotalCountQuery } from '@/hooks/queries/useUserQuery';
 import CommonPagination from '../comment/CommonPagination';
 import UserStatusModal from './UserStatusModal';
 import { useUpdateUserStatusCodeMutation } from '@/hooks/mutations/useUserMutation';
