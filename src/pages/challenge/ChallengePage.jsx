@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { instance } from '@/api/axios';
+import { getChallengeList, createChallenge, deleteChallenge } from '@/api/challengeApi';
 import { 
   CButton, 
   CFormInput, 
@@ -40,8 +40,8 @@ const ChallengePage = () => {
 
   const fetchChallenges = async () => {
     try {
-      const response = await instance.get('/api/challenge', { params: { userEmail } });
-      setChallenges(response.data);
+      const data = await getChallengeList(userEmail);
+      setChallenges(data);
     } catch (error) {
       console.error("챌린지 목록 조회 실패:", error);
     }
@@ -64,7 +64,7 @@ const ChallengePage = () => {
   // 챌린지 삭제 함수
   const handleDeleteChallenge = async (id) => {
     try {
-      await instance.delete(`/api/challenge/${id}`, { params: { userEmail: user?.email } }); // 3. 키(Key)를 지정하여 문법 오류 해결
+      await deleteChallenge(id, user?.email);
       setChallenges(prev => prev.filter(challenge => challenge.challengeId !== id));
     } catch (error) {
       console.error("챌린지 삭제 실패:", error);
@@ -107,7 +107,7 @@ const ChallengePage = () => {
     
     try {
       // 2. 백엔드 API 호출
-      await instance.post('/api/challenge', newChallengeData);
+      await createChallenge(newChallengeData);
       
       // 3. 목록 새로고침
       fetchChallenges();

@@ -13,7 +13,7 @@ import {
 import CIcon from '@coreui/icons-react'
 import { cilX } from '@coreui/icons'
 import { useState, useEffect } from 'react';
-import { instance } from '@/api/axios';
+import { verifyChallenge } from '@/api/challengeApi';
 import { set } from 'react-hook-form';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -64,15 +64,11 @@ const ChallengeCard = ({ challenge, onDelete }) => {
         }
 
         try {
-            const res = await instance.post(
-                `/api/challenge/${challenge.challengeId}/verify`,
-                { checkedDate: todayStr },
-                { headers: { 'Content-Type': 'application/json' } }
-            );
+            const data = await verifyChallenge(challenge.challengeId, todayStr);
             // 백엔드 응답으로 state 업데이트
             // 백엔드 응답이 다를 수 있으므로 옵셔널 체이닝으로 방어하고, 없을 시 로컬 값으로 +1 처리
-            setCheckCount(res.data?.totalAchieveCount !== undefined ? res.data.totalAchieveCount : checkCount + 1);
-            setLastCheckDate(res.data?.checkedDate !== undefined ? res.data.checkedDate : todayStr);
+            setCheckCount(data?.totalAchieveCount !== undefined ? data.totalAchieveCount : checkCount + 1);
+            setLastCheckDate(data?.checkedDate !== undefined ? data.checkedDate : todayStr);
         } catch (error) {
             console.error("인증 실패:", error);
             alert(error.response?.data || "인증 처리 중 오류가 발생했습니다.");
