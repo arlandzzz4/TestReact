@@ -131,10 +131,10 @@ const UserBoard = () => {
               
               {/* 오른쪽: 필터 및 총 인원 */}
               <CCol md={8} className="text-end">
-                <CButtonGroup className="me-3">
-                  <CButton color="dark" variant="outline" active={userStatusCode === ''} onClick={() => handleUserStatusCodeChange('')} size="sm" className="px-3 text-white border-dark">전체</CButton>
-                  <CButton color="dark" variant="outline" active={userStatusCode === '01'} onClick={() => handleUserStatusCodeChange('01')} size="sm" className="px-3 text-white border-dark">활성</CButton>
-                  <CButton color="dark" variant="outline" active={userStatusCode === '02'} onClick={() => handleUserStatusCodeChange('02')} size="sm" className="px-3 text-white border-dark">정지</CButton>
+                <CButtonGroup className="me-3 shadow-sm border rounded overflow-hidden">
+                  <CButton color="dark" variant="outline" active={userStatusCode === ''} onClick={() => handleUserStatusCodeChange('')} size="sm" className={`px-3 border-0 ${userStatusCode === '' ? 'text-white' : 'text-dark'}`}>전체</CButton>
+                  <CButton color="dark" variant="outline" active={userStatusCode === '01'} onClick={() => handleUserStatusCodeChange('01')} size="sm" className={`px-3 border-0 ${userStatusCode === '01' ? 'text-white' : 'text-dark'}`}>활성</CButton>
+                  <CButton color="dark" variant="outline" active={userStatusCode === '02'} onClick={() => handleUserStatusCodeChange('02')} size="sm" className={`px-3 border-0 ${userStatusCode === '02' ? 'text-white' : 'text-dark'}`}>정지</CButton>
                 </CButtonGroup>
                 <span className="small text-body-secondary">총 <strong>{totalCnt}</strong>명</span>
               </CCol>
