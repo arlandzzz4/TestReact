@@ -20,6 +20,7 @@ import {
 import '../../scss/Challenge.scss'; // SCSS 파일 import
 import '../../scss/style.scss'
 import ChallengeCard from './ChallengeCard'; // 챌린지 카드 컴포넌트 import
+import { useAuth } from '@/hooks/useAuth';
 
 const ChallengePage = () => {
 
@@ -29,8 +30,9 @@ const ChallengePage = () => {
   const [title, setTitle] = useState(''); //챌린지 이름 저장
   const [description, setDescription] = useState(''); //챌린지 설명 저장
   const [challenges, setChallenges] = useState([]); // 생성된 챌린지 목록을 저장할 배열
+  const { user } = useAuth(); // 1. 전역 상태에서 로그인한 유저 정보 가져오기
 
-  const userEmail = "test@test.com"; // 임시 유저 이메일
+  const userEmail = user?.email || ""; // 2. 실제 로그인한 유저 이메일 할당
 
   useEffect(() => {
     fetchChallenges();
@@ -62,7 +64,7 @@ const ChallengePage = () => {
   // 챌린지 삭제 함수
   const handleDeleteChallenge = async (id) => {
     try {
-      await instance.delete(`/api/challenge/${id}`, { params: { userEmail } });
+      await instance.delete(`/api/challenge/${id}`, { params: { userEmail: user?.email } }); // 3. 키(Key)를 지정하여 문법 오류 해결
       setChallenges(prev => prev.filter(challenge => challenge.challengeId !== id));
     } catch (error) {
       console.error("챌린지 삭제 실패:", error);
