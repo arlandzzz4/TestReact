@@ -12,7 +12,7 @@
  *   - 1200px+ (xl) → 4열
  */
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { instance } from '@/api/axios' // 하드코딩 대신 설정된 axios 인스턴스 사용
 import {
   CRow,
@@ -42,23 +42,65 @@ const CommunityPosts = () => {
   const [posts, setPosts] = useState([])
   const [activeTab, setActiveTab] = useState('전체')
   const [searchQuery, setSearchQuery] = useState('')
+
+    const [lastId, setLastId] = useState(null)       // 마지막으로 불러온 게시글 ID
+  const [hasMore, setHasMore] = useState(true)     // 더 불러올 게시글이 있는지
+  const [loading, setLoading] = useState(false)    // 로딩 중 여부
+  const observerRef = useRef(null)                 // IntersectionObserver 타겟
+    const loadingRef = useRef(false)                 // loading을 ref로도 관리
+  const hasMoreRef = useRef(true)                  // hasMore를 ref로도 관리
+  const lastIdRef = useRef(null)                   // lastId를 ref로도 관리
+
   const navigate = useNavigate()
+  const LIMIT = 10
 
   //API 호출
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const res = await instance.get('/api/post/search/post', {
-          params: { limit: 10 }
-        })
-        setPosts(res.data)
-      } catch (err) {
-        console.error(err)
-      }
-    }
+  const fetchPosts = useCallback(async () => {
+    if (loadingRef.current || !hasMoreRef.current) return
+    loadingRef.current = true
+    setLoading(true)
 
+    try {
+      const res = await instance.get('/api/post/search/post', {
+        params: { lastId: lastIdRef.current, limit: LIMIT }
+      })
+      const newPosts = res.data
+
+      setPosts(prev => [...prev, ...newPosts])
+
+      if (newPosts.length < LIMIT) {
+        hasMoreRef.current = false
+        setHasMore(false) // 더 이상 불러올 게시글 없음
+      } else {
+        const newLastId = newPosts[newPosts.length - 1].postId
+        lastIdRef.current = newLastId
+        setLastId(newLastId) // 마지막 게시글 ID 저장
+      }
+    } catch (err) {
+      console.error(err)
+    } finally {
+      loadingRef.current = false
+      setLoading(false)
+    }
+  }, [])
+
+  // 최초 로딩
+  useEffect(() => {
     fetchPosts()
   }, [])
+
+  // IntersectionObserver - 스크롤 감지
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        fetchPosts()
+      }
+    }, { threshold: 1.0 })
+
+    if (observerRef.current) observer.observe(observerRef.current)
+
+    return () => observer.disconnect()
+  }, [fetchPosts])
 
   //카테고리 변환 함수
   const getCategoryName = (id) => {
@@ -218,6 +260,23 @@ const mappedPosts = posts.map(post => ({
           style={{ color: 'var(--cui-secondary-color)', fontSize: '14px' }}
         >
           검색 결과가 없습니다.
+        </div>
+      )}
+
+       {/* ── 무한 스크롤 감지 타겟 ── */}
+      <div ref={observerRef} style={{ height: 1 }} />
+
+      {/* ── 로딩 표시 ── */}
+      {loading && (
+        <div className="text-center py-3" style={{ color: 'var(--cui-secondary-color)', fontSize: '14px' }}>
+          불러오는 중...
+        </div>
+      )}
+
+      {/* ── 더 이상 게시글 없음 ── */}
+      {!hasMore && posts.length > 0 && (
+        <div className="text-center py-3" style={{ color: 'var(--cui-secondary-color)', fontSize: '14px' }}>
+          모든 게시글을 불러왔습니다.
         </div>
       )}
 
