@@ -13,7 +13,7 @@ import {
 import CIcon from '@coreui/icons-react'
 import {cilClipboard} from '@coreui/icons'
 import { useCodeGroupSearch } from '@/hooks/queries/useCommonQuery';
-import CommonPagination from '../comment/CommonPagination';
+import CommonPagination from '../common/CommonPagination';
 
 const PostReport = ({ 
   activeKey, 

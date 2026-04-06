@@ -17,7 +17,7 @@ import {
 } from '@coreui/react'
 import { useCodeGroupSearch } from '@/hooks/queries/useCommonQuery';
 import StatusBadge from '../common/StatusBadge';
-import CommonPagination from '../comment/CommonPagination';
+import CommonPagination from '../common/CommonPagination';
 import { usePostList, usePostTotalCountQuery } from '@/hooks/queries/usePostQuery';
 import CommonConfirmModal from '../common/CommonConfirmModal'
 import { useDeletePostMutation } from '@/hooks/mutations/usePostMutation'

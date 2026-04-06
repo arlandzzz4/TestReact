@@ -18,7 +18,7 @@ import {
 import { useUserList, useUserTotalCountQuery } from '@/hooks/queries/useUserQuery';
 import { useCodeGroupSearch } from '@/hooks/queries/useCommonQuery';
 import StatusBadge from '../common/StatusBadge';
-import CommonPagination from '../comment/CommonPagination';
+import CommonPagination from '../common/CommonPagination';
 import UserStatusModal from './UserStatusModal';
 import { useUpdateUserStatusCodeMutation } from '@/hooks/mutations/useUserMutation';
 
