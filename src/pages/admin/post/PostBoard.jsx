@@ -13,7 +13,7 @@ import {
   CTableRow,
   CFormInput,
   CButton,
-  CButtonGroup,
+  CLink,
 } from '@coreui/react'
 import { useCodeGroupSearch } from '@/hooks/queries/useCommonQuery';
 import StatusBadge from '../common/StatusBadge';
@@ -22,6 +22,7 @@ import { usePostList, usePostTotalCountQuery } from '@/hooks/queries/usePostQuer
 import CommonConfirmModal from '../common/CommonConfirmModal'
 import { useDeletePostMutation } from '@/hooks/mutations/usePostMutation'
 import { useAuth } from '../../../hooks/useAuth'
+import { useNavigate } from 'react-router-dom';
 
 const PostBoard = () => {
     const [size, setSize] = useState(10);
@@ -41,6 +42,8 @@ const PostBoard = () => {
     const {data: totalCnt= 0, reCounting} = usePostTotalCountQuery({word: searchWord, delYn:'N'});
     const {data: posts, isLoading, refetch} = usePostList({size, offset, word: searchWord, delYn:'N'});
     const {data: statusCodes} = useCodeGroupSearch('REPORT_STATUS', true);
+
+    const navigate = useNavigate();
 
     const onDeleteClick = (post) => {
       setIsModalOpen(true);
@@ -157,7 +160,21 @@ const PostBoard = () => {
                   posts.map((item, index) => (
                     <CTableRow key={item.id || index}>
                       <CTableDataCell>{offset + index + 1}</CTableDataCell>
-                      <CTableDataCell>{item.title}</CTableDataCell>
+                      <CTableDataCell>
+                        <div 
+        onClick={() => {
+          if (item.postId) {
+            navigate(`/post/${item.postId}`); // 2. 클릭 시 이동
+          } else {
+            console.error("postId가 없습니다!", item);
+          }
+        }}
+        className="text-dark fw-bold"
+        style={{ cursor: 'pointer', textDecoration: 'none' }}
+      >
+                            {item.title}
+                        </div>
+                      </CTableDataCell>
                       <CTableDataCell>{item.nickname}</CTableDataCell>
                       <CTableDataCell>{item.createdAt}</CTableDataCell>
                       <CTableDataCell>{item.comments}</CTableDataCell>
