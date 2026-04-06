@@ -99,8 +99,8 @@ export default function WritePost() {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault(); // 브라우저 새로고침 방지
+const handleSubmit = async (e) => {
+    e.preventDefault();
     const formErrors = validateForm();
     const categoryCode = getCategoryId(category);
     if (Object.keys(formErrors).length > 0) {
@@ -133,8 +133,8 @@ export default function WritePost() {
       alert('게시글이 성공적으로 등록되었습니다.');
       navigate(-1); // 이전 페이지로 돌아가기
     } catch (error) {
-      console.error('게시글 등록 실패:', error);
-      alert('게시글 등록에 실패했습니다. 잠시 후 다시 시도해 주세요.');
+      console.error('게시글 처리 실패:', error);
+      alert('글 등록 오류! 잠시 후 다시 시도해 주세요.');
     }
   };
 
