@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
-import { searchPostTotalCount, searchPostTodayCount, searchCommentTotalCount, searchCommentTodayCount, searchPostList} from '@/api/postApi';
+import { searchPostTotalCount, searchPostTodayCount, searchCommentTotalCount, searchCommentTodayCount, searchPostList, searchCommentList} from '@/api/postApi';
 
-export const usePostTotalCountQuery = (enabled = true) => {
+export const usePostTotalCountQuery = (searchParams, enabled = true) => {
     return useQuery({
-      queryKey: ['PostTotalCnt'],
-      queryFn: ()=>searchPostTotalCount(),
+      queryKey: ['PostTotalCnt', searchParams],
+      queryFn: ()=>searchPostTotalCount(searchParams),
       enabled: enabled,
       retry: false,
       staleTime: 1000 * 60 * 5,
@@ -21,10 +21,10 @@ export const usePostTodayCountQuery = (enabled = true) => {
     });
 };
 
-export const useCommentTotalCountQuery = (enabled = true) => {
+export const useCommentTotalCountQuery = (searchParams, enabled = true) => {
     return useQuery({
-      queryKey: ['commentTotalCnt'],
-      queryFn: ()=>searchCommentTotalCount(),
+      queryKey: ['commentTotalCnt', searchParams],
+      queryFn: ()=>searchCommentTotalCount(searchParams),
       enabled: enabled,
       retry: false,
       staleTime: 1000 * 60 * 5,
@@ -45,6 +45,16 @@ export const usePostList = (searchParams, enabled = true) => {
     return useQuery({
       queryKey: ['posts', searchParams],
       queryFn: ()=>searchPostList(searchParams),
+      enabled: enabled,
+      retry: false,
+      staleTime: 1000 * 60 * 5,
+    });
+};
+
+export const useCommentList = (searchParams, enabled = true) => {
+    return useQuery({
+      queryKey: ['posts', searchParams],
+      queryFn: ()=>searchCommentList(searchParams),
       enabled: enabled,
       retry: false,
       staleTime: 1000 * 60 * 5,

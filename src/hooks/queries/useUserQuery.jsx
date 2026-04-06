@@ -14,10 +14,10 @@ export const useUserQuery = () => {
   return { useEmailSearch };
 };
 
-export const useUserTotalCountQuery = (enabled = true) => {
+export const useUserTotalCountQuery = (searchParams, enabled = true) => {
     return useQuery({
-      queryKey: ['totalCnt'],
-      queryFn: ()=>searchUserTotalCount(),
+      queryKey: ['totalCnt', searchParams],
+      queryFn: ()=>searchUserTotalCount(searchParams),
       enabled: enabled,
       retry: false,
       staleTime: 1000 * 60 * 5,

@@ -15,7 +15,7 @@ import {cilClipboard} from '@coreui/icons'
 import { useCodeGroupSearch } from '@/hooks/queries/useCommonQuery';
 import CommonPagination from '../comment/CommonPagination';
 
-const ReportReport = ({ 
+const PostReport = ({ 
   activeKey, 
   postReports, 
   isLoading, 
@@ -107,4 +107,4 @@ return (
 )
 }
 
-export default ReportReport
+export default PostReport

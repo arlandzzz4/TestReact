@@ -32,7 +32,7 @@ const UserBoard = () => {
     const [searchEmail, setSearchEmail] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
-    const {data: totalCnt= 0} = useUserTotalCountQuery();
+    const {data: totalCnt= 0} = useUserTotalCountQuery({userStatusCode, email: searchEmail});
     const {data, isLoading, refetch} = useUserList({size, offset, userStatusCode, email: searchEmail});
     const {data: statusCodes} = useCodeGroupSearch('USER_STATUS', true);
 

@@ -3,7 +3,7 @@ import { CRow, CCol, CCard, CCardBody } from '@coreui/react'
 import { useCommentTotalCountQuery, useCommentTodayCountQuery } from '@/hooks/queries/usePostQuery';
  
 const DashCommentCard = () => {
-    const {data: totalCnt} = useCommentTotalCountQuery();
+    const {data: totalCnt} = useCommentTotalCountQuery({delYn: 'N'});
     const {data: todayCnt} = useCommentTodayCountQuery();
     
     return (

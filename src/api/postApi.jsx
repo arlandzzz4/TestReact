@@ -1,8 +1,8 @@
 import { instance } from './axios.jsx';
 
-export const searchPostTotalCount = async () => {
+export const searchPostTotalCount = async (data) => {
   try {
-    const response = await instance.get(`/api/post/search/totalcnt`);
+    const response = await instance.get(`/api/post/search/totalcnt`, {params : data});
     return response.data;
   } catch (error) {
     console.error("총 게시글 조회 중 오류 발생:", error);
@@ -20,9 +20,9 @@ export const searchPostTodayCount = async () => {
   }
 };
 
-export const searchCommentTotalCount = async () => {
+export const searchCommentTotalCount = async (data) => {
   try {
-    const response = await instance.get(`/api/post/comment/search/totalcnt`);
+    const response = await instance.get(`/api/post/comment/search/totalcnt`, {params : data});
     return response.data;
   } catch (error) {
     console.error("총 게시글 조회 중 오류 발생:", error);
@@ -43,6 +43,16 @@ export const searchCommentTodayCount = async () => {
 export const searchPostList = async (data) => {
   try {
     const response = await instance.get(`/api/post/search/post`, {params : data});
+    return response.data;
+  } catch (error) {
+    console.error("게시글 조회 중 오류 발생:", error);
+    throw error;
+  }
+};
+
+export const searchCommentList = async (data) => {
+  try {
+    const response = await instance.get(`/api/post/comment/search/comment`, {params : data});
     return response.data;
   } catch (error) {
     console.error("게시글 조회 중 오류 발생:", error);

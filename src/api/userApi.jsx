@@ -11,9 +11,9 @@ export const searchEmail = async (email) => {
   }
 };
 
-export const searchUserTotalCount = async () => {
+export const searchUserTotalCount = async (data) => {
   try {
-    const response = await instance.get(`/api/user/search/totalcnt`);
+    const response = await instance.get(`/api/user/search/totalcnt`, {params : data});
     return response.data;
   } catch (error) {
     console.error("총 유저 조회 중 오류 발생:", error);
