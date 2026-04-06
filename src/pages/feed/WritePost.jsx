@@ -24,6 +24,7 @@ import { instance } from '@/api/axios';
 import '../../scss/WritePost.scss'; // SCSS 파일 import
 import '../../scss/style.scss'; // SCSS 파일 import
 import { useParams } from 'react-router-dom';
+import { updatePost } from '@/api/postApi';
 
 export default function WritePost() {
   const navigate = useNavigate();
@@ -96,8 +97,8 @@ export default function WritePost() {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault(); // 브라우저 새로고침 방지
+const handleSubmit = async (e) => {
+    e.preventDefault();
     const formErrors = validateForm();
     const categoryCode = getCategoryId(category);
     if (Object.keys(formErrors).length > 0) {
@@ -107,37 +108,41 @@ export default function WritePost() {
     setErrors({});
 
     try {
-      // 1. 게시글 먼저 등록 → post_id 반환
-      const response = await instance.post('/api/postwrite/create', {
-        userEmail: user,
-        categoryCode: categoryCode,
-        title: title,
-        content: content
-      });
-
-      const postId = response.data; // 반환된 post_id
-
-      // 2. 이미지가 있으면 post_id와 함께 업로드
-      if (images.length > 0) {
-        const formData = new FormData();
-        formData.append('postId', postId);
-        images.forEach((img) => {
-          formData.append('file', img.file);
+      if (isEditMode) {
+        await updatePost(id, {
+          title: title,
+          content: content,
+          categoryCode: categoryCode,
+        });
+        alert('게시글이 수정되었습니다.');
+        navigate(`/post/${id}`);
+      } else {
+        const response = await instance.post('/api/postwrite/create', {
+          userEmail: user,
+          categoryCode: categoryCode,
+          title: title,
+          content: content
         });
 
-        await instance.post('/api/common/uploadList', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
+        const postId = response.data;
+
+        if (images.length > 0) {
+          const formData = new FormData();
+          formData.append('postId', postId);
+          images.forEach((img) => {
+            formData.append('file', img.file);
+          });
+          await instance.post('/api/common/uploadList', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+          });
+        }
+
+        alert('게시글이 성공적으로 등록되었습니다.');
+        navigate(-1);
       }
-
-      console.log('게시글 등록 성공:', response.data);
-      alert('게시글이 성공적으로 등록되었습니다.');
-      navigate(-1); // 이전 페이지로 돌아가기
     } catch (error) {
-      console.error('게시글 등록 실패:', error);
-      alert('게시글 등록에 실패했습니다. 잠시 후 다시 시도해 주세요.');
+      console.error('게시글 처리 실패:', error);
+      alert('글 등록 오류! 잠시 후 다시 시도해 주세요.');
     }
   };
 
