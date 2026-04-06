@@ -38,7 +38,7 @@ const PostBoard = () => {
     const [confirmModalWriter, setConfirmModalWriter] = useState('');
     const [confirmModalOnConfirm , setConfirmModalOnConfirm] = useState(() => () => {});
 
-    const {data: totalCnt= 0} = usePostTotalCountQuery({word: searchWord});
+    const {data: totalCnt= 0, reCounting} = usePostTotalCountQuery({word: searchWord});
     const {data, isLoading, refetch} = usePostList({size, offset, word: searchWord});
     const {data: statusCodes} = useCodeGroupSearch('REPORT_STATUS', true);
 
@@ -56,6 +56,7 @@ const PostBoard = () => {
         deletePostMutation.mutate(deleteData, {
             onSuccess: () => {          
             refetch();
+            reCounting();
             setIsModalOpen(false);
             },
             onError: (error) => {
