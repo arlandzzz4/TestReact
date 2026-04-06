@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { searchPostTotalCount, searchPostTodayCount, searchCommentTotalCount, searchCommentTodayCount, searchPostList, searchCommentList} from '@/api/postApi';
+import { searchPostTotalCount, searchPostTodayCount, searchPostList } from '@/api/postApi';
 
 export const usePostTotalCountQuery = (searchParams, enabled = true) => {
     return useQuery({
@@ -21,26 +21,6 @@ export const usePostTodayCountQuery = (enabled = true) => {
     });
 };
 
-export const useCommentTotalCountQuery = (searchParams, enabled = true) => {
-    return useQuery({
-      queryKey: ['commentTotalCnt', searchParams],
-      queryFn: ()=>searchCommentTotalCount(searchParams),
-      enabled: enabled,
-      retry: false,
-      staleTime: 1000 * 60 * 5,
-    });
-};
-
-export const useCommentTodayCountQuery = (enabled = true) => {
-    return useQuery({
-      queryKey: ['commentTodayCnt'],
-      queryFn: ()=>searchCommentTodayCount(),
-      enabled: enabled,
-      retry: false,
-      staleTime: 1000 * 60 * 5,
-    });
-};
-
 export const usePostList = (searchParams, enabled = true) => {
     return useQuery({
       queryKey: ['posts', searchParams],
@@ -51,12 +31,3 @@ export const usePostList = (searchParams, enabled = true) => {
     });
 };
 
-export const useCommentList = (searchParams, enabled = true) => {
-    return useQuery({
-      queryKey: ['posts', searchParams],
-      queryFn: ()=>searchCommentList(searchParams),
-      enabled: enabled,
-      retry: false,
-      staleTime: 1000 * 60 * 5,
-    });
-};

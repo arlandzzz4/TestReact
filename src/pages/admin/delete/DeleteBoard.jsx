@@ -2,7 +2,8 @@ import React, { useState } from 'react'
 import { CNav, CNavItem, CNavLink, CTabContent } from '@coreui/react'
 import PostDelete from './PostDelete'
 import CommentDelete from './CommentDelete'
-import { usePostList, usePostTotalCountQuery, useCommentList, useCommentTotalCountQuery } from '@/hooks/queries/usePostQuery';
+import { usePostList, usePostTotalCountQuery } from '@/hooks/queries/usePostQuery';
+import { useCommentList, useCommentTotalCountQuery } from '../../../hooks/queries/useCommentQuery';
 
 const DeleteBoard = () => {
   const [size] = useState(10)

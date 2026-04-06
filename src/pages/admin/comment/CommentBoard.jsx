@@ -18,43 +18,39 @@ import {
 import { useCodeGroupSearch } from '@/hooks/queries/useCommonQuery';
 import StatusBadge from '../common/StatusBadge';
 import CommonPagination from '../common/CommonPagination';
-import { usePostList, usePostTotalCountQuery } from '@/hooks/queries/usePostQuery';
+import { useCommentList, useCommentTotalCountQuery } from '@/hooks/queries/useCommentQuery';
 import CommonConfirmModal from '../common/CommonConfirmModal'
-import { useDeletePostMutation } from '@/hooks/mutations/usePostMutation'
-import { useAuth } from '../../../hooks/useAuth'
+import { useDeleteCommentMutation } from '@/hooks/mutations/useCommentMutation'
 
-const PostBoard = () => {
+const CommentBoard = () => {
     const [size, setSize] = useState(10);
     const [offset, setOffset] = useState(0);
     const [searchInput, setSearchInput] = useState(''); 
     const [searchWord, setSearchWord] = useState('');
-    const { user } = useAuth();
-    const deletePostMutation = useDeletePostMutation();
+    const deleteCommentMutation = useDeleteCommentMutation();
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const [confirmModalTitle, setConfirmModalTitle] = useState('게시글을 삭제하시겠습니까?');
+    const [confirmModalTitle, setConfirmModalTitle] = useState('댓글을 삭제하시겠습니까?');
     const [confirmModalContent, setConfirmModalContent] = useState('');
-    const [confirmModalGuide, setConfirmModalGuide] = useState('삭제된 게시글은 복구할 수 없습니다.\n해당 게시글의 댓글도 함께 삭제됩니다.');
+    const [confirmModalGuide, setConfirmModalGuide] = useState('삭제된 댓글은 복구할 수 없습니다.\n해당 게시글의 댓글도 함께 삭제됩니다.');
     const [confirmModalWriter, setConfirmModalWriter] = useState('');
     const [confirmModalOnConfirm , setConfirmModalOnConfirm] = useState(() => () => {});
 
-    const {data: totalCnt= 0, reCounting} = usePostTotalCountQuery({word: searchWord, delYn:'N'});
-    const {data: posts, isLoading, refetch} = usePostList({size, offset, word: searchWord, delYn:'N'});
+    const {data: totalCnt= 0, reCounting} = useCommentTotalCountQuery({word: searchWord, delYn:'N'});
+    const {data: comments, isLoading, reComment} = useCommentList({size, offset, word: searchWord, delYn:'N'});
     const {data: statusCodes} = useCodeGroupSearch('REPORT_STATUS', true);
 
-    const onDeleteClick = (post) => {
+    const onDeleteClick = (comment) => {
       setIsModalOpen(true);
-      setConfirmModalContent(post.title.length > 100 ? post.title.slice(0, 100) + '...' : post.title);
-      setConfirmModalWriter(post.nickname);
+      setConfirmModalContent(comment.content.length > 100 ? comment.content.slice(0, 100) + '...' : comment.content);
       const deleteData = {
-        postId: post.postId,
-        deletedId: user.email,
+        postId: comment.postId,
         delYn: 'Y',
       };
       setConfirmModalOnConfirm(() => () => {
-        deletePostMutation.mutate(deleteData, {
+        deleteCommentMutation.mutate(deleteData, {
             onSuccess: () => {          
-            refetch();
+            reComment();
             reCounting();
             setIsModalOpen(false);
             },
@@ -75,7 +71,7 @@ const PostBoard = () => {
     }
     
     //조회
-    const onPostSearch = () => {
+    const onCommentSearch = () => {
         setOffset(0);
         setSearchWord(searchInput);
     };
@@ -98,19 +94,19 @@ const PostBoard = () => {
                 <div className="d-flex align-items-center"> 
                     <CFormInput 
                     size="sm" 
-                    placeholder="제목 또는 작성자로 검색" 
+                    placeholder="댓글 또는 작성자로 검색" 
                     className="me-2 py-1.5" 
                     style={{ maxWidth: '200px' }}
                     value={searchInput}
                     onChange={(e) => setSearchInput(e.target.value)}
-                    onKeyUp={(e) => e.key === 'Enter' && onPostSearch()}
+                    onKeyUp={(e) => e.key === 'Enter' && onCommentSearch()}
                     />
                     <CButton 
                     size="sm" 
                     color="success" 
                     className="text-white me-1 text-nowrap px-3"
                     active
-                    onClick={onPostSearch}
+                    onClick={onCommentSearch}
                     >
                     검색
                     </CButton>
@@ -138,10 +134,10 @@ const PostBoard = () => {
               <CTableHead color="light">
                 <CTableRow>
                   <CTableHeaderCell className="text-center" style={{ width: '50px' }}>No.</CTableHeaderCell>
-                  <CTableHeaderCell>닉네임</CTableHeaderCell>
-                  <CTableHeaderCell>이메일</CTableHeaderCell>
-                  <CTableHeaderCell>가입일</CTableHeaderCell>
-                  <CTableHeaderCell>댓글</CTableHeaderCell>
+                  <CTableHeaderCell>댓글 내용</CTableHeaderCell>
+                  <CTableHeaderCell>작성자</CTableHeaderCell>
+                  <CTableHeaderCell>게시글</CTableHeaderCell>
+                  <CTableHeaderCell>작성일</CTableHeaderCell>
                   <CTableHeaderCell className="text-center">상태</CTableHeaderCell>
                   <CTableHeaderCell className="text-center">관리</CTableHeaderCell>
                 </CTableRow>
@@ -153,14 +149,14 @@ const PostBoard = () => {
                       데이터를 불러오는 중입니다...
                     </CTableDataCell>
                   </CTableRow>
-                ) :Array.isArray(posts) && posts.length > 0 ? (
-                  posts.map((item, index) => (
+                ) :Array.isArray(comments) && comments.length > 0 ? (
+                  comments.map((item, index) => (
                     <CTableRow key={item.id || index}>
                       <CTableDataCell>{offset + index + 1}</CTableDataCell>
-                      <CTableDataCell>{item.title}</CTableDataCell>
+                      <CTableDataCell>{item.content}</CTableDataCell>
                       <CTableDataCell>{item.nickname}</CTableDataCell>
+                      <CTableDataCell>{item.title}</CTableDataCell>
                       <CTableDataCell>{item.createdAt}</CTableDataCell>
-                      <CTableDataCell>{item.comments}</CTableDataCell>
                       <CTableDataCell className="text-center">
                         <StatusBadge status={statusCodes?.[item.reportStatusCode] || '정상'} />
                       </CTableDataCell>
@@ -211,4 +207,4 @@ const PostBoard = () => {
   )
 }
 
-export default PostBoard
+export default CommentBoard
