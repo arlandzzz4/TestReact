@@ -8,8 +8,7 @@ import {
   CTableDataCell,
   CButton,
   CRow,
-  CCol,
-  CIcon
+  CCol
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {cilClipboard} from '@coreui/icons'
