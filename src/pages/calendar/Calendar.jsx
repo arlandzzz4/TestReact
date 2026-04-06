@@ -6,8 +6,7 @@ import '../../scss/calendar.scss'
 
 const dayKey = (y, m, d) => `${y}-${m}-${d}`
 
-const hasMealData = (data) =>
-  data && Object.values(data.meals ?? {}).some(arr => arr.length > 0)
+const hasMealData = (data) => data?.dietLoggedYn ?? false
 
 const totalKcal = (meals) =>
   Object.values(meals ?? {}).flat().reduce((s, i) => s + (parseInt(i.kcal) || 0), 0)
@@ -27,7 +26,7 @@ export default function CalendarPage() {
   const [month, setMonth] = useState(TODAY.m)
   const [detailKey, setDetailKey] = useState(null)
 
-  const { data: dietData = {} } = useDietByMonth(year, month)
+const { data: dietData = {} } = useDietByMonth(year, month, user?.email)
   const { mutate: saveExercise } = useSaveExercise()
 
   const prevMonth = () => {
@@ -91,9 +90,9 @@ export default function CalendarPage() {
             const isToday = !isOther && year === TODAY.y && month === TODAY.m && day === TODAY.d
             const dk = isOther ? null : dayKey(year, month, day)
             const data = dk ? dietData[dk] : null
-            const hasMeal = hasMealData(data)
-            const kcal = hasMeal ? totalKcal(data.meals) : 0
-            const isChecked = data?.exercise ?? false
+            const hasMeal = data?.dietLoggedYn ?? false
+            const kcal = data?.calorieIntake ?? 0
+            const isChecked = data?.exerciseYn ?? false
 
             const dispDay = isOther
               ? day < 1 ? prevDays + day : day - daysInMonth
@@ -122,7 +121,7 @@ export default function CalendarPage() {
                         checked={isChecked}
                         onChange={e => {
                           e.stopPropagation()
-                          saveExercise({ dateKey: dk, checked: e.target.checked })
+                          saveExercise({ dateKey: dk, checked: e.target.checked, userEmail: user?.email })
                         }}
                       />
                       <span className="iob-exercise-label">운동</span>
