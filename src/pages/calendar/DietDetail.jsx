@@ -1,9 +1,9 @@
-import { useState } from 'react'
 import { CModal, CModalHeader, CModalBody, CModalFooter, CButton } from '@coreui/react'
 import SearchModal from '../../components/SearchModal'
 import FavMealModal from '../../components/FavMealModal'
-import { useSaveDiet, useSaveWeight, useFavMeals, useDeleteFavMeal } from '../../hooks/useDiet'
+import { useSaveDiet, useSaveWeight, useFavMeals, useDeleteFavMeal, useDietDetail } from '../../hooks/useDiet'
 import '../../scss/calendar.scss'
+import { useState, useEffect } from 'react'
 
 const MEAL_KEYS = ['breakfast', 'lunch', 'dinner', 'snack']
 const MEAL_LABELS = { breakfast: '아침', lunch: '점심', dinner: '저녁', snack: '간식' }
@@ -11,22 +11,28 @@ const MEAL_LABELS = { breakfast: '아침', lunch: '점심', dinner: '저녁', sn
 const totalKcal = (meals) =>
   Object.values(meals).flat().reduce((s, i) => s + (parseInt(i.kcal) || 0), 0)
 
-export default function DietDetail({ dateKey, initialData, prevWeight, onBack }) {
-  const [meals, setMeals] = useState(
-    initialData?.meals ?? { breakfast: [], lunch: [], dinner: [], snack: [] }
-  )
-  const [weight, setWeight] = useState(initialData?.weight ?? '')
+export default function DietDetail({ dateKey, prevWeight, userEmail, onBack }) {
+  const [y, m, d] = dateKey.split('-')
+  const date = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`
+
+  const { data: detailData } = useDietDetail(date, userEmail)
+
+  const [meals, setMeals] = useState({ breakfast: [], lunch: [], dinner: [], snack: [] })
+  const [weight, setWeight] = useState('')
   const [searchModal, setSearchModal] = useState({ open: false, mealKey: 'breakfast' })
   const [favModalOpen, setFavModalOpen] = useState(false)
   const [mealPickModal, setMealPickModal] = useState({ open: false, favId: null })
 
+  useEffect(() => {
+    if (detailData?.meals) setMeals(detailData.meals)
+    if (detailData?.weight) setWeight(detailData.weight)
+}, [detailData])
+
   const { mutate: saveDiet } = useSaveDiet()
   const { mutate: saveWeight } = useSaveWeight()
-  const { data: favMealsData } = useFavMeals()
+  const { data: favMealsData } = useFavMeals(userEmail)
   const favMeals = Array.isArray(favMealsData) ? favMealsData : []
   const { mutate: deleteFavMeal } = useDeleteFavMeal()
-
-  const [y, m, d] = dateKey.split('-')
 
   const handleAddFood = (mealKey, food) => {
     setMeals(prev => ({
@@ -42,11 +48,11 @@ export default function DietDetail({ dateKey, initialData, prevWeight, onBack })
     }))
   }
 
-  const handleSaveWeight = () => saveWeight({ dateKey, weight })
+  const handleSaveWeight = () => saveWeight({ dateKey, weight, userEmail: userEmail})
 
   const handleBack = () => {
     const hasMeal = Object.values(meals).some(arr => arr.length > 0)
-    if (hasMeal || weight) saveDiet({ dateKey, meals, weight })
+    if (hasMeal || weight) saveDiet({ dateKey, meals, weight, userEmail: userEmail})
     onBack()
   }
 
@@ -154,7 +160,7 @@ export default function DietDetail({ dateKey, initialData, prevWeight, onBack })
                     </div>
                     <div className="iob-fav-item-right">
                       <button className="iob-fav-use-btn" onClick={() => setMealPickModal({ open: true, favId: fav.id })}>추가</button>
-                      <button className="iob-fav-del-btn" onClick={() => deleteFavMeal(fav.id)}>×</button>
+                      <button className="iob-fav-del-btn" onClick={() => deleteFavMeal({ id: fav.id, email: userEmail })}>×</button>
                     </div>
                   </div>
                 ))
@@ -173,7 +179,7 @@ export default function DietDetail({ dateKey, initialData, prevWeight, onBack })
       />
 
       {/* 즐겨찾기 저장 모달 */}
-      <FavMealModal isOpen={favModalOpen} onClose={() => setFavModalOpen(false)} />
+      <FavMealModal isOpen={favModalOpen} onClose={() => setFavModalOpen(false)} userEmail={userEmail} />
 
       {/* 끼니 선택 모달 */}
       <CModal

@@ -34,6 +34,7 @@ import {
   CNavItem,
   useColorModes,
   CButton,
+  CBadge,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
@@ -46,9 +47,11 @@ import {
   cilSun,
 } from '@coreui/icons'
 
-import { AppHeaderDropdown } from './header/index'
+import { useLogoutMutation } from '../hooks/mutations/useAuthMutation'
+import { useAuth } from '@/hooks/useAuth'
 
-/**
+
+/** 
  * AppHeader functional component
  *
  * Manages header UI including:
@@ -60,14 +63,25 @@ import { AppHeaderDropdown } from './header/index'
  * @returns {React.ReactElement} Header component with navigation and controls
  */
 const AppHeader = () => {
+  const { user, isAuthenticated, isAdmin, isAuthLoading } = useAuth();
+  
   const headerRef = useRef()
   const { colorMode, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
 
   const location = useLocation()
-  const isWritePage = location.pathname === '/write' || location.pathname.startsWith('/post/edit/')
+  const isWritePage = location.pathname === '/write'
 
   const dispatch = useDispatch()
   const sidebarShow = useSelector((state) => state.sidebarShow)
+
+  const { mutate: logoutMutate } = useLogoutMutation();
+  const handleLogout = () => {
+    if (!user) {
+      console.warn("로그인 정보가 없어 바로 클라이언트 로그아웃을 진행합니다.");
+    }
+
+    logoutMutate(user); 
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -115,9 +129,61 @@ const AppHeader = () => {
           </CNavItem>
         </CHeaderNav>
         <CHeaderNav className='ms-auto'>
-          <CButton to="/login" as={NavLink}
+          {isAuthenticated ?
+          <div className="d-flex align-items-center gap-3">
+            <CNavLink
+              as={NavLink}
+              to="/notifications"
+              className="position-relative text-decoration-none" 
+              style={{ 
+                cursor: 'pointer', 
+                fontSize: '24px', 
+                lineHeight: 1, 
+                padding: '4px 8px' 
+              }}>
+              🔔
+            </CNavLink>
+            {/* 유저 프로필 동그라미 (클릭 시 마이페이지 이동) */}
+            <CNavLink
+              as={NavLink}
+              to="/mypage"
+              title={`${user?.nickname}님의 마이페이지`}
+              className="text-decoration-none"
+              style={{
+                width: 36,
+                height: 36,
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, #d4e8db, #6aab81)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '14px',
+                fontWeight: 700,
+                color: '#3d6b4f',
+                flexShrink: 0,
+                border: 'none',
+              }}
+            >
+              {user?.nickname ? user.nickname[0] : 'U'}
+            </CNavLink>
+            <CButton onClick={handleLogout}
+                     style={{ backgroundColor: '#f0f0f0', color: '#5c5c5c', border: '1px solid #e1e1e1', borderRadius: '40px'}}
+            >Logout</CButton>
+          </div>
+
+          : <CButton to="/login" as={NavLink}
                     color="green"
                         >Join Us</CButton>
+          }
+          {isAdmin && (
+            <CButton 
+              to="/admin/dashboard" as={NavLink}
+              color="green"
+              style={{ marginLeft: '10px' }}
+            >
+              관리자
+            </CButton>
+          )}
         </CHeaderNav>
       </CContainer>
     </CHeader>

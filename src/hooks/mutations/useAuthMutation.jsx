@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { loginUser, logoutUser, registUser } from '../../api/authApi';
 import { useAuthStore } from '../../store/useAuthStore';
 import { handleLoginRedirect } from '@/utils/navigation';
-
+ 
 export const useLoginMutation = () => {
   const navigate = useNavigate();
   const location = useLocation();

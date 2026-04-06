@@ -1,0 +1,41 @@
+import { instance } from './axios.jsx';
+
+export const searchReportTotalCount = async (data) => {
+  try {
+    const response = await instance.get(`/api/report/search/totalcnt`, { params: data });
+    return response.data;
+  } catch (error) {
+    console.error("미처리 신고 중 오류 발생:", error);
+    throw error;
+  }
+};
+
+export const searchReportTodayCount = async (data) => {
+  try {
+    const response = await instance.get(`/api/report/search/todaycnt`, { params: data });
+    return response.data;
+  } catch (error) {
+    console.error("오늘 신고 조회 중 오류 발생:", error);
+    throw error;
+  }
+};
+
+export const searchReportList = async (data) => {
+  try {
+    const response = await instance.get(`/api/report/search/report`, {params : data});
+    return response.data;
+  } catch (error) {
+    console.error("신고 조회 중 오류 발생:", error);
+    throw error;
+  }
+};
+
+export const updateReportStatusCode = async (data) => {
+  try {
+    const response = await instance.patch(`/api/report/updateReportStatusCode`, data );
+    return response.data;
+  } catch (error) {
+    console.error("신고 상태 코드 업데이트 중 오류 발생:", error);
+    throw error;
+  }
+};

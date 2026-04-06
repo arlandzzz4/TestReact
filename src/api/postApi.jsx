@@ -1,54 +1,128 @@
-import { instance } from './axios';
+import { instance } from './axios.jsx';
 
-// 게시글 상세 조회
-export const getPostDetail = (postId) => {
-  return instance.get(`/api/post/${postId}`);
+export const searchPostTotalCount = async (data) => {
+  try {
+    const response = await instance.get(`/api/post/search/totalcnt`, {params : data});
+    return response.data;
+  } catch (error) {
+    console.error("총 게시글 조회 중 오류 발생:", error);
+    throw error;
+  }
 };
 
-// 댓글 목록 조회
-export const getCommentList = (postId) => {
-  return instance.get(`/api/comment/${postId}`);
+export const searchPostTodayCount = async () => {
+  try {
+    const response = await instance.get(`/api/post/search/todaycnt`);
+    return response.data;
+  } catch (error) {
+    console.error("오늘 게시글 조회 중 오류 발생:", error);
+    throw error;
+  }
 };
 
-// 댓글 등록
-export const insertComment = (commentData) => {
-  return instance.post(`/api/comment`, commentData);
+export const searchCommentTotalCount = async (data) => {
+  try {
+    const response = await instance.get(`/api/post/comment/search/totalcnt`, {params : data});
+    return response.data;
+  } catch (error) {
+    console.error("총 게시글 조회 중 오류 발생:", error);
+    throw error;
+  }
 };
 
-// 댓글 삭제
-export const deleteComment = (commentId) => {
-  return instance.delete(`/api/comment/${commentId}`);
+export const searchCommentTodayCount = async () => {
+  try {
+    const response = await instance.get(`/api/post/comment/search/todaycnt`);
+    return response.data;
+  } catch (error) {
+    console.error("오늘 게시글 조회 중 오류 발생:", error);
+    throw error;
+  }
 };
 
-// 게시글 수정
-export const updatePost = (postId, postData) => {
-  return instance.put(`/api/post/${postId}`, postData);
+export const searchPostList = async (data) => {
+  try {
+    const response = await instance.get(`/api/post/search/post`, {params : data});
+    return response.data;
+  } catch (error) {
+    console.error("게시글 조회 중 오류 발생:", error);
+    throw error;
+  }
 };
 
-// 게시글 삭제
-export const deletePost = (postId, userEmail) => {
-  return instance.delete(`/api/post/${postId}`, {
-    params: { userEmail }
-  });
+export const searchCommentList = async (data) => {
+  try {
+    const response = await instance.get(`/api/post/comment/search/comment`, {params : data});
+    return response.data;
+  } catch (error) {
+    console.error("게시글 조회 중 오류 발생:", error);
+    throw error;
+  }
 };
 
-// 게시글 좋아요 토글
-export const togglePostLike = (postId, userEmail) => {
-  return instance.post(`/api/post/${postId}/like`, null, {
-    params: { userEmail }
-  });
+export const deletePost = async (data) => {
+  try {
+    const response = await instance.patch(`/api/post/delete`, data );
+    return response.data;
+  } catch (error) {
+    console.error("게시글 삭제 중 오류 발생:", error);
+    throw error;
+  }
 };
 
-// 댓글 좋아요 토글
-export const toggleCommentLike = (commentId, userEmail) => {
-  return instance.post(`/api/comment/${commentId}/like`, null, {
-    params: { userEmail }
-  });
+export const createPost = async (postData) => {
+  try {
+    const response = await instance.post('/api/postwrite/create', postData);
+    return response.data; // 반환된 post_id
+  } catch (error) {
+    console.error("게시글 등록 중 오류 발생:", error);
+    throw error;
+  }
 };
 
-// 신고 등록
-export const insertReport = (targetCode, targetId, reporterEmail, reasonCode) => {
-  return instance.post(`/api/post/report`, null, {
-    params: { targetCode, targetId, reporterEmail, reasonCode }
-  });
+export const uploadPostImages = async (formData) => {
+  try {
+    const response = await instance.post('/api/photo/uploadList', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("게시글 이미지 업로드 중 오류 발생:", error);
+    throw error;
+  }
+};
+
+export const getPostDetail = async (postId) => {
+  const response = await instance.get(`/api/post/${postId}`);
+  return response;
+};
+
+export const getCommentList = async (postId) => {
+  const response = await instance.get(`/api/comment/list/${postId}`);
+  return response;
+};
+
+export const insertComment = async (data) => {
+  const response = await instance.post(`/api/comment/insert`, data);
+  return response;
+};
+
+export const deleteComment = async (commentId) => {
+  const response = await instance.patch(`/api/comment/delete/${commentId}`);
+  return response;
+};
+
+export const togglePostLike = async (postId, userEmail) => {
+  const response = await instance.post(`/api/like/post`, { postId, userEmail });
+  return response;
+};
+
+export const toggleCommentLike = async (commentId, userEmail) => {
+  const response = await instance.post(`/api/like/comment`, { commentId, userEmail });
+  return response;
+};
+
+export const insertReport = async (targetCode, targetId, userEmail, reasonCode) => {
+  const response = await instance.post(`/api/report/insert`, { targetCode, targetId, userEmail, reasonCode });
+  return response;
 };

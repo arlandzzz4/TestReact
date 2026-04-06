@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { CModal, CModalHeader, CModalBody, CModalFooter, CButton } from '@coreui/react'
 import { useFoodSearch, useSaveFavMeal } from '../hooks/useDiet'
 
-export default function FavMealModal({ isOpen, onClose }) {
+export default function FavMealModal({ isOpen, onClose, userEmail }) {
   const [name, setName] = useState('')
   const [query, setQuery] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
@@ -28,7 +28,7 @@ export default function FavMealModal({ isOpen, onClose }) {
   const handleSave = () => {
     if (!name.trim()) { alert('식단 이름을 입력해주세요.'); return }
     if (staged.length === 0) { alert('음식을 하나 이상 추가해주세요.'); return }
-    saveFavMeal({ name: name.trim(), items: staged })
+    saveFavMeal({ name: name.trim(), items: staged, userEmail })
     handleClose()
   }
 
@@ -92,7 +92,7 @@ export default function FavMealModal({ isOpen, onClose }) {
             results.map(food => {
               const isAdded = staged.some(s => s.name === food.name)
               return (
-                <div key={food.name} className="iob-search-result-item">
+                <div key={food.foodId} className="iob-search-result-item">
                   <div className="iob-result-info">
                     <div className="iob-result-name">{food.name}</div>
                     <div className="iob-result-detail">{food.unit} · {food.kcal}kcal</div>

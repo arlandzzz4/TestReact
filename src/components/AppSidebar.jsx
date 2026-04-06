@@ -16,7 +16,7 @@
  * @example
  * return (
  *   <AppSidebar />
- * )
+ * ) 
  */
 import React, { useMemo } from 'react'
 import { useAuth } from '@/hooks/useAuth' // 👈 인증 상태를 가져오기 위한 훅
@@ -52,7 +52,7 @@ const AppSidebar = () => {
   const dispatch = useDispatch()
   const unfoldable = useSelector((state) => state.sidebarUnfoldable)
   const sidebarShow = useSelector((state) => state.sidebarShow)
-  const { isAuthenticated } = useAuth() // 👈 로그인 상태 확인
+  const { isAuthenticated } = useAuth()
 
   // 로그인 상태에 따라 보여줄 메뉴를 필터링합니다.
   const filteredNav = useMemo(
