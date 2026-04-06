@@ -55,7 +55,7 @@ const CommentBoard = () => {
             setIsModalOpen(false);
             },
             onError: (error) => {
-            console.error('게시글 삭제 실패:', error);
+            console.error('댓글 삭제 실패:', error);
             setIsModalOpen(false);
             },
         });

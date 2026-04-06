@@ -24,7 +24,7 @@ export const useCommentTodayCountQuery = (enabled = true) => {
 
 export const useCommentList = (searchParams, enabled = true) => {
     return useQuery({
-      queryKey: ['posts', searchParams],
+      queryKey: ['comments', searchParams],
       queryFn: ()=>searchCommentList(searchParams),
       enabled: enabled,
       retry: false,
