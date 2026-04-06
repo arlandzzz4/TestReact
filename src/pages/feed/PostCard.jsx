@@ -26,6 +26,7 @@ const TAG_STYLES = {
   자유:     { background: '#f0e6d3', color: '#b07d3a' },
   정보:     { background: '#d3e8df', color: '#2e6b4f' },
   인원모집: { background: '#d9e4f5', color: '#2d4fa0' },
+  공지사항: { background: '#f7e6ea', color: '#a63a50' },
 }
 
 const PostCard = ({ post }) => {

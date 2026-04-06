@@ -108,7 +108,8 @@ const CommunityPosts = () => {
       case '01': return '자유'
       case '02': return '정보'
       case '03': return '인원모집'
-      default: return '공지사항'
+      case '04': return '공지사항'
+      default: return '자유' // 알 수 없는 코드이거나 값이 없을 경우 '자유'로 기본값 설정
     }
   }
 
