@@ -46,10 +46,8 @@ import {
   cilMoon,
   cilSun,
 } from '@coreui/icons'
-import { IoNotifications } from 'react-icons/io5'
 
-import { AppHeaderDropdown } from './header/index'
-import { useLogoutMutation } from '@/hooks/mutations/useAuthMutation';
+import { useLogoutMutation } from '../hooks/mutations/useAuthMutation'
 import { useAuth } from '@/hooks/useAuth'
 
 
