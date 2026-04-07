@@ -3,7 +3,7 @@
     .card {
         --cui-card-bg: #ffffff !important;
         background-color: #ffffff !important;
-        margin-top: 1rem;
+        // margin-top: 1rem;
         border: 1px solid #F0EDE8;
         border-radius: 10px;
         overflow: hidden;
@@ -17,6 +17,7 @@
         border-bottom: 1px solid #f0ede8;
         font-weight: bold;
         color: #363636;
+        height: 40px;
     }
 
     /* 카드 푸터*/
@@ -26,6 +27,13 @@
         // border-top: #f0ede8 1px solid;
         border-top: none;
         font-weight: bold;
+    }
+
+    /* 입력창(Input) 포커스 시 테마색(초록색) 적용 */
+    .form-control:focus {
+        border-color: #3D6B4F !important; /* 초록색 테두리 */
+        box-shadow: 0 0 0 0.25rem rgba(61, 107, 79, 0.25) !important; /* 초록색 부드러운 아웃라인 */
+        outline: 0;
     }
 
     .button {
@@ -42,6 +50,29 @@
         &:hover {
             background-color: #2c4e3a !important; /* 마우스를 올렸을 때 살짝 어두운 초록색 */
             border-color: #2c4e3a !important;
+        }
+    }
+
+    /* text-muted 느낌의 회색 아웃라인 버튼 */
+    .button-muted-outline {
+        border-radius: 40px !important;
+        background-color: transparent !important; /* 배경 투명하게 */
+        border: 1px solid #e0ddd8 !important; /* text-muted에 어울리는 회색 테두리 */
+        color: #404144 !important;
+        
+        &:hover {
+            background-color: rgba(138, 147, 162, 0.1) !important; /* 마우스 올렸을 때 옅은 회색 배경 */
+        }
+    }
+
+        .button-red-outline {
+        border-radius: 40px !important;
+        background-color: transparent !important; /* 배경 투명하게 */
+        border: 1px solid #b14e3d !important; /* text-muted에 어울리는 회색 테두리 */
+        color: #b14e3d !important;
+        
+        &:hover {
+            background-color: rgba(226, 151, 133, 0.856) !important; /* 마우스 올렸을 때 옅은 회색 배경 */
         }
     }
 
@@ -67,5 +98,15 @@
                 color: #ffffff !important;
             }
         }
+    }
+
+    /* 내 글 목록 구분선 색상 통일 */
+    .list-unstyled li.border-bottom {
+        border-bottom-color: #F0EDE8 !important;
+    }
+
+    hr {
+        border-color: #F0EDE8 !important;
+        opacity: 1 !important;
     }
 }

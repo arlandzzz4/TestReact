@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { CRow, CCol, CCard, CCardBody, CCardHeader, CCardFooter, CButton, CPagination, CPaginationItem, CFormInput, CForm } from '@coreui/react';
 import '../../scss/MyPage.scss'
 import { useAuth } from '@/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 // 임시 글 목록 더미 데이터 (총 10개)
 const DUMMY_POSTS = [
@@ -20,6 +21,7 @@ const DUMMY_POSTS = [
 const MyPage = () => {
 
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [clickEdtBtn, setClickEdtBtn] = useState(false); //클릭 버튼 누르면 true -> 수정 필드 활성화되게끔
   const [nickName, setNickName] = useState('');
   const [isDeleting, setIsDeleting] = useState(false); // 회원 탈퇴 진행 상태
@@ -116,7 +118,7 @@ const MyPage = () => {
 
   return (
     <div className="p-8 my-page-container mb-5 pb-5">
-      <h1 className="text-2xl font-bold">마이페이지</h1>
+      <h2 className="mb-4" style={{fontSize:'22px', fontWeight:'700', color:'textDark', marginBottom:'4px'}}>마이페이지</h2>
 
       <CCard>
         {/* <CCardHeader>사용자 정보</CCardHeader> */}
@@ -151,7 +153,7 @@ const MyPage = () => {
         </CCardBody>
       </CCard>
 
-      <CRow>
+      <CRow className="mt-2 g-3">
         <CCol xs={12} md={6} lg={6}>
           <CCard className="h-100">
             <CCardHeader className="d-flex justify-content-between align-items-center">
@@ -166,7 +168,7 @@ const MyPage = () => {
                   cancelDelete();
                 }}
                 size="sm" 
-                className="rounded-pill button">수정</CButton>}
+                className="rounded-pill button-muted-outline">수정</CButton>}
               
             </CCardHeader>
             <CCardBody>
@@ -198,7 +200,7 @@ const MyPage = () => {
                 </CButton>
                 <CButton //취소 -> 모든 작성 취소하고 원래로 롤백
                   onClick={cancelEdit}
-                  className="rounded-pill button">취소
+                  className="rounded-pill button button-muted-outline">취소
                 </CButton>
                 </div>
                 :
@@ -216,12 +218,17 @@ const MyPage = () => {
                   <ul className="list-unstyled mb-1 w-100">
                     {currentPosts.map((post) => (
                       <li key={post.id} className="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
-                        <span className="text-truncate" style={{ maxWidth: '65%', fontSize: '0.95rem' }} title={post.title}>
+                        <span 
+                          className="text-truncate" 
+                          style={{ maxWidth: '65%', fontSize: '0.95rem', cursor: 'pointer' }} 
+                          title={post.title}
+                          onClick={() => navigate(`/post/${post.id}`)}
+                        >
                           {post.title}
                         </span>
                         <div className="d-flex gap-1 flex-shrink-0">
-                          <CButton size="sm" color="secondary" variant="outline" className="rounded-pill" style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem' }} onClick={() => alert(`${post.id}번 글 수정`)}>수정</CButton>
-                          <CButton size="sm" color="danger" variant="outline" className="rounded-pill" style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem' }} onClick={() => { if(window.confirm('삭제하시겠습니까?')) alert(`${post.id}번 글 삭제완료`); }}>삭제</CButton>
+                          <CButton size="sm" color="secondary" variant="outline" className="rounded-pill button-muted-outline" style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem' }} onClick={() => navigate(`/post/edit/${post.id}`)}>수정</CButton>
+                          <CButton size="sm" color="danger" variant="outline" className="rounded-pill button-red-outline" style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem' }} onClick={() => { if(window.confirm('삭제하시겠습니까?')) alert(`${post.id}번 글 삭제완료`); }}>삭제</CButton>
                         </div>
                       </li>
                     ))}
@@ -267,7 +274,7 @@ const MyPage = () => {
         </CCol>
       </CRow>
 
-      <CRow className="mt-4 mb-5">
+      <CRow className="mt-4 mb-5 g-3">
         <CCol xs={12} md={6} lg={6}>
           <CCard className="h-100">
             <CCardHeader>비밀번호 재설정</CCardHeader>
@@ -275,7 +282,7 @@ const MyPage = () => {
               {!isEditingPassword ? (
                 <>
                   <p className='text-muted'>현재 비밀번호를 확인 후 새 비밀번호로 변경할 수 있습니다</p>
-                  <CButton className="rounded-pill button mt-auto" onClick={() => {
+                  <CButton className="rounded-pill button-muted-outline mt-2" onClick={() => {
                     setIsEditingPassword(true);
                     cancelEdit(); // 다른 창 닫기 및 초기화
                     cancelDelete();
@@ -308,7 +315,7 @@ const MyPage = () => {
                   />
                   <div className="d-flex gap-2">
                     <CButton className="rounded-pill button-green" onClick={changePassword}>변경</CButton>
-                    <CButton color="secondary" variant="outline" className="rounded-pill button" onClick={cancelPasswordEdit}>
+                    <CButton className="rounded-pill button button-muted  -outline" onClick={cancelPasswordEdit}>
                       취소
                     </CButton>
                   </div>
@@ -326,7 +333,7 @@ const MyPage = () => {
                     <p className='text-muted'>탈퇴 시 모든 데이터가 삭제되며 복구할 수 없습니다</p>
                     <CButton 
                       color="danger" 
-                      className="rounded-pill button mt-auto"
+                      className="rounded-pill mt-auto button-red-outline"
                       onClick={() => {
                         setIsDeleting(true);
                         cancelEdit(); // 다른 창 닫기 및 초기화
@@ -346,10 +353,10 @@ const MyPage = () => {
                       * 탈퇴 후 데이터는 복구되지 않습니다
                     </div>
                     <div className="d-flex gap-2">
-                      <CButton color="danger" className="rounded-pill button" onClick={delAccount}>
+                      <CButton className="rounded-pill button button-red-outline" onClick={delAccount}>
                         탈퇴하기
                       </CButton>
-                      <CButton color="secondary" variant="outline" className="rounded-pill button" onClick={cancelDelete}>
+                      <CButton className="rounded-pill button button-muted-outline" onClick={cancelDelete}>
                         취소
                       </CButton>
                     </div>
