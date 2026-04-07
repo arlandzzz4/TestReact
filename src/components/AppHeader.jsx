@@ -18,9 +18,9 @@
  * )
  */
 
-import React, { useEffect, useRef } from 'react'
-import { NavLink, useLocation } from 'react-router-dom'
-import { useSelector, useDispatch } from 'react-redux'
+import React, { useEffect, useRef, useState } from "react";
+import { NavLink, useLocation } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import {
   CContainer,
   CDropdown,
@@ -35,8 +35,8 @@ import {
   useColorModes,
   CButton,
   CBadge,
-} from '@coreui/react'
-import CIcon from '@coreui/icons-react'
+} from "@coreui/react";
+import CIcon from "@coreui/icons-react";
 import {
   cilBell,
   cilContrast,
@@ -45,15 +45,15 @@ import {
   cilMenu,
   cilMoon,
   cilSun,
-} from '@coreui/icons'
-import { IoNotifications } from 'react-icons/io5'
+} from "@coreui/icons";
+import { IoNotifications } from "react-icons/io5";
 
-import { AppHeaderDropdown } from './header/index'
-import { useLogoutMutation } from '@/hooks/mutations/useAuthMutation';
-import { useAuth } from '@/hooks/useAuth'
+import { AppHeaderDropdown } from "./header/index";
+import { useLogoutMutation } from "@/hooks/mutations/useAuthMutation";
+import { useAuth } from "@/hooks/useAuth";
+import { useNotifSettingStore } from "@/store/notifStore";
 
-
-/** 
+/**
  * AppHeader functional component
  *
  * Manages header UI including:
@@ -65,16 +65,21 @@ import { useAuth } from '@/hooks/useAuth'
  * @returns {React.ReactElement} Header component with navigation and controls
  */
 const AppHeader = () => {
+  const [settingOpen, setSettingOpen] = useState(false);
+  const settingRef = useRef(null);
+  const { likeEnabled, setLikeEnabled, commentEnabled, setCommentEnabled, noticeEnabled, setNoticeEnabled } = useNotifSettingStore();
   const { user, isAuthenticated, isAdmin, isAuthLoading } = useAuth();
-  
-  const headerRef = useRef()
-  const { colorMode, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
 
-  const location = useLocation()
-  const isWritePage = location.pathname === '/write'
+  const headerRef = useRef();
+  const { colorMode, setColorMode } = useColorModes(
+    "coreui-free-react-admin-template-theme",
+  );
 
-  const dispatch = useDispatch()
-  const sidebarShow = useSelector((state) => state.sidebarShow)
+  const location = useLocation();
+  const isWritePage = location.pathname === "/write";
+
+  const dispatch = useDispatch();
+  const sidebarShow = useSelector((state) => state.sidebarShow);
 
   const { mutate: logoutMutate } = useLogoutMutation();
   const handleLogout = () => {
@@ -82,106 +87,289 @@ const AppHeader = () => {
       console.warn("로그인 정보가 없어 바로 클라이언트 로그아웃을 진행합니다.");
     }
 
-    logoutMutate(user); 
+    logoutMutate(user);
   };
 
   useEffect(() => {
     const handleScroll = () => {
       headerRef.current &&
-        headerRef.current.classList.toggle('shadow-sm', document.documentElement.scrollTop > 0)
-    }
+        headerRef.current.classList.toggle(
+          "shadow-sm",
+          document.documentElement.scrollTop > 0,
+        );
+    };
 
-    document.addEventListener('scroll', handleScroll)
-    return () => document.removeEventListener('scroll', handleScroll)
-  }, [])
+    document.addEventListener("scroll", handleScroll);
+    return () => document.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <CHeader position="sticky" className={isWritePage ? 'p-0' : 'mb-4 p-0'} ref={headerRef}>
+    <CHeader
+      position="sticky"
+      className={isWritePage ? "p-0" : "mb-4 p-0"}
+      ref={headerRef}
+    >
       <CContainer className="border-bottom px-4" fluid>
         <CHeaderToggler
-          onClick={() => dispatch({ type: 'set', sidebarShow: !sidebarShow })}
-          style={{ marginInlineStart: '-14px' }}
+          onClick={() => dispatch({ type: "set", sidebarShow: !sidebarShow })}
+          style={{ marginInlineStart: "-14px" }}
         >
           <CIcon icon={cilMenu} size="lg" />
         </CHeaderToggler>
         <CHeaderNav className="d-none d-md-flex nav-underline">
-
-          <h4 style={{ color: "#3D6B4F", marginRight: "50px"}}><b>IOB</b></h4>
+          <h4 style={{ color: "#3D6B4F", marginRight: "50px" }}>
+            <b>IOB</b>
+          </h4>
           <CNavItem>
             <CNavLink to="/feed" as={NavLink}>
               홈
             </CNavLink>
           </CNavItem>
           <CNavItem>
-            <CNavLink to="/calendar" as={NavLink}>캘린더</CNavLink>
+            <CNavLink to="/calendar" as={NavLink}>
+              캘린더
+            </CNavLink>
           </CNavItem>
           <CNavItem>
-            <CNavLink to="/foodSearch" as={NavLink}>음식 검색</CNavLink>
+            <CNavLink to="/foodSearch" as={NavLink}>
+              음식 검색
+            </CNavLink>
           </CNavItem>
           <CNavItem>
-            <CNavLink to="/calc" as={NavLink}>계산기</CNavLink>
+            <CNavLink to="/calc" as={NavLink}>
+              계산기
+            </CNavLink>
           </CNavItem>
           <CNavItem>
-             <CNavLink to="/map" as={NavLink}>
+            <CNavLink to="/map" as={NavLink}>
               지도/루트
             </CNavLink>
           </CNavItem>
           <CNavItem>
-            <CNavLink to="/challenge" as={NavLink}>챌린지</CNavLink>
+            <CNavLink to="/challenge" as={NavLink}>
+              챌린지
+            </CNavLink>
           </CNavItem>
         </CHeaderNav>
-        <CHeaderNav className='ms-auto'>
-          {isAuthenticated ?
-          <div className="d-flex align-items-center gap-3">
-            <CNavLink
-              as={NavLink}
-              to="/notifications"
-              className="position-relative text-decoration-none" 
-              style={{ 
-                cursor: 'pointer', 
-                fontSize: '24px', 
-                lineHeight: 1, 
-                padding: '4px 8px' 
-              }}>
-              🔔
-            </CNavLink>
-            {/* 유저 프로필 동그라미 (클릭 시 마이페이지 이동) */}
-            <CNavLink
-              as={NavLink}
-              to="/mypage"
-              title={`${user?.nickname}님의 마이페이지`}
-              className="text-decoration-none"
-              style={{
-                width: 36,
-                height: 36,
-                borderRadius: '50%',
-                background: 'linear-gradient(135deg, #d4e8db, #6aab81)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '14px',
-                fontWeight: 700,
-                color: '#3d6b4f',
-                flexShrink: 0,
-                border: 'none',
-              }}
-            >
-              {user?.nickname ? user.nickname[0] : 'U'}
-            </CNavLink>
-            <CButton onClick={handleLogout}
-                     style={{ backgroundColor: '#f0f0f0', color: '#5c5c5c', border: '1px solid #e1e1e1', borderRadius: '40px'}}
-            >Logout</CButton>
-          </div>
+        <CHeaderNav className="ms-auto">
+          {isAuthenticated ? (
+            <div className="d-flex align-items-center gap-3">
+              <CNavLink
+                as={NavLink}
+                to="/notifications"
+                className="position-relative text-decoration-none"
+                style={{
+                  cursor: "pointer",
+                  fontSize: "24px",
+                  lineHeight: 1,
+                  padding: "4px 8px",
+                }}
+              >
+                🔔
+              </CNavLink>
+              {/* ⚙️ 설정 버튼 추가 */}
+              <div style={{ position: "relative" }} ref={settingRef}>
+                <button
+                  onClick={() => setSettingOpen((prev) => !prev)}
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: "50%",
+                    background: "#ede9df",
+                    border: "none",
+                    cursor: "pointer",
+                    fontSize: "15px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  ⚙️
+                </button>
 
-          : <CButton to="/login" as={NavLink}
-                    color="green"
-                        >Join Us</CButton>
-          }
+                {settingOpen && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: 40,
+                      right: 0,
+                      background: "#fff",
+                      border: "1px solid #e0ddd4",
+                      borderRadius: 14,
+                      padding: "1rem 1.25rem",
+                      width: 220,
+                      boxShadow: "0 4px 16px rgba(0,0,0,0.10)",
+                      zIndex: 100,
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontSize: 12,
+                        fontWeight: 500,
+                        marginBottom: 10,
+                      }}
+                    >
+                      알림 설정
+                    </div>
+
+                    {[
+                      { label: "좋아요 알림", color: "#e05050", key: "like" },
+                      { label: "댓글 알림", color: "#4a90d9", key: "comment" },
+                      {
+                        label: "공지사항 알림",
+                        color: "#2d5a27",
+                        key: "notice",
+                      },
+                    ].map(({ label, color, key }) => (
+                      <div
+                        key={key}
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          padding: "7px 0",
+                          borderBottom: "1px solid #f5f2eb",
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 6,
+                            fontSize: 12,
+                            color: "#555",
+                          }}
+                        >
+                          <span
+                            style={{
+                              width: 8,
+                              height: 8,
+                              borderRadius: "50%",
+                              background: color,
+                              display: "inline-block",
+                            }}
+                          ></span>
+                          {label}
+                        </div>
+                        <label
+                          style={{
+                            position: "relative",
+                            width: 34,
+                            height: 18,
+                            display: "inline-block",
+                          }}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={
+                              key === "like"
+                                ? likeEnabled
+                                : key === "comment"
+                                  ? commentEnabled
+                                  : noticeEnabled
+                            }
+                            onChange={(e) => {
+                              if (key === "like")
+                                setLikeEnabled(e.target.checked);
+                              if (key === "comment")
+                                setCommentEnabled(e.target.checked);
+                              if (key === "notice")
+                                setNoticeEnabled(e.target.checked);
+                            }}
+                            style={{ opacity: 0, width: 0, height: 0 }}
+                          />
+                          <span
+                            style={{
+                              position: "absolute",
+                              inset: 0,
+                              background: (
+                                key === "like"
+                                  ? likeEnabled
+                                  : key === "comment"
+                                    ? commentEnabled
+                                    : noticeEnabled
+                              )
+                                ? "#2d5a27"
+                                : "#d8d4cb",
+                              borderRadius: 18,
+                              cursor: "pointer",
+                              transition: "background 0.2s",
+                            }}
+                          >
+                            <span
+                              style={{
+                                position: "absolute",
+                                width: 13,
+                                height: 13,
+                                left: (
+                                  key === "like"
+                                    ? likeEnabled
+                                    : key === "comment"
+                                      ? commentEnabled
+                                      : noticeEnabled
+                                )
+                                  ? 18
+                                  : 3,
+                                top: "50%",
+                                transform: "translateY(-50%)",
+                                background: "#fff",
+                                borderRadius: "50%",
+                                transition: "left 0.2s",
+                              }}
+                            ></span>
+                          </span>
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              {/* 유저 프로필 동그라미 (클릭 시 마이페이지 이동) */}
+              <CNavLink
+                as={NavLink}
+                to="/mypage"
+                title={`${user?.nickname}님의 마이페이지`}
+                className="text-decoration-none"
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: "50%",
+                  background: "linear-gradient(135deg, #d4e8db, #6aab81)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "14px",
+                  fontWeight: 700,
+                  color: "#3d6b4f",
+                  flexShrink: 0,
+                  border: "none",
+                }}
+              >
+                {user?.nickname ? user.nickname[0] : "U"}
+              </CNavLink>
+              <CButton
+                onClick={handleLogout}
+                style={{
+                  backgroundColor: "#f0f0f0",
+                  color: "#5c5c5c",
+                  border: "1px solid #e1e1e1",
+                  borderRadius: "40px",
+                }}
+              >
+                Logout
+              </CButton>
+            </div>
+          ) : (
+            <CButton to="/login" as={NavLink} color="green">
+              Join Us
+            </CButton>
+          )}
           {isAdmin && (
-            <CButton 
-              to="/admin/dashboard" as={NavLink}
+            <CButton
+              to="/admin/dashboard"
+              as={NavLink}
               color="green"
-              style={{ marginLeft: '10px' }}
+              style={{ marginLeft: "10px" }}
             >
               관리자
             </CButton>
@@ -189,7 +377,7 @@ const AppHeader = () => {
         </CHeaderNav>
       </CContainer>
     </CHeader>
-  )
-}
+  );
+};
 
-export default AppHeader
+export default AppHeader;

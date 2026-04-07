@@ -1,8 +1,16 @@
 // src/MapPage.jsx
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react"; // React 기본 훅 import
 import "../../scss/MapPage.scss";
+// 로그인 상태를 전역으로 관리하는 Zustand store import
+// isLoggedIn(로그인여부), user(로그인한 사람 정보)를 꺼내쓰기 위해 가져옴
+import { useAuthStore } from "../../store/useAuthStore";
 
 const MapPage = () => {
+  // Zustand store에서 로그인 정보 꺼내오기
+  // isLoggedIn : 로그인 했으면 true, 안했으면 false
+  // user : 로그인한 사람 정보 (email 등)
+// 테스트용 임시 코드 (나중에 원래대로 되돌려야 함!)
+  const { isLoggedIn, user } = useAuthStore();
   const [mapLoaded, setMapLoaded] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [gyms, setGyms] = useState([]);
@@ -15,7 +23,6 @@ const MapPage = () => {
   const [clickedPosition, setClickedPosition] = useState(null);
   const [customMarkers, setCustomMarkers] = useState([]);
   const [modalForm, setModalForm] = useState({
-    nickname: "",
     place_name: "",
     facility_type: "",
     comment: "",
@@ -190,11 +197,13 @@ const MapPage = () => {
       <span style="color:#3D6B4F;">🏷️ ${pin.facilityType}</span><br/>
       ${pin.comment ? `💬 ${pin.comment}<br/>` : ""}
       <span style="color:#aaa; font-size:11px;">등록자: ${pin.nickname || "익명"}</span><br/>
-      <button
-        onclick="window.deletePin(${pin.pinId}, this)"
-        style="margin-top:8px; padding:4px 12px; background:#ff4444; color:white; border:none; border-radius:6px; cursor:pointer; font-size:12px;">
-        🗑️ 삭제
-      </button>
+      ${isLoggedIn && user?.email === pin.userEmail
+        ? `<button
+             onclick="window.deletePin(${pin.pinId})"
+             style="margin-top:8px; padding:4px 12px; background:#ff4444; color:white; border:none; border-radius:6px; cursor:pointer; font-size:12px;">
+             🗑️ 삭제
+           </button>`
+        : ""}
     </div>
   `;
         infowindow.current = new window.kakao.maps.InfoWindow({ content });
@@ -531,10 +540,7 @@ const MapPage = () => {
   // 핀 등록 처리
   const handlePinSubmit = async () => {
     // 필수값 체크
-    if (!modalForm.nickname.trim()) {
-      alert("닉네임을 입력해주세요");
-      return;
-    }
+
     if (!modalForm.place_name.trim()) {
       alert("시설명을 입력해주세요");
       return;
@@ -545,14 +551,15 @@ const MapPage = () => {
     }
 
     // DB에 저장할 데이터
-    const pinData = {
-      userEmail: modalForm.nickname + "@temp.com", // 임시 (나중에 Firebase로 교체)
-      placeName: modalForm.place_name,
-      facilityType: modalForm.facility_type,
-      comment: modalForm.comment,
-      latitude: clickedPosition.lat,
-      longitude: clickedPosition.lng,
-    };
+const pinData = {
+  userEmail: user?.email, // 로그인한 사용자 이메일 자동입력
+  nickname: user?.nickname, // 로그인한 사용자 닉네임 자동입력
+  placeName: modalForm.place_name,
+  facilityType: modalForm.facility_type,
+  comment: modalForm.comment,
+  latitude: clickedPosition.lat,
+  longitude: clickedPosition.lng,
+};
 
     try {
       // DB에 저장
@@ -563,55 +570,11 @@ const MapPage = () => {
       });
 
       if (response.ok) {
-        console.log("📌 DB 저장 성공!");
+  console.log("📌 DB 저장 성공!");
+  // DB에서 핀 목록 다시 불러오기 (닉네임, 삭제버튼 바로 반영)
+  fetchCustomPins();
 
-        // 지도에 마커 표시
-        const svgMarker = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="62" viewBox="0 0 50 62">
-          <path d="M25,0 C11.2,0 0,11.2 0,25 C0,43.8 25,62 25,62 S50,43.8 50,25 C50,11.2 38.8,0 25,0 Z"
-                fill="#FF6B35" stroke="white" stroke-width="2"/>
-          <text x="25" y="20" text-anchor="middle" font-size="16" fill="white">📌</text>
-          <text x="25" y="36" text-anchor="middle" font-size="9" font-weight="bold"
-                fill="white" font-family="sans-serif">${pinData.placeName.slice(0, 3)}</text>
-        </svg>
-      `;
-        const svgBlob = new Blob([svgMarker], { type: "image/svg+xml" });
-        const url = URL.createObjectURL(svgBlob);
-        const imageSize = new window.kakao.maps.Size(36, 45);
-        const imageOption = { offset: new window.kakao.maps.Point(18, 45) };
-        const markerImage = new window.kakao.maps.MarkerImage(
-          url,
-          imageSize,
-          imageOption,
-        );
 
-        const position = new window.kakao.maps.LatLng(
-          clickedPosition.lat,
-          clickedPosition.lng,
-        );
-        const marker = new window.kakao.maps.Marker({
-          position,
-          map: mapInstance.current,
-          image: markerImage,
-          zIndex: 11,
-        });
-
-        // 마커 클릭 시 인포윈도우
-        window.kakao.maps.event.addListener(marker, "click", () => {
-          if (infowindow.current) infowindow.current.close();
-          const content = `
-          <div style="padding:12px 16px; font-size:13px; min-width:200px; line-height:1.8; position:relative;">
-           <button onclick="window.closeInfowindow()"
-             style="position:absolute; top:4px; right:8px; background:none; border:none; font-size:16px; cursor:pointer; color:#aaa;">✕</button>
-            <strong style="font-size:15px;">📌 ${pinData.placeName}</strong><br/>
-            <span style="color:#3D6B4F;">🏷️ ${pinData.facilityType}</span><br/>
-             ${pinData.comment ? `💬 ${pinData.comment}<br/>` : ""}
-           <span style="color:#aaa; font-size:11px;">등록자: ${modalForm.nickname}</span>
-           </div>
-            `;
-          infowindow.current = new window.kakao.maps.InfoWindow({ content });
-          infowindow.current.open(mapInstance.current, marker);
-        });
 
         alert("📌 핀이 등록됐어요!");
       } else {
@@ -626,7 +589,6 @@ const MapPage = () => {
     setShowModal(false);
     setIsRegisterMode(false);
     setModalForm({
-      nickname: "",
       place_name: "",
       facility_type: "",
       comment: "",
@@ -680,6 +642,11 @@ const MapPage = () => {
         </button>
         <button
           onClick={() => {
+            // 로그인 안 했으면 알림 띄우고 종료
+            if (!isLoggedIn) {
+              alert("로그인이 필요합니다!");
+              return;
+            }
             setIsRegisterMode((prev) => !prev);
             setShowModal(false);
           }}
@@ -769,23 +736,7 @@ const MapPage = () => {
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
             <h3>📌 운동장소 등록</h3>
-
-            <div className="modal-field">
-              <label>닉네임 *</label>
-              <input
-                type="text"
-                placeholder="닉네임을 입력하세요"
-                value={modalForm.nickname}
-                onChange={(e) =>
-                  setModalForm((prev) => ({
-                    ...prev,
-                    nickname: e.target.value,
-                  }))
-                }
-              />
-            </div>
-
-            <div className="modal-field">
+           <div className="modal-field">
               <label>시설명 *</label>
               <input
                 type="text"
