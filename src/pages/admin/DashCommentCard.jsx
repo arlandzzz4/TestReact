@@ -1,6 +1,6 @@
 import React from 'react'
-import { CRow, CCol, CCard, CCardBody } from '@coreui/react'
-import { useCommentTotalCountQuery, useCommentTodayCountQuery } from '@/hooks/queries/usePostQuery';
+import { CCol, CCard, CCardBody } from '@coreui/react'
+import { useCommentTotalCountQuery, useCommentTodayCountQuery } from '@/hooks/queries/useCommentQuery';
  
 const DashCommentCard = () => {
     const {data: totalCnt} = useCommentTotalCountQuery({delYn: 'N'});

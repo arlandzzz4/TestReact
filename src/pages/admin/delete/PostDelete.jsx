@@ -11,7 +11,7 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {cilClipboard} from '@coreui/icons'
-import CommonPagination from '../comment/CommonPagination';
+import CommonPagination from '../common/CommonPagination'
 
 const PostDelete = ({ 
   postDeletes, 

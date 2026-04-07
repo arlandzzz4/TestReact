@@ -91,3 +91,38 @@ export const uploadPostImages = async (formData) => {
     throw error;
   }
 };
+
+export const getPostDetail = async (postId) => {
+  const response = await instance.get(`/api/post/${postId}`);
+  return response;
+};
+
+export const getCommentList = async (postId) => {
+  const response = await instance.get(`/api/comment/list/${postId}`);
+  return response;
+};
+
+export const insertComment = async (data) => {
+  const response = await instance.post(`/api/comment/insert`, data);
+  return response;
+};
+
+export const deleteComment = async (commentId) => {
+  const response = await instance.patch(`/api/comment/delete/${commentId}`);
+  return response;
+};
+
+export const togglePostLike = async (postId, userEmail) => {
+  const response = await instance.post(`/api/like/post`, { postId, userEmail });
+  return response;
+};
+
+export const toggleCommentLike = async (commentId, userEmail) => {
+  const response = await instance.post(`/api/like/comment`, { commentId, userEmail });
+  return response;
+};
+
+export const insertReport = async (targetCode, targetId, userEmail, reasonCode) => {
+  const response = await instance.post(`/api/report/insert`, { targetCode, targetId, userEmail, reasonCode });
+  return response;
+};
