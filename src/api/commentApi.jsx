@@ -29,3 +29,13 @@ export const searchCommentList = async (data) => {
     throw error;
   }
 };
+
+export const deleteComment = async (data) => {
+  try {
+    const response = await instance.patch(`/api/comment/delete`, data);
+    return response.data;
+  } catch (error) {
+    console.error("댓글 삭제 중 오류 발생:", error);
+    throw error;
+  }
+};

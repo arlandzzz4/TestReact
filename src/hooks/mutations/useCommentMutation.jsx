@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { deleteComment } from '@/api/commonApi';
+import { deleteComment } from '../../api/commentApi';
 
 export const useDeleteCommentMutation = () => {
     return useMutation({
