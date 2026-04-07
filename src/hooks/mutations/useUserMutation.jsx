@@ -17,7 +17,7 @@ export const useUpdateUserStatusCodeMutation = () => {
 
 export const useUnsubscribe = () => {
     return useMutation({
-        //withdrawData = email, providerCode, providerId
+        //withdrawData = email, providerCode, providerId, reason
         mutationFn: async (withdrawData) => {
         // 파이어베이스 삭제
         try {
