@@ -63,7 +63,7 @@ export const useLogoutMutation = () => {
   const logout = useAuthStore((state) => state.logout);
 
   return useMutation({
-    mutationFn: logoutUser,
+    mutationFn: (data)=>logoutUser(data),
     // 성공하든 실패하든 클라이언트 상태는 무조건 지우고 로그인 페이지로 보냅니다.
     onSettled: () => {
       logout(); 

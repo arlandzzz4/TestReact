@@ -79,7 +79,13 @@ const AppAdminHeader = () => {
       console.warn("로그인 정보가 없어 바로 클라이언트 로그아웃을 진행합니다.");
     }
 
-    logoutMutate(user); 
+    const logoutData = { 
+      email: user?.email, 
+      fcmToken: user?.fcmToken,
+      providerCode : user?.providerCode,
+      providerId : user?.providerId,
+    };
+    logoutMutate(logoutData); 
   };
 
   useEffect(() => {

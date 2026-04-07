@@ -34,24 +34,11 @@ export const registUser = async ({ userData, token }) => {
     throw new Error("회원가입 중 알 수 없는 오류가 발생했습니다.");
   }
 };
-/*
-export const registUser = async (userData) => {
-  try {
-    console.log('registUser~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
-    const response = await instance.post('/api/auth/regist', userData);
-    console.log('registUser~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
-    return response.data; 
-  } catch (error) {
-    if (error.response && error.response.data) {
-      throw error.response.data; 
-    }
-    throw new Error("회원가입 중 알 수 없는 오류가 발생했습니다.");
-  }
-};*/
 
-export const logoutUser = async () => {
+export const logoutUser = async (logoutData) => {
   try {
-    await instance.post('/api/auth/logout');
+    console.log("실제 서버로 전송되는 데이터:", logoutData);
+    await instance.post('/api/auth/logout', logoutData);
   } catch (error) {
     console.error("서버 로그아웃 처리 중 오류 발생:", error);
   }

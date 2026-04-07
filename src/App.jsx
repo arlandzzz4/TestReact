@@ -6,7 +6,6 @@ import {
   useQuery, 
   useQueryErrorResetBoundary 
 } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { useAuthStore } from '@/store/useAuthStore';
 import { instance } from '@/api/axios';
 import { properties } from './constants/properties.js';
@@ -92,9 +91,6 @@ function App() {
         </AuthWrapper>
       </ErrorBoundary>
 
-      {properties.isDev && (
-        <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
-      )}
     </QueryClientProvider>
   );
 }
