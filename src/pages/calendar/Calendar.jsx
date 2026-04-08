@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { useDietByMonth, useSaveExercise } from '../../hooks/useDiet'
+import { useDietByMonth } from '../../hooks/queries/useDietQuery'
+import { useSaveExercise } from '../../hooks/mutations/useDietMutation'
 import { useAuth } from '../../hooks/useAuth'
 import DietDetail from './DietDetail'
 import '../../scss/calendar.scss'

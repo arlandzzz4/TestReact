@@ -2,8 +2,8 @@
 // - DefaultLayout 안에서 렌더링 → AppHeader/AppSidebar 별도 추가 불필요
 // - 로그인 여부 무관하게 접근 가능 (AuthGuard 밖에 위치)
 
-import { useState, useCallback } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useState, useCallback, useRef, useEffect } from 'react'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import { searchFood } from '../../api/diet'
 import {
   CContainer,
@@ -73,8 +73,9 @@ const mobileStyle = `
   }
 `
 
-// ── API 호출 ───────────────────────────────────────────────
-const fetchFoods = (keyword) => searchFood(keyword)
+// ── API 호출 (페이지 파라미터 추가) ───────────────────────
+const fetchFoods = ({ keyword, page }) =>
+  searchFood(keyword, page)
 
 // ── 영양정보 상세 패널 ─────────────────────────────────────
 const NutritionDetail = ({ food, amount, onAmountChange }) => {
@@ -85,13 +86,11 @@ const NutritionDetail = ({ food, amount, onAmountChange }) => {
   return (
     <CCard className="border-0 shadow-sm">
       <CCardBody className="p-4">
-        {/* 음식명 */}
         <h5 className="fw-bold mb-0">{food.name}</h5>
         <small className="text-medium-emphasis">공공데이터 식품영양성분 DB</small>
 
         <hr />
 
-        {/* 섭취량 입력 */}
         <CRow className="align-items-center mb-3">
           <CCol>
             <span className="text-medium-emphasis">섭취량</span>
@@ -110,7 +109,6 @@ const NutritionDetail = ({ food, amount, onAmountChange }) => {
           </CCol>
         </CRow>
 
-        {/* 칼로리 */}
         <div className="mb-3">
           <span
             className="d-block fw-bold kcal-display"
@@ -118,12 +116,9 @@ const NutritionDetail = ({ food, amount, onAmountChange }) => {
           >
             {calc(food.kcal)}
           </span>
-          <small className="text-medium-emphasis">
-            kcal · {amount}g 기준
-          </small>
+          <small className="text-medium-emphasis">kcal · {amount}g 기준</small>
         </div>
 
-        {/* 3대 영양소 */}
         <CRow className="g-2 mb-2">
           {[
             { label: '단백질', key: 'protein' },
@@ -135,26 +130,17 @@ const NutritionDetail = ({ food, amount, onAmountChange }) => {
                 className="text-center p-2 rounded nutrient-card"
                 style={{ background: '#f5f5f0' }}
               >
-                <div className="text-medium-emphasis" style={{ fontSize: '0.72rem' }}>
-                  {label}
-                </div>
-                <div className="fw-bold nutrient-value" style={{ fontSize: '1.1rem' }}>
-                  {calc(food[key])}
-                </div>
-                <div className="text-medium-emphasis" style={{ fontSize: '0.72rem' }}>
-                  g
-                </div>
+                <div className="text-medium-emphasis" style={{ fontSize: '0.72rem' }}>{label}</div>
+                <div className="fw-bold nutrient-value" style={{ fontSize: '1.1rem' }}>{calc(food[key])}</div>
+                <div className="text-medium-emphasis" style={{ fontSize: '0.72rem' }}>g</div>
               </div>
             </CCol>
           ))}
         </CRow>
 
-        {/* 1회 제공량 */}
         <CRow className="py-2 border-top align-items-center">
           <CCol><span className="text-medium-emphasis">1회 제공량</span></CCol>
-          <CCol xs="auto">
-            <span className="fw-semibold">{food.unit}</span>
-          </CCol>
+          <CCol xs="auto"><span className="fw-semibold">{food.unit}</span></CCol>
         </CRow>
       </CCardBody>
     </CCard>
@@ -168,12 +154,56 @@ const FoodSearchPage = () => {
   const [selectedFood, setSelectedFood] = useState(null)
   const [amount, setAmount] = useState(100)
 
-  const { data: foods = [], isFetching, isError } = useQuery({
+  // 무한 스크롤 감지용 ref
+  const observerRef = useRef(null)
+
+  const [showTopBtn, setShowTopBtn] = useState(false)
+
+// 스크롤 감지
+useEffect(() => {
+  const handleScroll = () => setShowTopBtn(window.scrollY > 300)
+  window.addEventListener('scroll', handleScroll)
+  return () => window.removeEventListener('scroll', handleScroll)
+}, [])
+
+const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
+
+  // useInfiniteQuery로 교체
+  const {
+    data,
+    isFetching,
+    isFetchingNextPage,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+  } = useInfiniteQuery({
     queryKey: ['foodSearch', keyword],
-    queryFn: () => fetchFoods(keyword),
+    queryFn: ({ pageParam = 0 }) => fetchFoods({ keyword, page: pageParam }),
+    getNextPageParam: (lastPage, allPages) => {
+      // 마지막 페이지가 30개 미만이면 더 이상 없음
+      return lastPage.length === 30 ? allPages.length : undefined
+    },
     enabled: keyword.trim().length > 0,
     staleTime: 1000 * 60 * 5,
   })
+
+  // 전체 음식 목록 (페이지 합산)
+  const foods = data?.pages.flat() ?? []
+
+  // Intersection Observer — 목록 맨 아래 감지
+  useEffect(() => {
+    if (!observerRef.current) return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage()
+        }
+      },
+      { threshold: 0.5 }
+    )
+    observer.observe(observerRef.current)
+    return () => observer.disconnect()
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage])
 
   const handleSearch = useCallback(() => {
     const trimmed = inputValue.trim()
@@ -193,9 +223,7 @@ const FoodSearchPage = () => {
   }
 
   return (
-    // CContainer에 모바일 패딩 제거 클래스 추가
-      <CContainer fluid className="px-4 py-4 mobile-no-padding">
-      {/* 모바일 sticky 스타일 */}
+    <CContainer fluid className="px-4 py-4 mobile-no-padding">
       <style>{mobileStyle}</style>
 
       {/* 페이지 헤더 */}
@@ -218,10 +246,10 @@ const FoodSearchPage = () => {
         <CButton
           color="secondary"
           onClick={handleSearch}
-          disabled={isFetching}
+          disabled={isFetching && !isFetchingNextPage}
           style={{ minWidth: 80 }}
         >
-          {isFetching
+          {isFetching && !isFetchingNextPage
             ? <CSpinner size="sm" />
             : <><CIcon icon={cilSearch} /> 검색</>
           }
@@ -245,7 +273,7 @@ const FoodSearchPage = () => {
       )}
 
       {/* 검색 결과 */}
-      {keyword && !isFetching && !isError && (
+      {keyword && !isError && (
         <CRow className="g-3">
           {/* 데스크탑: 오른쪽 / 모바일: 위 고정 */}
           <CCol
@@ -277,7 +305,7 @@ const FoodSearchPage = () => {
                   <small className="text-medium-emphasis">{foods.length}건</small>
                 </div>
 
-                {foods.length === 0 ? (
+                {foods.length === 0 && !isFetching ? (
                   <div className="text-center py-5 text-medium-emphasis">
                     검색 결과가 없습니다.
                   </div>
@@ -288,7 +316,6 @@ const FoodSearchPage = () => {
                       return (
                         <CListGroupItem
                           key={food.foodId}
-                          
                           onClick={() => handleSelect(food)}
                           className="d-flex justify-content-between align-items-center py-3 px-3"
                           style={{
@@ -312,12 +339,43 @@ const FoodSearchPage = () => {
                         </CListGroupItem>
                       )
                     })}
+
+                    {/* 무한 스크롤 감지 영역 */}
+                    <div ref={observerRef} className="py-2 text-center">
+                      {isFetchingNextPage && <CSpinner size="sm" />}
+                      {!hasNextPage && foods.length > 0 && (
+                        <small className="text-medium-emphasis">마지막 검색 결과입니다</small>
+                      )}
+                    </div>
                   </CListGroup>
                 )}
               </CCardBody>
             </CCard>
           </CCol>
         </CRow>
+      )}
+      {/* 최상단 이동 버튼 */}
+      {showTopBtn && (
+        <button
+          onClick={scrollToTop}
+          style={{
+            position: 'fixed',
+            bottom: '2rem',
+            right: '2rem',
+            width: 44,
+            height: 44,
+            borderRadius: '50%',
+            background: '#2d6a4f',
+            color: '#fff',
+            border: 'none',
+            fontSize: '1.2rem',
+            cursor: 'pointer',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+            zIndex: 999,
+          }}
+        >
+          ↑
+        </button>
       )}
     </CContainer>
   )

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { CModal, CModalHeader, CModalBody, CModalFooter, CButton } from '@coreui/react'
-import { useFoodSearch, useSaveFavMeal } from '../hooks/useDiet'
+import { useFoodSearch } from '../hooks/queries/useDietQuery'
+import { useSaveFavMeal } from '../hooks/mutations/useDietMutation'
 
 export default function FavMealModal({ isOpen, onClose, userEmail }) {
   const [name, setName] = useState('')
