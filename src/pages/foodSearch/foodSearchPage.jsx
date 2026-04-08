@@ -22,14 +22,62 @@ import {
 import CIcon from '@coreui/icons-react'
 import { cilSearch } from '@coreui/icons'
 
-// ── API 호출 ───────────────────────────────────────────────
-// GET /api/calendar/food/search?q=검색어
-const fetchFoods = (keyword) => searchFood(keyword)
+const mobileStyle = `
+  @media (max-width: 767px) {
+    .nutrition-sticky {
+      position: sticky !important;
+      top: 60px !important;
+      z-index: 100;
+    }
+    .nutrition-sticky .card,
+    .food-list-card .card {
+      border-radius: 0 !important;
+      border-left: none !important;
+      border-right: none !important;
+    }
+    .nutrition-sticky .card-body {
+      padding: 0.5rem 1rem !important;
+    }
+    .nutrition-sticky h5 {
+      font-size: 0.9rem !important;
+      margin-bottom: 0 !important;
+    }
+    .nutrition-sticky hr {
+      margin: 0.3rem 0 !important;
+    }
+    .nutrition-sticky .kcal-display {
+      font-size: 1.4rem !important;
+    }
+    .nutrition-sticky .nutrient-card {
+      padding: 0.2rem !important;
+    }
+    .nutrition-sticky .nutrient-value {
+      font-size: 0.85rem !important;
+    }
+    .nutrition-sticky .mb-3 {
+      margin-bottom: 0.3rem !important;
+    }
+    .nutrition-sticky .mb-2 {
+      margin-bottom: 0.3rem !important;
+    }
+    .nutrition-sticky .align-items-center.mb-3 {
+      margin-bottom: 0.3rem !important;
+    }
+    .mobile-no-padding {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+    .mobile-no-padding .g-3 {
+      --bs-gutter-x: 0 !important;
+    }
+  }
+`
 
+// ── API 호출 ───────────────────────────────────────────────
+const fetchFoods = (keyword) => searchFood(keyword)
 
 // ── 영양정보 상세 패널 ─────────────────────────────────────
 const NutritionDetail = ({ food, amount, onAmountChange }) => {
-  // servingSize 기준으로 비율 계산 (없으면 100g 기준)
   const base = food.servingSize ? Number(food.servingSize) : 100
   const ratio = amount / base
   const calc = (val) => (val != null ? (Number(val) * ratio).toFixed(1) : '-')
@@ -65,7 +113,7 @@ const NutritionDetail = ({ food, amount, onAmountChange }) => {
         {/* 칼로리 */}
         <div className="mb-3">
           <span
-            className="d-block fw-bold"
+            className="d-block fw-bold kcal-display"
             style={{ fontSize: '2.4rem', color: '#2d6a4f' }}
           >
             {calc(food.kcal)}
@@ -84,13 +132,13 @@ const NutritionDetail = ({ food, amount, onAmountChange }) => {
           ].map(({ label, key }) => (
             <CCol key={key} xs={4}>
               <div
-                className="text-center p-2 rounded"
+                className="text-center p-2 rounded nutrient-card"
                 style={{ background: '#f5f5f0' }}
               >
                 <div className="text-medium-emphasis" style={{ fontSize: '0.72rem' }}>
                   {label}
                 </div>
-                <div className="fw-bold" style={{ fontSize: '1.1rem' }}>
+                <div className="fw-bold nutrient-value" style={{ fontSize: '1.1rem' }}>
                   {calc(food[key])}
                 </div>
                 <div className="text-medium-emphasis" style={{ fontSize: '0.72rem' }}>
@@ -141,12 +189,15 @@ const FoodSearchPage = () => {
 
   const handleSelect = (food) => {
     setSelectedFood(food)
-    // 선택한 음식의 1회 제공량(servingSize)으로 초기값 설정
     setAmount(food.servingSize ? Number(food.servingSize) : 100)
   }
 
   return (
-    <CContainer fluid className="px-4 py-4">
+    // CContainer에 모바일 패딩 제거 클래스 추가
+      <CContainer fluid className="px-4 py-4 mobile-no-padding">
+      {/* 모바일 sticky 스타일 */}
+      <style>{mobileStyle}</style>
+
       {/* 페이지 헤더 */}
       <div className="mb-4">
         <h2 className="fw-bold mb-1">음식 영양성분 검색</h2>
@@ -196,8 +247,29 @@ const FoodSearchPage = () => {
       {/* 검색 결과 */}
       {keyword && !isFetching && !isError && (
         <CRow className="g-3">
-          {/* 좌측: 결과 목록 */}
-          <CCol xs={12} md={5} lg={4}>
+          {/* 데스크탑: 오른쪽 / 모바일: 위 고정 */}
+          <CCol
+            xs={12} md={7} lg={8}
+            className="order-1 order-md-2 nutrition-sticky"
+            style={{ position: 'sticky', top: '80px', alignSelf: 'flex-start', zIndex: 10 }}
+          >
+            {selectedFood ? (
+              <NutritionDetail
+                food={selectedFood}
+                amount={amount}
+                onAmountChange={setAmount}
+              />
+            ) : (
+              foods.length > 0 && (
+                <div className="text-center text-medium-emphasis py-3">
+                  목록에서 음식을 선택하면 영양정보가 표시됩니다.
+                </div>
+              )
+            )}
+          </CCol>
+
+          {/* 데스크탑: 왼쪽 / 모바일: 아래 */}
+          <CCol xs={12} md={5} lg={4} className="order-2 order-md-1 food-list-card">
             <CCard className="border-0 shadow-sm">
               <CCardBody className="p-0">
                 <div className="d-flex justify-content-between px-3 py-2 border-bottom">
@@ -216,7 +288,7 @@ const FoodSearchPage = () => {
                       return (
                         <CListGroupItem
                           key={food.foodId}
-                          action
+                          
                           onClick={() => handleSelect(food)}
                           className="d-flex justify-content-between align-items-center py-3 px-3"
                           style={{
@@ -244,23 +316,6 @@ const FoodSearchPage = () => {
                 )}
               </CCardBody>
             </CCard>
-          </CCol>
-
-          {/* 우측: 영양정보 상세 */}
-          <CCol xs={12} md={7} lg={8}>
-            {selectedFood ? (
-              <NutritionDetail
-                food={selectedFood}
-                amount={amount}
-                onAmountChange={setAmount}
-              />
-            ) : (
-              foods.length > 0 && (
-                <div className="text-center text-medium-emphasis py-5">
-                  좌측 목록에서 음식을 선택하면 영양정보가 표시됩니다.
-                </div>
-              )
-            )}
           </CCol>
         </CRow>
       )}

@@ -470,3 +470,178 @@
   background: none;
   &:hover { border-color: #2d5a27; color: #2d5a27; background: #f0f6ee; }
 }
+
+// ── 모바일 반응형 ──
+@media (max-width: 768px) {
+  .iob-main {
+    padding: 0;
+    max-width: 100%;
+    margin: 0;
+  }
+
+  .iob-month-nav {
+    margin-bottom: 1rem;
+    padding: 0.75rem 0;
+  }
+
+  .iob-calendar-wrap {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+  }
+
+  .iob-cal-cell {
+    min-height: 110px;
+    padding: 8px 6px;
+    gap: 4px;
+  }
+
+  .iob-cal-header-cell {
+    font-size: 9px;
+    padding: 8px 0;
+  }
+
+  .iob-cell-num {
+    font-size: 12px;
+    font-weight: 600;
+    color: #999;
+  }
+
+  .iob-today-badge {
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+  }
+
+  .iob-exercise-label {
+    font-size: 9px;
+  }
+
+  .iob-exercise-check input[type='checkbox'] {
+    width: 11px;
+    height: 11px;
+  }
+
+  .iob-pill {
+    font-size: 9px;
+    padding: 2px 5px;
+    border-radius: 4px;
+    font-weight: 500;
+    &.iob-pill-weight {
+      background: #e8f0e4;
+      color: #2d5a27;
+    }
+    &.iob-pill-meal {
+      background: #faf0e4;
+      color: #7a4a10;
+    }
+  }
+
+  .iob-data-row {
+    gap: 3px;
+  }
+
+  .iob-diet-btn {
+    font-size: 9px;
+    padding: 3px 7px;
+    border-radius: 10px;
+    &.iob-filled {
+      background: #faf0e4;
+      border-color: #e0c89a;
+      color: #7a4a10;
+      font-weight: 500;
+    }
+  }
+
+  // 식단 상세 페이지
+@media (max-width: 768px) {
+  .iob-detail-wrap {
+    padding: 0;
+    max-width: 100%;
+  }
+
+  .iob-detail-header {
+    padding: 0.75rem 1rem;
+    margin-bottom: 0;
+  }
+
+  .iob-detail-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .iob-meal-grid {
+    grid-template-columns: 1fr 1fr;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+  }
+
+  .iob-meal-card {
+    min-height: 150px;
+    padding: 1rem;
+    border-radius: 0;
+  }
+
+  .iob-right-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+  }
+
+  .iob-fav-card,
+  .iob-stat-card,
+  .iob-weight-card {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+  }
+
+  .iob-stat-value {
+    font-size: 22px;
+  }
+
+  .iob-weight-input-row {
+    gap: 8px;
+  }
+}
+}
+
+// 모바일 운동 버튼 기본 숨김
+.iob-exercise-mobile {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  // 데스크탑 체크박스 숨기기
+  .iob-exercise-desktop {
+    display: none;
+  }
+
+  // 모바일 운동 텍스트 버튼
+  .iob-exercise-mobile {
+    display: block;
+    background: none;
+    border: none;
+    font-size: 9px;
+    color: #ccc;
+    cursor: pointer;
+    padding: 0;
+    font-weight: 400;
+
+    &.iob-checked {
+      color: #2d5a27;
+      font-weight: 600;
+    }
+  }
+}
