@@ -236,7 +236,7 @@ const RegistPage = () => {
                   <div className="mb-2">
                     <CFormLabel style={labelStyle}>이메일</CFormLabel>
                     <CInputGroup>
-                      <CFormInput style={inputStyle} placeholder="example@job.kr" {...register('email')} invalid={!!errors.email} />
+                      <CFormInput style={inputStyle} placeholder="example@job.kr" {...register('email')} invalid={!!errors.email} maxLength={200} />
                       <CButton type="button" onClick={onEmailConfirm} disabled={isCheckLoading} style={{ backgroundColor: '#e9f5ee', color: '#3d6b4f', border: 'none', marginLeft: '10px', borderRadius: '8px', fontWeight: 'bold', fontSize: '13px' }}>
                         {isCheckLoading ? <CSpinner size="sm"/> : '사용 확인'}
                       </CButton>
@@ -247,20 +247,20 @@ const RegistPage = () => {
                   {/* 비밀번호 섹션 */}
                   <div className="mb-2">
                     <CFormLabel style={labelStyle}>비밀번호 <span style={{fontSize: '10px', fontWeight: 'normal', color: '#888'}}>(8~20자, 영문, 숫자 포함)</span></CFormLabel>
-                    <CFormInput type="password" style={inputStyle} {...register('password')} invalid={!!errors.password} />
+                    <CFormInput type="password" style={inputStyle} {...register('password')} invalid={!!errors.password} maxLength={200} />
                     <div style={errorSpaceStyle(errors.password)}>* {errors.password?.message || '조건이 일치하지 않습니다'}</div>
                   </div>
 
                   {/* 비밀번호 확인 섹션 */}
                   <div className="mb-2">
                     <CFormLabel style={labelStyle}>비밀번호 중복 확인</CFormLabel>
-                    <CFormInput type="password" style={inputStyle} {...register('confirmPassword')} invalid={!!errors.confirmPassword} />
+                    <CFormInput type="password" style={inputStyle} {...register('confirmPassword')} invalid={!!errors.confirmPassword} maxLength={200} />
                     <div style={errorSpaceStyle(errors.confirmPassword)}>* {errors.confirmPassword?.message || '비밀번호가 일치하지 않습니다'}</div>
                   </div>
 
                   {/* 닉네임 섹션 */}
                   <div className="mt-2">
-                    <CFormLabel style={labelStyle}>닉네임</CFormLabel>
+                    <CFormLabel style={labelStyle} maxLength={25}>닉네임</CFormLabel>
                     <CFormInput style={inputStyle} placeholder="" {...register('nickname')} />
                     <div style={errorSpaceStyle(errors.nickname)}>&nbsp;</div>
                     <div style={errorSpaceStyle(errors.nickname)}>* {errors.nickname?.message || '닉네임은 2~20자 사이로 입력해주세요'}</div>
