@@ -1,4 +1,5 @@
 // src/MapPage.jsx
+import { properties } from "../../constants/properties.js";
 import { instance } from "../../api/axios.jsx";
 import { useState, useEffect, useRef } from "react"; // React 기본 훅 import
 import "../../scss/MapPage.scss";
@@ -55,7 +56,7 @@ const MapPage = () => {
   // 카카오맵 SDK 동적 로드
   useEffect(() => {
     const script = document.createElement("script");
-    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=a64b772b10f603c9c422cffb8d1373e0&libraries=services&autoload=false`;
+    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${properties.kakaoMapKey}&libraries=services&autoload=false`;
     script.async = true;
 
     script.onload = () => {
