@@ -48,11 +48,11 @@ export const updateUserStatusCode = async (data) => {
     console.error("유저 상태 코드 업데이트 중 오류 발생:", error);
     throw error;
   }
-}
+} 
 
 export const unsubscribe = async (data) => {
   try {
-    await instance.put(`/api/user/unsubscribe`, data);
+    await instance.post (`/api/user/unsubscribe`, data);
   } catch (error) {
     console.error("유저 탈퇴 중 오류 발생:", error);
     throw error;

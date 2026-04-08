@@ -5,20 +5,57 @@ import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { instance } from '@/api/axios';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useUnsubscribe } from '@/hooks/mutations/useUserMutation';
+
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { useForm } from 'react-hook-form';
+import { auth } from '@/config/firebase';
+import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from 'firebase/auth';
+
+// export const pwSchema = z.object({
+
+export const pwSchema = z
+  .object({
+    currentPassword: z.string().min(1, "현재 비밀번호를 입력해주세요."),
+    newPassword: z.string() //새로 입력하는 비번에만 수행
+      .min(8, "최소 8자 이상 입력해주세요.")
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/,
+        "대소문자, 숫자, 특수문자를 모두 포함해야 합니다."
+      ),
+    confirmPassword: z.string()
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "비밀번호가 일치하지 않습니다.",
+    path: ["confirmPassword"], // 에러 메시지를 어느 필드에 표시할지 지정 (중요!)
+  });
 
 const MyPage = () => {
 
   const { user } = useAuth();
   const navigate = useNavigate();
+
   const [clickEdtBtn, setClickEdtBtn] = useState(false);
   const [nickName, setNickName] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteReason, setDeleteReason] = useState('');
   
   const [isEditingPassword, setIsEditingPassword] = useState(false);
-  const [currentPasswordInput, setCurrentPasswordInput] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+
+  // 파이어베이스 키(FCM 토큰) 삭제 및 백엔드 탈퇴 API 처리를 수행하는 커스텀 훅
+  const { mutate: withdrawMutate } = useUnsubscribe();
+
+  // 비밀번호 변경 폼 관리를 위한 react-hook-form 추가
+  const {
+    register: registerPw,
+    handleSubmit: handleSubmitPw,
+    formState: { errors: pwErrors, isValid: isPwValid },
+    reset: resetPw
+  } = useForm({
+    resolver: zodResolver(pwSchema),
+    mode: 'onChange',
+  });
 
   // 내 글 목록 상태
   const [myPosts, setMyPosts] = useState([]);
@@ -26,6 +63,8 @@ const MyPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const postsPerPage = 3;
   const totalPages = Math.ceil(totalCount / postsPerPage);
+
+
 
   // 보여줄 페이지 번호 계산 (현재 페이지 포함 앞뒤 1개씩, 최대 3개)
   const pageNumbers = (() => {
@@ -132,29 +171,59 @@ const MyPage = () => {
     setClickEdtBtn(false);
   }
 
-  const changePassword = () => {
+  const changePassword = async (data) => {
+    // --- [더미 데이터 테스트용 로직] ---
     const DUMMY_CURRENT_PW = "1234";
-    if (!currentPasswordInput || !newPassword || !confirmPassword) {
-      alert("모든 비밀번호 필드를 입력해 주세요.");
-      return;
-    }
-    if (currentPasswordInput !== DUMMY_CURRENT_PW) {
+    if (data.currentPassword !== DUMMY_CURRENT_PW) {
       alert("현재 비밀번호가 일치하지 않습니다.");
       return;
     }
-    if (newPassword !== confirmPassword) {
-      alert("변경할 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
-      return;
-    }
-    alert("비밀번호가 성공적으로 변경되었습니다.");
+    alert("비밀번호가 성공적으로 변경되었습니다. (더미 처리)");
     cancelPasswordEdit();
-  }
+
+    /* --- [실제 API 및 Firebase 연동 코드 - 필요 시 주석 해제하여 사용] ---
+    // try {
+    //   const currentUser = auth.currentUser;
+    //   if (!currentUser) {
+    //     alert("로그인 정보가 만료되었습니다. 다시 로그인해 주세요.");
+    //     return;
+    //   }
+    //
+    //   // 1. Firebase 현재 비밀번호 재인증
+    //   const credential = EmailAuthProvider.credential(currentUser.email, data.currentPassword);
+    //   await reauthenticateWithCredential(currentUser, credential);
+    //
+    //   // 2. Firebase 비밀번호 업데이트
+    //   await updatePassword(currentUser, data.newPassword);
+    //
+    //   // ID Token 발급 (강제 갱신)
+    //   const idToken = await currentUser.getIdToken(true);
+    //
+    //   // 3. Spring 백엔드 API 호출 (DB 동기화)
+    //   await instance.patch('/api/user/me/password', 
+    //     { 
+    //       email: user.email,        // 이메일 추가
+    //       newPassword: data.newPassword // 필드명을 'newPassword'로 변경
+    //     },
+    //     { headers: { Authorization: `Bearer ${idToken}` } }
+    //   );
+    //
+    //   alert("비밀번호가 성공적으로 변경되었습니다.");
+    //   cancelPasswordEdit();
+    // } catch (error) {
+    //   console.error("비밀번호 변경 실패:", error);
+    //   if (error.code === 'auth/invalid-credential') {
+    //     alert("현재 비밀번호가 일치하지 않습니다.");
+    //   } else {
+    //     alert("비밀번호 변경 중 오류가 발생했습니다.");
+    //   }
+    // }
+    */
+  };
 
   const cancelPasswordEdit = () => {
     setIsEditingPassword(false);
-    setCurrentPasswordInput('');
-    setNewPassword('');
-    setConfirmPassword('');
+    resetPw();
   }
 
   const delAccount = () => {
@@ -162,9 +231,23 @@ const MyPage = () => {
       alert('탈퇴 사유를 입력해 주세요.');
       return;
     }
-    alert(`회원 탈퇴가 접수되었습니다.\n입력하신 사유: ${deleteReason} 잘가게`);
-    setIsDeleting(false);
-    setDeleteReason('');
+    
+    if (window.confirm('정말로 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+      // ✅ 수정된 부분: 백엔드 UnsubscribeRequestDto가 필요로 하는 정보를 모두 보냅니다.
+      withdrawMutate({
+        email: user?.email,
+        providerCode: user?.providerCode || '01', // 일반(LOCAL) 회원의 기본 코드값 (백엔드 설정에 맞춤)
+        providerId: user?.providerId || null,     // 소셜 로그인 회원일 경우 존재하는 ID
+        reason: deleteReason
+      }, {
+        onSuccess: () => {
+          // useUnsubscribe 훅 내부에 alert 처리가 되어 있으므로, 여기서는 후속 처리만 수행합니다.
+          useAuthStore.setState({ user: null, token: null });
+          localStorage.removeItem('accessToken');
+          navigate('/', { replace: true });
+        }
+      });
+    }
   }
 
   const cancelDelete = () => {
@@ -345,42 +428,58 @@ const MyPage = () => {
               {!isEditingPassword ? (
                 <>
                   <p className='text-muted'>현재 비밀번호를 확인 후 새 비밀번호로 변경할 수 있습니다</p>
-                  <CButton className="rounded-pill button-muted-outline mt-2" onClick={() => {
+                  <CButton className="rounded-pill button-muted-outline mt-2" 
+                  onClick={() => {
+                    // 1. 소셜 로그인 여부 먼저 체크
+                    if (user.providerCode !== "01") {
+                      alert("소셜 회원가입 회원은 비밀번호를 재설정할 수 없습니다.");
+                      return; // 더 이상 진행하지 않고 종료
+                    }
+
+                    // 2. 일반 회원일 경우에만 상태 변경
                     setIsEditingPassword(true);
                     cancelEdit();
                     cancelDelete();
-                  }}>
+                  }}
+                  >
                     비밀번호 변경
                   </CButton>
                 </>
               ) : (
-                <div className="w-100">
+              <CForm className="w-100" onSubmit={handleSubmitPw(changePassword)}>
+                <div className="mb-2">
                   <CFormInput 
                     type="password"
                     placeholder="현재 비밀번호 입력"
-                    value={currentPasswordInput}
-                    onChange={(e) => setCurrentPasswordInput(e.target.value)}
-                    className="mb-2"
+                    {...registerPw('currentPassword')}
+                    invalid={!!pwErrors.currentPassword}
                   />
+                  {pwErrors.currentPassword && <div className="text-danger mt-1" style={{fontSize: '0.8rem'}}>{pwErrors.currentPassword.message}</div>}
+                </div>
+                <div className="mb-2">
                   <CFormInput 
                     type="password"
                     placeholder="변경할 새 비밀번호"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    className="mb-2"
+                    {...registerPw('newPassword')}
+                    invalid={!!pwErrors.newPassword}
                   />
+                  {pwErrors.newPassword && <div className="text-danger mt-1" style={{fontSize: '0.8rem'}}>{pwErrors.newPassword.message}</div>}
+                </div>
+                <div className="mb-3">
                   <CFormInput 
                     type="password"
                     placeholder="변경할 비밀번호 확인"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="mb-3"
+                    {...registerPw('confirmPassword')}
+                    invalid={!!pwErrors.confirmPassword}
                   />
-                  <div className="d-flex gap-2">
-                    <CButton className="rounded-pill button-green" onClick={changePassword}>변경</CButton>
-                    <CButton className="rounded-pill button button-muted-outline" onClick={cancelPasswordEdit}>취소</CButton>
-                  </div>
+                  {pwErrors.confirmPassword && <div className="text-danger mt-1" style={{fontSize: '0.8rem'}}>{pwErrors.confirmPassword.message}</div>}
                 </div>
+                <div className="d-flex gap-2">
+                  {/* 모든 조건을 통과해야만(!isPwValid) 변경 버튼이 눌리게 잠급니다 */}
+                  <CButton type="submit" className="rounded-pill button-green" disabled={!isPwValid}>변경</CButton>
+                  <CButton type="button" className="rounded-pill button button-muted-outline" onClick={cancelPasswordEdit}>취소</CButton>
+                </div>
+              </CForm>
               )}
             </CCardBody>
           </CCard>
