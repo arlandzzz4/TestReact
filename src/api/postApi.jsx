@@ -30,9 +30,11 @@ export const searchPostList = async (data) => {
   }
 };
 
-export const deletePost = async (data) => {
+export const deletePost = async (postId, userEmail) => {
   try {
-    const response = await instance.patch(`/api/post/delete`, data );
+    const response = await instance.delete(`/api/post/${postId}`, {
+      params: { userEmail }
+    });
     return response.data;
   } catch (error) {
     console.error("게시글 삭제 중 오류 발생:", error);
@@ -62,13 +64,17 @@ export const uploadPostImages = async (formData) => {
   }
 };
 
-export const getPostDetail = async (postId) => {
-  const response = await instance.get(`/api/post/${postId}`);
+export const getPostDetail = async (postId, userEmail) => {
+  const response = await instance.get(`/api/post/${postId}`, {
+    params: { userEmail }
+  });
   return response;
 };
 
-export const getCommentList = async (postId) => {
-  const response = await instance.get(`/api/comment/list/${postId}`);
+export const getCommentList = async (postId, userEmail) => {
+  const response = await instance.get(`/api/comment/list/${postId}`, {
+    params: { userEmail }
+  });
   return response;
 };
 
@@ -83,16 +89,27 @@ export const deleteComment = async (commentId) => {
 };
 
 export const togglePostLike = async (postId, userEmail) => {
-  const response = await instance.post(`/api/like/post`, { postId, userEmail });
+  const response = await instance.post(`/api/post/${postId}/like`, null, {
+    params: { userEmail }
+  });
   return response;
 };
 
 export const toggleCommentLike = async (commentId, userEmail) => {
-  const response = await instance.post(`/api/like/comment`, { commentId, userEmail });
+  const response = await instance.post(`/api/comment/${commentId}/like`, null, {
+    params: { userEmail }
+  });
   return response;
 };
 
 export const insertReport = async (targetCode, targetId, userEmail, reasonCode) => {
-  const response = await instance.post(`/api/report/insert`, { targetCode, targetId, userEmail, reasonCode });
+  const response = await instance.post(`/api/post/report`, null, {
+    params: { targetCode, targetId, reporterEmail: userEmail, reasonCode }
+  });
+  return response;
+};
+
+export const updatePost = async (postId, postData) => {
+  const response = await instance.put(`/api/post/${postId}`, postData);
   return response;
 };

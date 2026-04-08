@@ -20,11 +20,11 @@ import { CContainer, CButton, CFormInput } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { cilArrowLeft, cilX } from '@coreui/icons';
 import { CModal, CModalHeader, CModalTitle, CModalBody, CModalFooter } from '@coreui/react';
-import { createPost, uploadPostImages } from '@/api/postApi';
 import '../../scss/WritePost.scss'; // SCSS 파일 import
 import '../../scss/style.scss'; // SCSS 파일 import
 import { useParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { createPost, uploadPostImages, getPostDetail, updatePost } from '@/api/postApi';
 
 export default function WritePost() {
   const navigate = useNavigate();
@@ -57,11 +57,19 @@ export default function WritePost() {
     }
   }
 
-  useEffect(() => { //입력 감지 - 취소/뒤로가기 모달창을 위함
-    if (title || content) {
-      setIsDirty(true)
-    }
-  }, [title, content])
+  useEffect(() => {
+    if (!isEditMode) return;
+    getPostDetail(id)
+      .then(res => {
+        const post = res.data;
+        setTitle(post.title);
+        setContent(post.content);
+        // 카테고리 코드를 이름으로 변환
+        const categoryMap = { '01': '자유', '02': '정보', '03': '인원모집', '04': '공지사항' };
+        setCategory(categoryMap[post.categoryCode] || '자유');
+      })
+      .catch(err => console.error('게시글 불러오기 실패', err));
+  }, [isEditMode, id]);
 
   const handleLeave = () => {
     if (isDirty) {
@@ -99,7 +107,7 @@ export default function WritePost() {
     }
   };
 
-const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const formErrors = validateForm();
     const categoryCode = getCategoryId(category);
@@ -110,31 +118,37 @@ const handleSubmit = async (e) => {
     setErrors({});
 
     try {
-      // 1. 게시글 먼저 등록 → post_id 반환
-      const postId = await createPost({
-        userEmail: user?.email,
-        categoryCode: categoryCode,
-        title: title,
-        content: content
-      });
-
-      // 2. 이미지가 있으면 post_id와 함께 업로드
-      if (images.length > 0) {
-        const formData = new FormData();
-        formData.append('postId', postId);
-        images.forEach((img) => {
-          formData.append('file', img.file);
+      if (isEditMode) {
+        // 수정 모드
+        await updatePost(id, {
+          categoryCode: categoryCode,
+          title: title,
+          content: content
         });
-
-        await uploadPostImages(formData);
+        alert('게시글이 수정되었습니다.');
+        navigate(`/post/${id}`);
+      } else {
+        // 등록 모드
+        const postId = await createPost({
+          userEmail: user?.email,
+          categoryCode: categoryCode,
+          title: title,
+          content: content
+        });
+        if (images.length > 0) {
+          const formData = new FormData();
+          formData.append('postId', postId);
+          images.forEach((img) => {
+            formData.append('file', img.file);
+          });
+          await uploadPostImages(formData);
+        }
+        alert('게시글이 성공적으로 등록되었습니다.');
+        navigate(-1);
       }
-
-      console.log('게시글 등록 성공:', postId);
-      alert('게시글이 성공적으로 등록되었습니다.');
-      navigate(-1); // 이전 페이지로 돌아가기
     } catch (error) {
       console.error('게시글 처리 실패:', error);
-      alert('글 등록 오류! 잠시 후 다시 시도해 주세요.');
+      alert('오류! 잠시 후 다시 시도해 주세요.');
     }
   };
 
@@ -173,7 +187,8 @@ const handleSubmit = async (e) => {
   return (
     <>
       {/* ── 상단 헤더 바 ── */}
-      <div className="d-flex align-items-center justify-content-center position-relative py-3 border-bottom mb-4 write-post-header">
+      <div className="d-flex align-items-center justify-content-center position-relative py-3 border-bottom mb-4 write-post-header"
+        style={isEditMode ? { marginTop: '-24px' } : { marginTop: '0px' }}>
         <CButton
           color="link"
           className="text-dark position-absolute start-0 ms-4"

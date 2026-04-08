@@ -35,11 +35,16 @@ const PostDetail = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
 
   useEffect(() => {
-    getPostDetail(id)
-      .then(res => setPost(res.data))
+    if (userEmail === "" && isLoggedIn) return; // 로그인했는데 email이 아직 없으면 기다림
+
+    getPostDetail(id, userEmail)
+      .then(res => {
+        setPost(res.data);
+        setPostLiked(res.data.liked);
+      })
       .catch(err => console.error('게시글 조회 실패', err));
 
-    getCommentList(id)
+    getCommentList(id, userEmail)
       .then(res => {
         const allComments = res.data;
         const parentComments = allComments.filter(c => !c.parentCommentId);
@@ -51,7 +56,18 @@ const PostDetail = () => {
         setComments(merged);
       })
       .catch(err => console.error('댓글 조회 실패', err));
-  }, [id]);
+  }, [id, userEmail]);
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    const yyyy = date.getFullYear();
+    const MM = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
+    const HH = String(date.getHours()).padStart(2, '0');
+    const mm = String(date.getMinutes()).padStart(2, '0');
+    return `${yyyy}-${MM}-${dd} ${HH}:${mm}`;
+  };
 
   if (!post) return <div>로딩 중...</div>;
 
@@ -125,7 +141,7 @@ const PostDetail = () => {
       size: 10,
     })
       .then(() => {
-        return getCommentList(id);
+        return getCommentList(id, userEmail);
       })
       .then(res => {
         const allComments = res.data;
@@ -145,7 +161,7 @@ const PostDetail = () => {
     if (!window.confirm('댓글을 삭제할까요?')) return;
     deleteComment(commentId)
       .then(() => {
-        return getCommentList(id);
+        return getCommentList(id, userEmail);
       })
       .then(res => {
         const allComments = res.data;
@@ -178,7 +194,7 @@ const PostDetail = () => {
       size: 10,
     })
       .then(() => {
-        return getCommentList(id);
+        return getCommentList(id, userEmail);
       })
       .then(res => {
         const allComments = res.data;
@@ -242,7 +258,7 @@ const PostDetail = () => {
           <div className="author-avatar">{post.nickname[0]}</div>
           <div>
             <div className="author-name">{post.nickname}</div>
-            <div className="author-date">{post.createdAt}</div>
+            <div className="author-date">{formatDate(post.createdAt)}</div>
           </div>
           <div className="post-detail-author-actions">
             <div className="comment-menu-wrap" onClick={e => e.stopPropagation()}>
@@ -266,7 +282,7 @@ const PostDetail = () => {
                               alert('삭제에 실패했습니다.');
                             });
                         }
-                      }}>게시글 삭제</button>
+                      }}>글 삭제</button>
                     </>
                   ) : (
                     <button onClick={() => openReport('post', post.postId)}>게시글 신고</button>
@@ -277,7 +293,7 @@ const PostDetail = () => {
           </div>
         </div>
 
-        <div className="post-detail-content">{post.content}</div>
+        <div className="post-detail-content" dangerouslySetInnerHTML={{ __html: post.content }} />
 
         <div className="post-detail-reaction">
           <button className={`pd-like-btn ${postLiked ? 'liked' : ''}`} onClick={handlePostLike}>
@@ -321,7 +337,7 @@ const PostDetail = () => {
             <div className="comment-body">
               <div className="comment-meta-row">
                 <span className="author-name">{comment.nickname}</span>
-                <span className="author-date">{comment.createdAt}</span>
+                <span className="author-date">{formatDate(comment.createdat)}</span>
                 <div className="comment-menu-wrap" onClick={e => e.stopPropagation()}>
                   <span className="comment-menu-dot" onClick={() => toggleDropdown(`comment-${comment.commentId}`)}>⋯</span>
                   {openDropdown === `comment-${comment.commentId}` && (
@@ -355,7 +371,7 @@ const PostDetail = () => {
                       <div className="comment-body">
                         <div className="comment-meta-row">
                           <span className="author-name">{reply.nickname}</span>
-                          <span className="author-date">{reply.createdAt}</span>
+                          <span className="author-date">{formatDate(reply.createdat)}</span>
                           <div className="comment-menu-wrap" onClick={e => e.stopPropagation()}>
                             <span className="comment-menu-dot" onClick={() => toggleDropdown(`reply-${reply.commentId}`)}>⋯</span>
                             {openDropdown === `reply-${reply.commentId}` && (
@@ -364,12 +380,22 @@ const PostDetail = () => {
                                   <button style={{ width: '89px' }} onClick={() => {
                                     setOpenDropdown(null);
                                     if (window.confirm('댓글을 삭제할까요?')) {
-                                      setComments(prev => prev.map(c =>
-                                        c.id === comment.id
-                                          ? { ...c, replies: c.replies.filter(r => r.id !== reply.commentId) }
-                                          : c
-                                      ));
-                                      alert('댓글이 삭제되었습니다.');
+                                      deleteComment(reply.commentId)
+                                        .then(() => {
+                                          return getCommentList(id, userEmail);
+                                        })
+                                        .then(res => {
+                                          const allComments = res.data;
+                                          const parentComments = allComments.filter(c => !c.parentCommentId);
+                                          const replies = allComments.filter(c => c.parentCommentId);
+                                          const merged = parentComments.map(c => ({
+                                            ...c,
+                                            replies: replies.filter(r => r.parentCommentId === c.commentId)
+                                          }));
+                                          setComments(merged);
+                                          alert('댓글이 삭제되었습니다.');
+                                        })
+                                        .catch(err => console.error('대댓글 삭제 실패', err));
                                     }
                                   }}>댓글 삭제
                                   </button>

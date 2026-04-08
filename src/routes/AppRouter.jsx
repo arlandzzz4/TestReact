@@ -26,15 +26,14 @@ const router = createBrowserRouter([
             lazy: () => import('@/pages/feed/Feed').then(m => ({ Component: m.default })) 
           },
           //게시글 포스트 상세로 이동하는 라우트 처리
-          {
-            path: 'post/:id',
-            lazy: () => import('@/pages/feed/PostDetail').then(m => ({ Component: m.default })),
-          },
           { // [글 수정] 선택 시, 게시글작성 페이지로 이동
             path: 'post/edit/:id',
             lazy: () => import('@/pages/feed/WritePost').then(m => ({ Component: m.default })),
           },
-
+          {
+            path: 'post/:id',
+            lazy: () => import('@/pages/feed/PostDetail').then(m => ({ Component: m.default })),
+          },
         
         //{ path: 'food-search', lazy: () => import('@/pages/food/FoodSearch').then(m => ({ Component: m.default })) },
         { path: 'calc', lazy: () => import('@/pages/calc/CalcPage').then(m => ({ Component: m.default })) },
