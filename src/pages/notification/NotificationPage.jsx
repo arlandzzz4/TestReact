@@ -13,12 +13,8 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // TanStack Query 훅 (서버 데이터)
-import {
-  useNotifications,
-  useMarkAsRead,
-  useMarkAllRead,
-  useDeleteAll,
-} from '../../hooks/useNotifications';
+import { useNotifications } from '../../hooks/queries/useNotificationQuery';
+import { useMarkAsRead, useMarkAllRead, useDeleteAll } from '../../hooks/mutations/useNotificationMutation';
 
 // Zustand 스토어 (클라이언트 상태)
 import { useNotifSettingStore, useNoticeBannerStore } from '../../store/notifStore';

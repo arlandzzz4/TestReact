@@ -1,4 +1,6 @@
 // src/MapPage.jsx
+import { properties } from "../../constants/properties.js";
+import { instance } from "../../api/axios.jsx";
 import { useState, useEffect, useRef } from "react"; // React 기본 훅 import
 import "../../scss/MapPage.scss";
 // 로그인 상태를 전역으로 관리하는 Zustand store import
@@ -9,7 +11,7 @@ const MapPage = () => {
   // Zustand store에서 로그인 정보 꺼내오기
   // isLoggedIn : 로그인 했으면 true, 안했으면 false
   // user : 로그인한 사람 정보 (email 등)
-// 테스트용 임시 코드 (나중에 원래대로 되돌려야 함!)
+  // 테스트용 임시 코드 (나중에 원래대로 되돌려야 함!)
   const { isLoggedIn, user } = useAuthStore();
   const [mapLoaded, setMapLoaded] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -54,7 +56,7 @@ const MapPage = () => {
   // 카카오맵 SDK 동적 로드
   useEffect(() => {
     const script = document.createElement("script");
-    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=a64b772b10f603c9c422cffb8d1373e0&libraries=services&autoload=false`;
+    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${properties.kakaoMapKey}&libraries=services&autoload=false`;
     script.async = true;
 
     script.onload = () => {
@@ -121,13 +123,8 @@ const MapPage = () => {
   window.deletePin = async (pinId) => {
     if (!window.confirm("정말 삭제할까요?")) return;
     try {
-      const response = await fetch(
-        `http://localhost:8080/api/map/pins/${pinId}`,
-        {
-          method: "DELETE",
-        },
-      );
-      if (response.ok) {
+      const response = await instance.delete(`/api/map/pins/${pinId}`);
+      if (response.status === 200) {
         alert("핀이 삭제됐어요!");
         if (infowindow.current) infowindow.current.close();
         window.location.reload();
@@ -146,10 +143,9 @@ const MapPage = () => {
 
   const fetchCustomPins = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/map/pins");
-      const data = await response.json();
-      console.log("📌 DB에서 불러온 핀 목록:", data);
-      displayCustomPins(data);
+      const response = await instance.get("/api/map/pins");
+      console.log("📌 DB에서 불러온 핀 목록:", response.data);
+      displayCustomPins(response.data);
     } catch (error) {
       console.error("❌ 핀 목록 불러오기 실패:", error);
     }
@@ -197,13 +193,15 @@ const MapPage = () => {
       <span style="color:#3D6B4F;">🏷️ ${pin.facilityType}</span><br/>
       ${pin.comment ? `💬 ${pin.comment}<br/>` : ""}
       <span style="color:#aaa; font-size:11px;">등록자: ${pin.nickname || "익명"}</span><br/>
-      ${isLoggedIn && user?.email === pin.userEmail
-        ? `<button
+      ${
+        isLoggedIn && user?.email === pin.userEmail
+          ? `<button
              onclick="window.deletePin(${pin.pinId})"
              style="margin-top:8px; padding:4px 12px; background:#ff4444; color:white; border:none; border-radius:6px; cursor:pointer; font-size:12px;">
              🗑️ 삭제
            </button>`
-        : ""}
+          : ""
+      }
     </div>
   `;
         infowindow.current = new window.kakao.maps.InfoWindow({ content });
@@ -551,30 +549,24 @@ const MapPage = () => {
     }
 
     // DB에 저장할 데이터
-const pinData = {
-  userEmail: user?.email, // 로그인한 사용자 이메일 자동입력
-  nickname: user?.nickname, // 로그인한 사용자 닉네임 자동입력
-  placeName: modalForm.place_name,
-  facilityType: modalForm.facility_type,
-  comment: modalForm.comment,
-  latitude: clickedPosition.lat,
-  longitude: clickedPosition.lng,
-};
+    const pinData = {
+      userEmail: user?.email, // 로그인한 사용자 이메일 자동입력
+      nickname: user?.nickname, // 로그인한 사용자 닉네임 자동입력
+      placeName: modalForm.place_name,
+      facilityType: modalForm.facility_type,
+      comment: modalForm.comment,
+      latitude: clickedPosition.lat,
+      longitude: clickedPosition.lng,
+    };
 
     try {
       // DB에 저장
-      const response = await fetch("http://localhost:8080/api/map/pins", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(pinData),
-      });
+      const response = await instance.post("/api/map/pins", pinData);
 
-      if (response.ok) {
-  console.log("📌 DB 저장 성공!");
-  // DB에서 핀 목록 다시 불러오기 (닉네임, 삭제버튼 바로 반영)
-  fetchCustomPins();
-
-
+      if (response.status === 200) {
+        console.log("📌 DB 저장 성공!");
+        // DB에서 핀 목록 다시 불러오기 (닉네임, 삭제버튼 바로 반영)
+        fetchCustomPins();
 
         alert("📌 핀이 등록됐어요!");
       } else {
@@ -736,7 +728,7 @@ const pinData = {
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
             <h3>📌 운동장소 등록</h3>
-           <div className="modal-field">
+            <div className="modal-field">
               <label>시설명 *</label>
               <input
                 type="text"
