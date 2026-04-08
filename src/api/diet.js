@@ -19,8 +19,8 @@ export const saveExercise = (dateKey, checked, userEmail) =>
   axios.patch(`${BASE_URL}/api/calendar/diet/exercise`, { dateKey, checked, userEmail }).then(r => r.data)
 
 // 음식 검색
-export const searchFood = (query) =>
-  axios.get(`${BASE_URL}/api/calendar/food/search`, { params: { q: query } }).then(r => r.data)
+export const searchFood = (query, page = 0) =>
+  axios.get(`${BASE_URL}/api/calendar/food/search`, { params: { q: query, page } }).then(r => r.data)
 
 // ── 즐겨 먹는 식단 ──
 export const getFavMeals = (email) =>

@@ -1,7 +1,8 @@
 import { CModal, CModalHeader, CModalBody, CModalFooter, CButton } from '@coreui/react'
 import SearchModal from '../../components/SearchModal'
 import FavMealModal from '../../components/FavMealModal'
-import { useSaveDiet, useSaveWeight, useFavMeals, useDeleteFavMeal, useDietDetail } from '../../hooks/useDiet'
+import { useDietDetail, useFavMeals } from '../../hooks/queries/useDietQuery'
+import { useSaveDiet, useSaveWeight, useDeleteFavMeal } from '../../hooks/mutations/useDietMutation'
 import '../../scss/calendar.scss'
 import { useState, useEffect } from 'react'
 

@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { useDietByMonth, useSaveExercise } from '../../hooks/useDiet'
+import { useDietByMonth } from '../../hooks/queries/useDietQuery'
+import { useSaveExercise } from '../../hooks/mutations/useDietMutation'
 import { useAuth } from '../../hooks/useAuth'
 import DietDetail from './DietDetail'
 import '../../scss/calendar.scss'
@@ -26,7 +27,7 @@ export default function CalendarPage() {
   const [month, setMonth] = useState(TODAY.m)
   const [detailKey, setDetailKey] = useState(null)
 
-const { data: dietData = {} } = useDietByMonth(year, month, user?.email)
+  const { data: dietData = {} } = useDietByMonth(year, month, user?.email)
   const { mutate: saveExercise } = useSaveExercise()
 
   const prevMonth = () => {
@@ -115,18 +116,33 @@ const { data: dietData = {} } = useDietByMonth(year, month, user?.email)
                     : <div className="iob-cell-num">{dispDay}</div>
                   }
                   {!isOther && (
-                    <label className={`iob-exercise-check ${isChecked ? 'iob-checked' : ''}`}>
-                      <input
-                        type="checkbox"
-                        checked={isChecked}
-                        onChange={e => {
+                    <>
+                      {/* 데스크탑: 체크박스 */}
+                      <label className={`iob-exercise-check iob-exercise-desktop ${isChecked ? 'iob-checked' : ''}`}>
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={e => {
+                            e.stopPropagation()
+                            saveExercise({ dateKey: dk, checked: e.target.checked, userEmail: user?.email })
+                          }}
+                        />
+                        <span className="iob-exercise-label">운동</span>
+                      </label>
+
+                      {/* 모바일: 텍스트 버튼 */}
+                      <button
+                        className={`iob-exercise-mobile ${isChecked ? 'iob-checked' : ''}`}
+                        onClick={e => {
                           e.stopPropagation()
-                          saveExercise({ dateKey: dk, checked: e.target.checked, userEmail: user?.email })
+                          saveExercise({ dateKey: dk, checked: !isChecked, userEmail: user?.email })
                         }}
-                      />
-                      <span className="iob-exercise-label">운동</span>
-                    </label>
+                      >
+                        운동
+                      </button>
+                    </>
                   )}
+
                 </div>
 
                 {/* 데이터 필 */}
