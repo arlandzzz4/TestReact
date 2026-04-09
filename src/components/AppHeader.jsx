@@ -118,15 +118,15 @@ const AppHeader = () => {
       className={isWritePage ? "p-0" : "mb-4 p-0"}
       ref={headerRef}
     >
-      <CContainer className="border-bottom px-4" fluid>
+      <CContainer className="border-bottom px-3 flex-nowrap" fluid>
         <CHeaderToggler
           onClick={() => dispatch({ type: "set", sidebarShow: !sidebarShow })}
           style={{ marginInlineStart: "-14px" }}
         >
           <CIcon icon={cilMenu} size="lg" />
         </CHeaderToggler>
-        <CHeaderNav className="header-nav-menu nav-underline">
-          <h4 style={{ color: "#3D6B4F", marginRight: "50px" }}>
+        <CHeaderNav className="header-nav-menu nav-underline flex-nowrap">
+          <h4 className="mb-0 d-flex align-items-center" style={{ color: "#3D6B4F", marginRight: "25px", flexShrink: 0 }}>
             <b>IOB</b>
           </h4>
           <CNavItem>
@@ -160,9 +160,9 @@ const AppHeader = () => {
             </CNavLink>
           </CNavItem>
         </CHeaderNav>
-        <CHeaderNav className="ms-auto">
+        <CHeaderNav className="ms-auto flex-shrink-0">
           {isAuthenticated ? (
-            <div className="d-flex align-items-center gap-3">
+            <div className="d-flex align-items-center gap-2 flex-nowrap">
               <CNavLink
                 as={NavLink}
                 to="/notifications"
