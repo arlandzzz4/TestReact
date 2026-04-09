@@ -48,7 +48,29 @@ export const updateUserStatusCode = async (data) => {
     console.error("유저 상태 코드 업데이트 중 오류 발생:", error);
     throw error;
   }
-} 
+}
+
+export const updateNickname = async (data) => {
+  try {
+    const response = await instance.patch('/api/user/me/nickname', data);
+    return response.data;
+  } catch (error) {
+    console.error("닉네임 변경 실패:", error);
+    throw error;
+  }
+};
+
+export const updatePassword = async (data) => {
+  try {
+    const response = await instance.patch('/api/user/me/password', {
+      newPassword: data.newPassword
+    });
+    return response.data;
+  } catch (error) {
+    console.error("백엔드 비밀번호 변경 실패:", error);
+    throw error;
+  }
+};
 
 export const unsubscribe = async (data) => {
   try {
