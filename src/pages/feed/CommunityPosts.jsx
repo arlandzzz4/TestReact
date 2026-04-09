@@ -42,31 +42,47 @@ const CommunityPosts = () => {
   const [posts, setPosts] = useState([])
   const [activeTab, setActiveTab] = useState('전체')
   const [searchQuery, setSearchQuery] = useState('')
+  const [submittedKeyword, setSubmittedKeyword] = useState('') // 실제 API 요청에 쓰일 확정된 검색어
 
-    const [lastId, setLastId] = useState(null)       // 마지막으로 불러온 게시글 ID
+    const [lastId, setLastId] = useState(0)          // 마지막으로 불러온 게시글 ID (백엔드 기본값 0)
   const [hasMore, setHasMore] = useState(true)     // 더 불러올 게시글이 있는지
   const [loading, setLoading] = useState(false)    // 로딩 중 여부
   const observerRef = useRef(null)                 // IntersectionObserver 타겟
     const loadingRef = useRef(false)                 // loading을 ref로도 관리
   const hasMoreRef = useRef(true)                  // hasMore를 ref로도 관리
-  const lastIdRef = useRef(null)                   // lastId를 ref로도 관리
+  const lastIdRef = useRef(0)                      // lastId를 ref로도 관리
 
   const navigate = useNavigate()
   const LIMIT = 10
 
   //API 호출
-  const fetchPosts = useCallback(async () => {
-    if (loadingRef.current || !hasMoreRef.current) return
+  const fetchPosts = useCallback(async (isReset = false) => {
+    // isReset이 아닐 때만 기존 로딩/hasMore 방어 로직을 탐
+    if (!isReset && (loadingRef.current || !hasMoreRef.current)) return
     loadingRef.current = true
     setLoading(true)
 
     try {
+      // 카테고리 이름에 맞는 코드값 설정
+      const categoryCode = activeTab === '전체' ? '' :
+        activeTab === '자유' ? '01' :
+        activeTab === '정보' ? '02' :
+        activeTab === '인원모집' ? '03' : '04';
+        
+      // 리셋 모드(검색/탭변경)일 경우 lastId를 0으로 보냄
+      const currentLastId = isReset ? 0 : lastIdRef.current;
+
       const res = await instance.get('/api/post/search/post', {
-        params: { lastId: lastIdRef.current, limit: LIMIT }
+        params: { 
+          lastId: currentLastId, 
+          size: LIMIT,                                // limit -> size 로 변경
+          word: submittedKeyword || '',               // keyword -> word 로 변경
+          categoryCode: categoryCode || '' 
+        }
       })
       const newPosts = res.data
 
-      setPosts(prev => [...prev, ...newPosts])
+      setPosts(prev => isReset ? newPosts : [...prev, ...newPosts])
 
       if (newPosts.length < LIMIT) {
         hasMoreRef.current = false
@@ -82,12 +98,16 @@ const CommunityPosts = () => {
       loadingRef.current = false
       setLoading(false)
     }
-  }, [])
+  }, [activeTab, submittedKeyword])
 
-  // 최초 로딩
+  // 탭이 바뀌거나 검색어가 제출되면 목록을 완전히 초기화하고 처음부터 다시 불러옵니다.
   useEffect(() => {
-    fetchPosts()
-  }, [])
+    lastIdRef.current = 0;
+    setLastId(0);
+    hasMoreRef.current = true;
+    setHasMore(true);
+    fetchPosts(true); // isReset = true
+  }, [activeTab, submittedKeyword, fetchPosts])
 
   // IntersectionObserver - 스크롤 감지
   useEffect(() => {
@@ -113,6 +133,11 @@ const CommunityPosts = () => {
     }
   }
 
+  // 검색 실행 핸들러
+  const handleSearch = () => {
+    setSubmittedKeyword(searchQuery);
+  };
+
   //날짜 포멧
   const formatDate = (dateStr) => {
     const d = new Date(dateStr)
@@ -134,15 +159,6 @@ const mappedPosts = posts.map(post => ({
     : `${(instance.defaults.baseURL || '').replace(/\/$/, '')}${post.thumbnail}`
   : null
   }))
-
-  // 탭 + 검색어 필터링
-  const filteredPosts = mappedPosts.filter((post) => {
-    const matchTab = activeTab === '전체' || post.tag === activeTab
-    const matchSearch =
-      post.title.includes(searchQuery) ||
-      post.author.includes(searchQuery)
-    return matchTab && matchSearch
-  })
 
   return (
     <div className="mb-4">
@@ -202,9 +218,16 @@ const mappedPosts = posts.map(post => ({
             size="sm"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleSearch();
+              }
+            }}
             style={{ borderRadius: '40px 0 0 40px', fontSize: '13px' }}
           />
           <CInputGroupText
+            onClick={handleSearch}
             style={{
               background: '#3d6b4f',
               border: 'none',
@@ -240,9 +263,9 @@ const mappedPosts = posts.map(post => ({
       </div>
 
       {/* ── 반응형 카드 그리드 ── */}
-      {filteredPosts.length > 0 ? (
+      {mappedPosts.length > 0 ? (
         <CRow className="g-3">
-          {filteredPosts.map((post) => (
+          {mappedPosts.map((post) => (
             <CCol
               key={post.id}
               xs={12}
