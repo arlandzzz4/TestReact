@@ -1,4 +1,4 @@
-import { getToken } from "firebase/messaging";
+import { getToken, onMessage } from "firebase/messaging";
 import { messaging } from "../../config/firebase";
 import { instance } from '../axios';
 import { properties } from '../../constants/properties.js';
@@ -46,3 +46,10 @@ export const requestForToken = async (accessToken) => {
     throw err;
   }
 };
+
+export const onMessageListener = () =>
+  new Promise((resolve) => {
+    onMessage(messaging, (payload) => {
+      resolve(payload);
+    });
+  });
