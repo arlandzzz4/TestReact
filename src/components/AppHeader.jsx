@@ -125,7 +125,7 @@ const AppHeader = () => {
         >
           <CIcon icon={cilMenu} size="lg" />
         </CHeaderToggler>
-        <CHeaderNav className="d-none d-md-flex nav-underline">
+        <CHeaderNav className="header-nav-menu nav-underline">
           <h4 style={{ color: "#3D6B4F", marginRight: "50px" }}>
             <b>IOB</b>
           </h4>
