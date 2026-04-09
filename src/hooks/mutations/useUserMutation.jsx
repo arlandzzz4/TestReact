@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { updateUserStatusCode, unsubscribe } from '@/api/userApi';
+import { updateUserStatusCode, unsubscribe, updateNickname, updatePassword } from '@/api/userApi';
 import { auth, googleProvider } from '@/config/firebase';
 import { 
   EmailAuthProvider, 
@@ -19,6 +19,38 @@ export const useUpdateUserStatusCodeMutation = () => {
         onError: (error) => {
             console.error('유저 상태 업데이트 에러:', error);
             alert('유저 상태 업데이트 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+        }
+    });
+}
+
+export const useUpdateNicknameMutation = () => {
+    return useMutation({
+        mutationFn: updateNickname,
+        onSuccess: (data, variables) => {
+            // Zustand 전역 상태 업데이트
+            useAuthStore.setState((state) => ({
+                user: state.user ? { ...state.user, nickname: variables.nickname } : state.user
+            }));
+            alert('닉네임이 성공적으로 변경되었습니다.');
+        },
+        onError: (error) => {
+            console.error('닉네임 변경 실패:', error);
+            alert('닉네임 변경에 실패했습니다.');
+        }
+    });
+};
+
+export const useUpdatePasswordMutation = () => {
+    return useMutation({
+        mutationFn: updatePassword,
+        onSuccess: () => {
+            // 이 mutation은 Firebase 비밀번호 변경 후 백엔드 동기화 용도이므로
+            // 성공 메시지는 실제 로직을 호출하는 컴포넌트에서 처리하는 것이 더 자연스러울 수 있습니다.
+            console.log("백엔드 비밀번호 동기화 성공");
+        },
+        onError: (error) => {
+            console.error("백엔드 비밀번호 동기화 실패:", error);
+            alert("서버와 비밀번호 동기화 중 오류가 발생했습니다.");
         }
     });
 }

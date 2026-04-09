@@ -3,9 +3,10 @@ import { CRow, CCol, CCard, CCardBody, CCardHeader, CCardFooter, CButton, CPagin
 import '../../scss/MyPage.scss'
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
-import { instance } from '@/api/axios';
+import { instance } from '@/api/axios'; // GET 요청에 여전히 사용되므로 유지합니다.
 import { useAuthStore } from '@/store/useAuthStore';
-import { useUnsubscribe } from '@/hooks/mutations/useUserMutation';
+import { useUnsubscribe, useUpdateNicknameMutation, useUpdatePasswordMutation } from '@/hooks/mutations/useUserMutation';
+import { useDeletePostMutation } from '@/hooks/mutations/usePostMutation';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -17,14 +18,15 @@ import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from 
 
 export const pwSchema = z
   .object({
-    currentPassword: z.string().min(1, "현재 비밀번호를 입력해주세요."),
+    currentPassword: z.string().min(1, "현재 비밀번호를 입력해주세요.").max(255, "최대 255자까지 입력 가능합니다."),
     newPassword: z.string() //새로 입력하는 비번에만 수행
       .min(8, "최소 8자 이상 입력해주세요.")
+      .max(255, "최대 255자까지 입력 가능합니다.")
       .regex(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/,
         "대소문자, 숫자, 특수문자를 모두 포함해야 합니다."
       ),
-    confirmPassword: z.string()
+    confirmPassword: z.string().max(255, "최대 255자까지 입력 가능합니다.")
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
     message: "비밀번호가 일치하지 않습니다.",
@@ -46,6 +48,13 @@ const MyPage = () => {
 
   // 파이어베이스 키(FCM 토큰) 삭제 및 백엔드 탈퇴 API 처리를 수행하는 커스텀 훅
   const { mutate: withdrawMutate } = useUnsubscribe();
+  // 닉네임 변경 뮤테이션 훅
+  const { mutate: updateNicknameMutate } = useUpdateNicknameMutation();
+  // 비밀번호 변경(백엔드 동기화) 뮤테이션 훅
+  const { mutate: updatePasswordMutate } = useUpdatePasswordMutation();
+  // 내 글 삭제 뮤테이션 훅
+  const { mutate: deletePostMutate } = useDeletePostMutation();
+
 
   // 비밀번호 변경 폼 관리를 위한 react-hook-form 추가
   const {
@@ -116,30 +125,6 @@ const MyPage = () => {
     }
   };
 
-  // 닉네임 변경 API 호출
-  const fetchUpdateNickname = async (newNickname) => {
-    if (!user?.email) return;
-    try {
-      // 스웨거 테스트와 완벽하게 동일한 JSON 객체 형태로 전송합니다.
-      await instance.patch('/api/user/me/nickname', { 
-        email: user.email,
-        nickname: newNickname
-      });
-
-      // [프론트엔드 상태 즉시 동기화] 새로고침 시에도 변경된 닉네임이 유지되도록 전역 상태(및 로컬 캐시)를 업데이트합니다.
-      useAuthStore.setState((state) => ({
-        user: state.user ? { ...state.user, nickname: newNickname } : state.user
-      }));
-
-      alert('닉네임이 성공적으로 변경되었습니다.');
-      return true; // 성공 여부 반환
-    } catch (err) {
-      console.error('닉네임 변경 실패', err);
-      alert('닉네임 변경에 실패했습니다.');
-      return false; // 실패 여부 반환
-    }
-  };
-
 
   useEffect(() => {
     fetchTotalCount();
@@ -155,16 +140,22 @@ const MyPage = () => {
     }
   };
 
-  const editProfile = async () => {
+  const editProfile = () => {
     if (!nickName.trim()) {
       alert("변경할 닉네임을 입력해 주세요.");
       return;
     }
-    const isSuccess = await fetchUpdateNickname(nickName);
-    if (isSuccess) {
-      setNickName('');
-      setClickEdtBtn(false);
+    if (nickName.length > 50) {
+      alert("닉네임은 최대 50자까지 입력 가능합니다.");
+      return;
     }
+    // 커스텀 훅을 사용하여 닉네임 변경 요청
+    updateNicknameMutate({ email: user.email, nickname: nickName }, {
+      onSuccess: () => {
+        setNickName('');
+        setClickEdtBtn(false);
+      }
+    });
   }
 
   const cancelEdit = () => {
@@ -188,13 +179,12 @@ const MyPage = () => {
     await updatePassword(currentUser, data.newPassword);
 
     // 3. 백엔드 DB 동기화
-    await instance.patch('/api/user/me/password', {
-      email: user?.email,
-      newPassword: data.newPassword
+    updatePasswordMutate({ email: user?.email, newPassword: data.newPassword }, {
+      onSuccess: () => {
+        alert("비밀번호가 성공적으로 변경되었습니다.");
+        cancelPasswordEdit();
+      }
     });
-
-    alert("비밀번호가 성공적으로 변경되었습니다.");
-    cancelPasswordEdit();
 
   } catch (error) {
     console.error("비밀번호 변경 실패:", error);
@@ -216,6 +206,11 @@ const MyPage = () => {
   const delAccount = () => {
     if (!deleteReason.trim()) {
       alert('탈퇴 사유를 입력해 주세요.');
+      return;
+    }
+
+    if (deleteReason.length > 500) {
+      alert('탈퇴 사유는 최대 500자까지 입력 가능합니다.');
       return;
     }
 
@@ -248,6 +243,18 @@ const MyPage = () => {
     setDeleteReason('');
     setDeletePassword('');
   }
+
+  const handleDeletePost = (postId) => {
+    if (window.confirm('정말로 이 게시글을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+      deletePostMutate({ postId, userEmail: user.email }, {
+        onSuccess: () => {
+          // 성공 시 목록을 다시 불러와 UI를 업데이트합니다.
+          fetchMyPosts(currentPage);
+          fetchTotalCount();
+        }
+      });
+    }
+  };
 
   return (
     <div className="p-8 my-page-container mb-5 pb-5">
@@ -319,6 +326,7 @@ const MyPage = () => {
                     value={nickName}
                     placeholder='변경할 닉네임 입력'
                     style={{margin: '0 0 1rem 0'}}
+                    max Length={50}
                   />
                   <CButton
                     onClick={editProfile}
@@ -355,8 +363,8 @@ const MyPage = () => {
                           {post.title}
                         </span>
                         <div className="d-flex gap-1 flex-shrink-0">
-                          <CButton size="sm" color="secondary" variant="outline" className="rounded-pill button-muted-outline" style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem' }} onClick={() => navigate(`/post/edit/${post.postId}`)}>수정</CButton>
-                          <CButton size="sm" color="danger" variant="outline" className="rounded-pill button-red-outline" style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem' }} onClick={() => { if(window.confirm('삭제하시겠습니까?')) alert(`${post.postId}번 글 삭제완료`); }}>삭제</CButton>
+                        <CButton size="sm" color="secondary" variant="outline" className="rounded-pill button-muted-outline" style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem' }} onClick={() => window.open(`/post/edit/${post.postId}`, '_blank')}>수정</CButton>
+                          <CButton size="sm" color="danger" variant="outline" className="rounded-pill button-red-outline" style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem' }} onClick={() => handleDeletePost(post.postId)}>삭제</CButton>
                         </div>
                       </li>
                     ))}
@@ -447,6 +455,7 @@ const MyPage = () => {
                     placeholder="현재 비밀번호 입력"
                     {...registerPw('currentPassword')}
                     invalid={!!pwErrors.currentPassword}
+                    maxLength={255}
                   />
                   {pwErrors.currentPassword && <div className="text-danger mt-1" style={{fontSize: '0.8rem'}}>{pwErrors.currentPassword.message}</div>}
                 </div>
@@ -456,6 +465,7 @@ const MyPage = () => {
                     placeholder="변경할 새 비밀번호"
                     {...registerPw('newPassword')}
                     invalid={!!pwErrors.newPassword}
+                    maxLength={255}
                   />
                   {pwErrors.newPassword && <div className="text-danger mt-1" style={{fontSize: '0.8rem'}}>{pwErrors.newPassword.message}</div>}
                 </div>
@@ -465,6 +475,7 @@ const MyPage = () => {
                     placeholder="변경할 비밀번호 확인"
                     {...registerPw('confirmPassword')}
                     invalid={!!pwErrors.confirmPassword}
+                    maxLength={255}
                   />
                   {pwErrors.confirmPassword && <div className="text-danger mt-1" style={{fontSize: '0.8rem'}}>{pwErrors.confirmPassword.message}</div>}
                 </div>
@@ -505,6 +516,7 @@ const MyPage = () => {
                           value={deletePassword}
                           onChange={(e) => setDeletePassword(e.target.value)}
                           className="mb-2"
+                          maxLength={255}
                       />
                   )}
                   <CFormInput
@@ -512,6 +524,7 @@ const MyPage = () => {
                       value={deleteReason}
                       onChange={(e) => setDeleteReason(e.target.value)}
                       className="mb-2"
+                      maxLength={500}
                   />
                   <div style={{ color: 'red', fontSize: '0.8rem', marginBottom: '1rem' }}>
                       * 탈퇴 후 데이터는 복구되지 않습니다
