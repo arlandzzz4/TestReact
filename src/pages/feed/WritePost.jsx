@@ -12,41 +12,42 @@
 // → 글 내용 + S3 URL 함께 DB 저장 API 호출
 // api에 전달 시 유저 이메일 , 카테고리 id, 제목, 컨텐츠, 작성시간 이렇게 보내줘야 함
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ReactQuill from 'react-quill'; // 보통 React에서는 ReactQuill 이름으로 가져옵니다.
+import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { CContainer, CButton, CFormInput } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { cilArrowLeft, cilX } from '@coreui/icons';
 import { CModal, CModalHeader, CModalTitle, CModalBody, CModalFooter } from '@coreui/react';
-import '../../scss/WritePost.scss'; // SCSS 파일 import
-import '../../scss/style.scss'; // SCSS 파일 import
+import '../../scss/WritePost.scss';
+import '../../scss/style.scss';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { createPost, uploadPostImages, getPostDetail, updatePost } from '@/api/postApi';
 
 export default function WritePost() {
   const navigate = useNavigate();
-  const { id } = useParams();   // ← 추가 (게시글 수정 시, [수정완료]버튼)
-  const isEditMode = !!id;      // ← 추가 (게시글 수정 시, [수정완료]버튼)
+  const { id } = useParams();
+  const isEditMode = !!id;
   const CATEGORY_COLORS = {
     '자유': { bg: '#F0E6D3', color: '#B07D3A' },
     '정보': { bg: '#D3E8DF', color: '#2E6B4F' },
     '인원모집': { bg: '#D9E4F5', color: '#2D4FA0' },
     '공지사항': { bg: '#F7E6EA', color: '#A63A50' },
   }
-  const [showModal, setShowModal] = useState(false); //모달창 표시
-  const [isDirty, setIsDirty] = useState(false) //변경 추적
+  const [showModal, setShowModal] = useState(false);
+  const [isDirty, setIsDirty] = useState(false)
   const [category, setCategory] = useState('자유');
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [errors, setErrors] = useState({});
-  const [images, setImages] = useState([]); //이미지용
-  const MaxImages = 3; //최대 3장까지만 첨부 가능
-  const { user, isAdmin } = useAuth(); // 로그인한 유저 정보 및 관리자 여부 가져오기
+  const [images, setImages] = useState([]);
+  const MaxImages = 3;
+  const { user, isAdmin } = useAuth();
+  const quillRef = useRef(null);
 
-  const modules = { //react-quill 상단 툴바 기능
+  const modules = {
     toolbar: {
       container: [
         ['bold', 'italic', 'underline'],
@@ -64,7 +65,6 @@ export default function WritePost() {
         const post = res.data;
         setTitle(post.title);
         setContent(post.content);
-        // 카테고리 코드를 이름으로 변환
         const categoryMap = { '01': '자유', '02': '정보', '03': '인원모집', '04': '공지사항' };
         setCategory(categoryMap[post.categoryCode] || '자유');
       })
@@ -79,31 +79,24 @@ export default function WritePost() {
     }
   }
 
-  const validateForm = () => { // 필수입력요소(제목,본문) 입력확인
+  const validateForm = () => {
     const newErrors = {};
     if (!title.trim()) {
       newErrors.title = '필수 입력 요소입니다.';
     }
-    // ReactQuill의 빈 값은 <p><br></p> 형태로 들어옵니다.
     if (!content.trim() || content === '<p><br></p>') {
       newErrors.content = '필수 입력 요소입니다.';
     }
     return newErrors;
   };
 
-  // 카테고리 이름을 서버에서 요구하는 코드(01, 02, 03)로 변환하는 함수
   const getCategoryId = (name) => {
     switch (name) {
-      case '자유':
-        return '01';
-      case '정보':
-        return '02';
-      case '인원모집':
-        return '03';
-      case '공지사항':
-        return '04';
-      default:
-        return '01'; // 기본값으로 '자유' 설정
+      case '자유': return '01';
+      case '정보': return '02';
+      case '인원모집': return '03';
+      case '공지사항': return '04';
+      default: return '01';
     }
   };
 
@@ -119,7 +112,6 @@ export default function WritePost() {
 
     try {
       if (isEditMode) {
-        // 수정 모드
         await updatePost(id, {
           categoryCode: categoryCode,
           title: title,
@@ -128,7 +120,6 @@ export default function WritePost() {
         alert('게시글이 수정되었습니다.');
         navigate(`/post/${id}`);
       } else {
-        // 등록 모드
         const postId = await createPost({
           userEmail: user?.email,
           categoryCode: categoryCode,
@@ -139,7 +130,6 @@ export default function WritePost() {
           const formData = new FormData();
           formData.append('postId', Number(postId));
           images.forEach((img) => {
-            console.log('img.file 확인:', img.file); //이미지 콘솔 테스트
             formData.append('file', img.file);
           });
           await uploadPostImages(formData);
@@ -155,32 +145,28 @@ export default function WritePost() {
 
   const handleImageAdd = (e) => {
     const files = Array.from(e.target.files);
-
-    // 10MB 초과 파일 체크
     const oversizedFiles = files.filter((file) => file.size > 10 * 1024 * 1024);
     if (oversizedFiles.length > 0) {
       alert(`10MB 이하의 이미지만 첨부 가능합니다.`);
       return;
     }
-
     if (images.length + files.length > MaxImages) {
       alert(`이미지는 최대 ${MaxImages}장까지 첨부 가능합니다.`);
       return;
     }
-
     const newImages = files.map((file) => ({
       id: Date.now() + Math.random(),
       file,
       preview: URL.createObjectURL(file),
     }));
     setImages((prev) => [...prev, ...newImages]);
-    e.target.value = ''; // 같은 파일 재선택 가능하도록 초기화
+    e.target.value = '';
   };
 
   const handleImageRemove = (id) => {
     setImages((prev) => {
       const removed = prev.find((img) => img.id === id);
-      if (removed) URL.revokeObjectURL(removed.preview); // 메모리 해제
+      if (removed) URL.revokeObjectURL(removed.preview);
       return prev.filter((img) => img.id !== id);
     });
   };
@@ -197,16 +183,15 @@ export default function WritePost() {
         >
           <CIcon icon={cilArrowLeft} size="lg" />
         </CButton>
-        {/* 원래 <h5 className="m-0 fw-bold" >게시글 작성</h5> */}
-        {/* 수정 후 */}
         <h5 className="m-0 fw-bold">{isEditMode ? '게시글 수정' : '게시글 작성'}</h5>
       </div>
+
       {/* ── 에디터 및 본문 영역 ── */}
       <div className="d-flex justify-content-center mb-5 write-post-container">
         <div className="write-post-inner">
           <form onSubmit={handleSubmit}>
             {/* ── 카테고리 선택 영역 ── */}
-            <p className="form-section-title  mt-3">카테고리 <span className="required-star">*</span></p>
+            <p className="form-section-title mt-3">카테고리 <span className="required-star">*</span></p>
             <div className="d-flex gap-2 mb-3">
               {(isAdmin ? ['자유', '정보', '인원모집', '공지사항'] : ['자유', '정보', '인원모집']).map((cat) => (
                 <CButton
@@ -233,40 +218,55 @@ export default function WritePost() {
                 type='text'
                 placeholder='제목 입력'
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                maxLength={50}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  // [...val]로 한글도 정확히 1글자로 카운트
+                  if ([...val].length <= 50) {
+                    setTitle(val);
+                    setIsDirty(true);
+                  }
+                }}
               />
               <div style={{ textAlign: 'right', fontSize: '0.8rem', color: '#999' }}>
-                {title.length}/50
+                {[...title].length}/50
               </div>
               {errors.title && <div className="error-message">{errors.title}</div>}
 
               <hr />
               <p className="form-section-title">본문 <span className="required-star">*</span></p>
               <ReactQuill
+                ref={quillRef}
                 className="post-editor"
                 modules={modules}
                 value={content}
-                onChange={(val) => {
-                  if (val.replace(/<[^>]*>/g, '').length <= 10000) {
+                onChange={(val, delta, source, editor) => {
+                  // HTML 제거 후 순수 텍스트만 추출해서 카운트 (이모티콘 대응 Array.from 사용)
+                  const textOnly = editor.getText().trim();
+                  const maxLength = 10000;
+
+                  if (textOnly.length > maxLength) {
+                    // 10000자 초과 시 에디터 내용을 직접 잘라냄
+                    const quill = quillRef.current.getEditor();
+                    quill.deleteText(maxLength, textOnly.length);
+                  } else {
                     setContent(val);
+                    setIsDirty(true); // 내용 변경 시 dirty 상태 활성화
                   }
                 }}
               />
               <div style={{ textAlign: 'right', fontSize: '0.8rem', color: '#999' }}>
-                {content.replace(/<[^>]*>/g, '').length}/10000
+                {/* 실시간 순수 글자수 표시 */}
+                {quillRef.current ? quillRef.current.getEditor().getText().trim().length : 0}/10000
               </div>
               {errors.content && <div className="error-message">{errors.content}</div>}
             </div>
 
-            {/* 3. JSX - 하단 버튼 영역 위에 삽입 */}
             <hr />
             <p className="form-section-title">
               이미지 첨부 <span className="image-limit-info">최대 3장 · JPG, PNG · 각 10MB 이하</span>
             </p>
 
             <div className="image-upload-area">
-              {/* 추가 버튼 - 최대 개수 미만일 때만 표시 */}
               {images.length < MaxImages && (
                 <label className="image-add-btn">
                   <input
@@ -281,7 +281,6 @@ export default function WritePost() {
                 </label>
               )}
 
-              {/* 미리보기 썸네일 */}
               {images.map((img) => (
                 <div key={img.id} className="image-preview-item">
                   <img src={img.preview} alt="첨부 이미지" className="image-preview-thumb" />
@@ -296,18 +295,10 @@ export default function WritePost() {
               ))}
             </div>
 
-            {/* ── 하단 버튼 영역 ── */}
             <div className="d-flex justify-content-center gap-2 mt-4">
               <CButton className="form-cancel-btn" onClick={handleLeave}>
                 취소
               </CButton>
-              {/* 원래 
-            <CButton
-              type="submit"
-              className="form-submit-btn"
-            >
-              등록
-            </CButton> */}
               <CButton type="submit" className="form-submit-btn">
                 {isEditMode ? '수정완료' : '등록'}
               </CButton>
@@ -315,18 +306,15 @@ export default function WritePost() {
           </form>
         </div>
       </div>
+
       <CModal
         visible={showModal}
         onClose={() => setShowModal(false)}
-        alignment="center"   // 수직 중앙
+        alignment="center"
       >
-        <CModalHeader>
-          {/* 제목을 body로 옮기고 헤더는 닫기 버튼만 남김 */}
-        </CModalHeader>
+        <CModalHeader></CModalHeader>
         <CModalBody className="text-center pt-4">
-          <div
-            className="d-inline-flex align-items-center justify-content-center mb-3 modal-warning-icon"
-          >
+          <div className="d-inline-flex align-items-center justify-content-center mb-3 modal-warning-icon">
             <CIcon icon={cilX} size="xl" />
           </div>
           <h5 className="fw-bold mb-2 text-danger">잠깐!</h5>
