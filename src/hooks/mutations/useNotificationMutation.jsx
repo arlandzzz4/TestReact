@@ -44,3 +44,18 @@ export function useDeleteAll() {
     },
   });
 }
+
+// 알림 설정 수정
+export function useUpdateSettings() {
+  const user = useAuthStore((state) => state.user);
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ likeYn, commentYn, noticeYn }) =>
+      notificationAPI.updateSettings(user.email, likeYn, commentYn, noticeYn),
+    onSuccess: () => {
+      // ✅ 추가 - 설정 캐시 무효화해서 최신 데이터 다시 조회
+      queryClient.invalidateQueries(NOTIFICATION_QUERY_KEYS.settings);
+    },
+  });
+}

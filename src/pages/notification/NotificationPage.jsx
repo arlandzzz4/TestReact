@@ -9,70 +9,33 @@
 //  라우팅  → react-router-dom v7 (useNavigate)
 // ====================================================
 
-import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-
 // TanStack Query 훅 (서버 데이터)
 import { useNotifications } from '../../hooks/queries/useNotificationQuery';
 import { useMarkAsRead, useMarkAllRead, useDeleteAll } from '../../hooks/mutations/useNotificationMutation';
 
-// Zustand 스토어 (클라이언트 상태)
-import { useNotifSettingStore, useNoticeBannerStore } from '../../store/notifStore';
+// Zustand 스토어 (배너용)
+import { useNoticeBannerStore } from '../../store/notifStore';
 
-// SCSS 스타일 (변수는 _variables.scss 에서 관리)
+// SCSS 스타일
 import '../../scss/NotificationPage.scss';
 
 // ── 메인 컴포넌트 ────────────────────────────────
 export default function NotificationPage() {
-  const navigate = useNavigate();
 
   // ── 서버 데이터 (TanStack Query) ──────────────
   const { data: notifications = [], isLoading, isError } = useNotifications();
-  const { mutate: markAsRead }  = useMarkAsRead();
+  const { mutate: markAsRead } = useMarkAsRead();
   const { mutate: markAllRead } = useMarkAllRead();
-  const { mutate: deleteAll }   = useDeleteAll();
-
-  // ── 클라이언트 상태 (Zustand) ─────────────────
-  const {
-    likeEnabled, setLikeEnabled,
-    commentEnabled, setCommentEnabled,
-    noticeEnabled, setNoticeEnabled,
-  } = useNotifSettingStore();
+  const { mutate: deleteAll } = useDeleteAll();
 
   const { dismissedDate, dismiss } = useNoticeBannerStore();
   const bannerDismissed = dismissedDate === new Date().toDateString();
 
-  // ── 로컬 상태 (useState) ──────────────────────
-  const [settingOpen, setSettingOpen] = useState(false); // 설정 드롭다운 열림 여부
-  const settingRef = useRef(null); // 드롭다운 DOM 참조 (외부 클릭 감지용)
-
-  // ── 설정 드롭다운 외부 클릭 시 닫기 ──────────
-  useEffect(() => {
-    const handleOutsideClick = (e) => {
-      if (settingRef.current && !settingRef.current.contains(e.target)) {
-        setSettingOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleOutsideClick);
-    return () => document.removeEventListener('mousedown', handleOutsideClick);
-  }, []);
-
-  // ── 필터링: 설정 ON/OFF 에 따라 보이는 알림 결정 ──
-  const visibleNotifs = notifications.filter((n) => {
-    if (n.type === 'like'    && !likeEnabled)    return false;
-    if (n.type === 'comment' && !commentEnabled) return false;
-    if (n.type === 'notice'  && !noticeEnabled)  return false;
-    return true;
-  });
-
-  // ── 미읽음 개수 ───────────────────────────────
-  const unreadCount = visibleNotifs.filter((n) => !n.isRead).length;
-
   // ── 날짜 섹션별 분류 ──────────────────────────
   const sections = [
-    { id: 'today',     label: '오늘' },
+    { id: 'today', label: '오늘' },
     { id: 'yesterday', label: '어제' },
-    { id: 'old',       label: '이전' },
+    { id: 'old', label: '이전' },
   ];
 
   // ── 전체 삭제 핸들러 ──────────────────────────
@@ -82,14 +45,20 @@ export default function NotificationPage() {
     }
   };
 
+  // 필터링 없이 전체 알림 표시
+  const visibleNotifs = notifications;
+
+  // ── 미읽음 개수 ─────────────────────────────── 
+  const unreadCount = visibleNotifs.filter((n) => !n.isRead).length;
+
   // ── 로딩/에러 처리 ────────────────────────────
   if (isLoading) return <div className="empty-state">알림을 불러오는 중...</div>;
-  if (isError)   return <div className="empty-state">알림을 불러오지 못했습니다.</div>;
+  if (isError) return <div className="empty-state">알림을 불러오지 못했습니다.</div>;
 
   return (
     <div className="notification-page">
 
-      
+
 
       {/* ══ 메인 콘텐츠 ════════════════════════════ */}
       <main className="notif-main">
@@ -109,11 +78,12 @@ export default function NotificationPage() {
             <button className="notif-action-btn" onClick={handleDeleteAll}>
               전체 삭제
             </button>
-          </div>
-        </div>
+          </div> {/* notif-actions 닫기 */}
+        </div> {/* notif-top 닫기 */}
+
 
         {/* 공지 배너 (오늘 닫으면 하루 안 보임) */}
-        {noticeEnabled && !bannerDismissed && (
+        {!bannerDismissed && (
           <div className="notice-banner">
             <div className="notice-banner-icon">📢</div>
             <div className="notice-banner-body">
@@ -166,10 +136,10 @@ function NotifItem({ notif, onRead }) {
 
   // 타입 뱃지 아이콘 결정
   const typeDotIcon = {
-    like:    '♥',
+    like: '♥',
     comment: '💬',
-    reply:   '💬',
-    notice:  '!',
+    reply: '💬',
+    notice: '!',
   }[notif.type] ?? '•';
 
   return (
@@ -195,9 +165,8 @@ function NotifItem({ notif, onRead }) {
           /* 💡 dangerouslySetInnerHTML: 서버에서 받은 HTML 문자열을 그대로 렌더링
                백엔드 데이터에 <b> 태그가 포함된 경우 사용 (XSS 주의) */
           dangerouslySetInnerHTML={{
-            __html: `<strong>${notif.actorName}</strong>${notif.message}${
-              notif.quoted ? ` <span class="quoted">${notif.quoted}</span>` : ''
-            }`,
+            __html: `<strong>${notif.actorName}</strong>${notif.message}${notif.quoted ? ` <span class="quoted">${notif.quoted}</span>` : ''
+              }`,
           }}
         />
         <div className="notif-time">{notif.time}</div>

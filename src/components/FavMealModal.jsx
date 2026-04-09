@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { CModal, CModalHeader, CModalBody, CModalFooter, CButton } from '@coreui/react'
 import { useFoodSearch } from '../hooks/queries/useDietQuery'
 import { useSaveFavMeal } from '../hooks/mutations/useDietMutation'
@@ -8,9 +8,34 @@ export default function FavMealModal({ isOpen, onClose, userEmail }) {
   const [query, setQuery] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
   const [staged, setStaged] = useState([])
+  const observerRef = useRef(null)
 
-  const { data: results = [], isFetching } = useFoodSearch(searchTerm)
+  const {
+    data,
+    isFetching,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
+  } = useFoodSearch(searchTerm)
+
+  const results = data?.pages.flat() ?? []
+
   const { mutate: saveFavMeal } = useSaveFavMeal()
+
+  // 무한 스크롤 감지
+  useEffect(() => {
+    if (!observerRef.current) return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage()
+        }
+      },
+      { threshold: 0.5 }
+    )
+    observer.observe(observerRef.current)
+    return () => observer.disconnect()
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage])
 
   const handleSearch = () => {
     if (!query.trim()) return
@@ -71,43 +96,50 @@ export default function FavMealModal({ isOpen, onClose, userEmail }) {
           <button
             className="iob-search-go-btn"
             onClick={handleSearch}
-            disabled={isFetching}
+            disabled={isFetching && !isFetchingNextPage}
           >
-            {isFetching ? '검색 중...' : '검색'}
+            {isFetching && !isFetchingNextPage ? '검색 중...' : '검색'}
           </button>
         </div>
 
         <div className="iob-search-status">
           {!searchTerm
             ? '음식 이름을 검색해보세요'
-            : isFetching
-            ? '검색 중...'
-            : `${results.length}개 결과`}
+            : isFetching && !isFetchingNextPage
+              ? '검색 중...'
+              : `${results.length}개 결과`}
         </div>
 
         {/* 검색 결과 */}
-        <div className="iob-search-results" style={{ maxHeight: 160 }}>
+        <div className="iob-search-results" style={{ maxHeight: 160, overflowY: 'auto' }}>
           {results.length === 0 && searchTerm && !isFetching ? (
             <div className="iob-search-empty">검색 결과가 없습니다</div>
           ) : (
-            results.map(food => {
-              const isAdded = staged.some(s => s.name === food.name)
-              return (
-                <div key={food.foodId} className="iob-search-result-item">
-                  <div className="iob-result-info">
-                    <div className="iob-result-name">{food.name}</div>
-                    <div className="iob-result-detail">{food.unit} · {food.kcal}kcal</div>
+            <>
+              {results.map(food => {
+                const isAdded = staged.some(s => s.name === food.name)
+                return (
+                  <div key={food.foodId} className="iob-search-result-item">
+                    <div className="iob-result-info">
+                      <div className="iob-result-name">{food.name}</div>
+                      <div className="iob-result-detail">{food.unit} · {food.kcal}kcal</div>
+                    </div>
+                    <button
+                      className={`iob-result-add-btn ${isAdded ? 'iob-added' : ''}`}
+                      onClick={() => !isAdded && handleAddFood(food)}
+                      disabled={isAdded}
+                    >
+                      {isAdded ? '추가됨' : '추가'}
+                    </button>
                   </div>
-                  <button
-                    className={`iob-result-add-btn ${isAdded ? 'iob-added' : ''}`}
-                    onClick={() => !isAdded && handleAddFood(food)}
-                    disabled={isAdded}
-                  >
-                    {isAdded ? '추가됨' : '추가'}
-                  </button>
-                </div>
-              )
-            })
+                )
+              })}
+
+              {/* 무한 스크롤 감지 영역 */}
+              <div ref={observerRef} className="text-center py-1">
+                {isFetchingNextPage && <span>불러오는 중...</span>}
+              </div>
+            </>
           )}
         </div>
 

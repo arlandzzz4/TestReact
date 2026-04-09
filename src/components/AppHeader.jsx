@@ -49,7 +49,8 @@ import {
 
 import { useLogoutMutation } from "@/hooks/mutations/useAuthMutation";
 import { useAuth } from "@/hooks/useAuth";
-import { useNotifSettingStore } from "@/store/notifStore";
+import { useNotificationSettings } from '@/hooks/queries/useNotificationQuery';
+import { useUpdateSettings } from '@/hooks/mutations/useNotificationMutation';
 
 /**
  * AppHeader functional component
@@ -65,7 +66,11 @@ import { useNotifSettingStore } from "@/store/notifStore";
 const AppHeader = () => {
   const [settingOpen, setSettingOpen] = useState(false);
   const settingRef = useRef(null);
-  const { likeEnabled, setLikeEnabled, commentEnabled, setCommentEnabled, noticeEnabled, setNoticeEnabled } = useNotifSettingStore();
+  const { data: settings } = useNotificationSettings();
+  const { mutate: updateSettings } = useUpdateSettings();
+  const likeEnabled = settings?.like_yn !== 'N';
+  const commentEnabled = settings?.comment_yn !== 'N';
+  const noticeEnabled = settings?.notice_yn !== 'N';
   const { user, isAuthenticated, isAdmin, isAuthLoading } = useAuth();
 
   const headerRef = useRef();
@@ -75,6 +80,7 @@ const AppHeader = () => {
 
   const location = useLocation();
   const isWritePage = location.pathname === "/write";
+  const isNotificationPage = location.pathname === '/notifications';
 
   const dispatch = useDispatch();
   const sidebarShow = useSelector((state) => state.sidebarShow);
@@ -84,11 +90,11 @@ const AppHeader = () => {
     if (!user) {
       console.warn("로그인 정보가 없어 바로 클라이언트 로그아웃을 진행합니다.");
     }
-    const logoutData = { 
-      email: user?.email, 
+    const logoutData = {
+      email: user?.email,
       fcmToken: user?.fcmToken,
-      providerCode : user?.providerCode,
-      providerId : user?.providerId,
+      providerCode: user?.providerCode,
+      providerId: user?.providerId,
     };
     logoutMutate(logoutData);
   };
@@ -170,163 +176,164 @@ const AppHeader = () => {
               >
                 🔔
               </CNavLink>
-              {/* ⚙️ 설정 버튼 추가 */}
-              <div style={{ position: "relative" }} ref={settingRef}>
-                <button
-                  onClick={() => setSettingOpen((prev) => !prev)}
-                  style={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: "50%",
-                    background: "#ede9df",
-                    border: "none",
-                    cursor: "pointer",
-                    fontSize: "15px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  ⚙️
-                </button>
-
-                {settingOpen && (
-                  <div
+              {/* ⚙️ 설정 버튼 - 알림 페이지에서만 표시 */}
+              {isNotificationPage && (
+                <div style={{ position: "relative" }} ref={settingRef}>
+                  <button
+                    onClick={() => setSettingOpen((prev) => !prev)}
                     style={{
-                      position: "absolute",
-                      top: 40,
-                      right: 0,
-                      background: "#fff",
-                      border: "1px solid #e0ddd4",
-                      borderRadius: 14,
-                      padding: "1rem 1.25rem",
-                      width: 220,
-                      boxShadow: "0 4px 16px rgba(0,0,0,0.10)",
-                      zIndex: 100,
+                      width: 32,
+                      height: 32,
+                      borderRadius: "50%",
+                      background: "#ede9df",
+                      border: "none",
+                      cursor: "pointer",
+                      fontSize: "15px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
                     }}
                   >
+                    ⚙️
+                  </button>
+
+                  {settingOpen && (
                     <div
                       style={{
-                        fontSize: 12,
-                        fontWeight: 500,
-                        marginBottom: 10,
+                        position: "absolute",
+                        top: 40,
+                        right: 0,
+                        background: "#fff",
+                        border: "1px solid #e0ddd4",
+                        borderRadius: 14,
+                        padding: "1rem 1.25rem",
+                        width: 220,
+                        boxShadow: "0 4px 16px rgba(0,0,0,0.10)",
+                        zIndex: 100,
                       }}
                     >
-                      알림 설정
-                    </div>
-
-                    {[
-                      { label: "좋아요 알림", color: "#e05050", key: "like" },
-                      { label: "댓글 알림", color: "#4a90d9", key: "comment" },
-                      {
-                        label: "공지사항 알림",
-                        color: "#2d5a27",
-                        key: "notice",
-                      },
-                    ].map(({ label, color, key }) => (
                       <div
-                        key={key}
                         style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          padding: "7px 0",
-                          borderBottom: "1px solid #f5f2eb",
+                          fontSize: 12,
+                          fontWeight: 500,
+                          marginBottom: 10,
                         }}
                       >
+                        알림 설정
+                      </div>
+
+                      {[
+                        { label: "좋아요 알림", color: "#e05050", key: "like" },
+                        { label: "댓글 알림", color: "#4a90d9", key: "comment" },
+                        {
+                          label: "공지사항 알림",
+                          color: "#2d5a27",
+                          key: "notice",
+                        },
+                      ].map(({ label, color, key }) => (
                         <div
+                          key={key}
                           style={{
                             display: "flex",
+                            justifyContent: "space-between",
                             alignItems: "center",
-                            gap: 6,
-                            fontSize: 12,
-                            color: "#555",
+                            padding: "7px 0",
+                            borderBottom: "1px solid #f5f2eb",
                           }}
                         >
-                          <span
+                          <div
                             style={{
-                              width: 8,
-                              height: 8,
-                              borderRadius: "50%",
-                              background: color,
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 6,
+                              fontSize: 12,
+                              color: "#555",
+                            }}
+                          >
+                            <span
+                              style={{
+                                width: 8,
+                                height: 8,
+                                borderRadius: "50%",
+                                background: color,
+                                display: "inline-block",
+                              }}
+                            ></span>
+                            {label}
+                          </div>
+                          <label
+                            style={{
+                              position: "relative",
+                              width: 34,
+                              height: 18,
                               display: "inline-block",
                             }}
-                          ></span>
-                          {label}
-                        </div>
-                        <label
-                          style={{
-                            position: "relative",
-                            width: 34,
-                            height: 18,
-                            display: "inline-block",
-                          }}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={
-                              key === "like"
-                                ? likeEnabled
-                                : key === "comment"
-                                  ? commentEnabled
-                                  : noticeEnabled
-                            }
-                            onChange={(e) => {
-                              if (key === "like")
-                                setLikeEnabled(e.target.checked);
-                              if (key === "comment")
-                                setCommentEnabled(e.target.checked);
-                              if (key === "notice")
-                                setNoticeEnabled(e.target.checked);
-                            }}
-                            style={{ opacity: 0, width: 0, height: 0 }}
-                          />
-                          <span
-                            style={{
-                              position: "absolute",
-                              inset: 0,
-                              background: (
+                          >
+                            <input
+                              type="checkbox"
+                              checked={
                                 key === "like"
                                   ? likeEnabled
                                   : key === "comment"
                                     ? commentEnabled
                                     : noticeEnabled
-                              )
-                                ? "#2d5a27"
-                                : "#d8d4cb",
-                              borderRadius: 18,
-                              cursor: "pointer",
-                              transition: "background 0.2s",
-                            }}
-                          >
+                              }
+                              onChange={(e) => {
+                                updateSettings({
+                                  likeYn: key === 'like' ? (e.target.checked ? 'Y' : 'N') : (likeEnabled ? 'Y' : 'N'),
+                                  commentYn: key === 'comment' ? (e.target.checked ? 'Y' : 'N') : (commentEnabled ? 'Y' : 'N'),
+                                  noticeYn: key === 'notice' ? (e.target.checked ? 'Y' : 'N') : (noticeEnabled ? 'Y' : 'N'),
+                                });
+                              }}
+                              style={{ opacity: 0, width: 0, height: 0 }}
+                            />
                             <span
                               style={{
                                 position: "absolute",
-                                width: 13,
-                                height: 13,
-                                left: (
+                                inset: 0,
+                                background: (
                                   key === "like"
                                     ? likeEnabled
                                     : key === "comment"
                                       ? commentEnabled
                                       : noticeEnabled
                                 )
-                                  ? 18
-                                  : 3,
-                                top: "50%",
-                                transform: "translateY(-50%)",
-                                background: "#fff",
-                                borderRadius: "50%",
-                                transition: "left 0.2s",
+                                  ? "#2d5a27"
+                                  : "#d8d4cb",
+                                borderRadius: 18,
+                                cursor: "pointer",
+                                transition: "background 0.2s",
                               }}
-                            ></span>
-                          </span>
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+                            >
+                              <span
+                                style={{
+                                  position: "absolute",
+                                  width: 13,
+                                  height: 13,
+                                  left: (
+                                    key === "like"
+                                      ? likeEnabled
+                                      : key === "comment"
+                                        ? commentEnabled
+                                        : noticeEnabled
+                                  )
+                                    ? 18
+                                    : 3,
+                                  top: "50%",
+                                  transform: "translateY(-50%)",
+                                  background: "#fff",
+                                  borderRadius: "50%",
+                                  transition: "left 0.2s",
+                                }}
+                              ></span>
+                            </span>
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
               {/* 유저 프로필 동그라미 (클릭 시 마이페이지 이동) */}
               <CNavLink
                 as={NavLink}

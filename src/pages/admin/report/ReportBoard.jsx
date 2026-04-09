@@ -20,7 +20,6 @@ const ReportBoard = () => {
   const [confirmModalGuide, setConfirmModalGuide] = useState('삭제 후 삭제 관리 페이지에 저장됩니다.');
   const [confirmModalWriter, setConfirmModalWriter] = useState('');
   const [confirmModalOnConfirm , setConfirmModalOnConfirm] = useState(() => () => {});
-
   const [postParams, setPostParams] = useState({ size, offset: 0, targetCode: '01' })
   const { data: postReportsData, isLoading: isPostLoading, refetch: refetchPosts } = useReportList(postParams)
   const { data: postTotalCnt = 0 } = useReportTotalCountQuery({ targetCode: '01' })

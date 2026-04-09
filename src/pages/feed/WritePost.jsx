@@ -137,8 +137,9 @@ export default function WritePost() {
         });
         if (images.length > 0) {
           const formData = new FormData();
-          formData.append('postId', postId);
+          formData.append('postId', Number(postId));
           images.forEach((img) => {
+            console.log('img.file 확인:', img.file); //이미지 콘솔 테스트
             formData.append('file', img.file);
           });
           await uploadPostImages(formData);
@@ -227,12 +228,34 @@ export default function WritePost() {
             <div className="custom-quill-editor">
               <hr />
               <p className="form-section-title">제목 <span className="required-star">*</span></p>
-              <CFormInput className="post-input" type='text' placeholder='제목 입력' value={title} onChange={(e) => setTitle(e.target.value)} />
+              <CFormInput
+                className="post-input"
+                type='text'
+                placeholder='제목 입력'
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                maxLength={50}
+              />
+              <div style={{ textAlign: 'right', fontSize: '0.8rem', color: '#999' }}>
+                {title.length}/50
+              </div>
               {errors.title && <div className="error-message">{errors.title}</div>}
 
               <hr />
               <p className="form-section-title">본문 <span className="required-star">*</span></p>
-              <ReactQuill className="post-editor" modules={modules} value={content} onChange={setContent} />
+              <ReactQuill
+                className="post-editor"
+                modules={modules}
+                value={content}
+                onChange={(val) => {
+                  if (val.replace(/<[^>]*>/g, '').length <= 10000) {
+                    setContent(val);
+                  }
+                }}
+              />
+              <div style={{ textAlign: 'right', fontSize: '0.8rem', color: '#999' }}>
+                {content.replace(/<[^>]*>/g, '').length}/10000
+              </div>
               {errors.content && <div className="error-message">{errors.content}</div>}
             </div>
 

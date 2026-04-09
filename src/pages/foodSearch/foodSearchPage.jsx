@@ -100,8 +100,12 @@ const NutritionDetail = ({ food, amount, onAmountChange }) => {
               <CFormInput
                 type="number"
                 min={1}
+                max={9999}
                 value={amount}
-                onChange={(e) => onAmountChange(Number(e.target.value))}
+                onChange={(e) => {
+                  const val = Number(e.target.value)
+                  if (val <= 9999) onAmountChange(val)
+                }}
                 className="text-end fw-semibold"
               />
               <span className="input-group-text bg-body-secondary">g</span>
@@ -159,14 +163,14 @@ const FoodSearchPage = () => {
 
   const [showTopBtn, setShowTopBtn] = useState(false)
 
-// 스크롤 감지
-useEffect(() => {
-  const handleScroll = () => setShowTopBtn(window.scrollY > 300)
-  window.addEventListener('scroll', handleScroll)
-  return () => window.removeEventListener('scroll', handleScroll)
-}, [])
+  // 스크롤 감지
+  useEffect(() => {
+    const handleScroll = () => setShowTopBtn(window.scrollY > 300)
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
-const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
 
   // useInfiniteQuery로 교체
   const {
