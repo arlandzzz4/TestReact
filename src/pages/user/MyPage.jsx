@@ -40,6 +40,7 @@ const MyPage = () => {
   const [nickName, setNickName] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteReason, setDeleteReason] = useState('');
+  const [deletePassword, setDeletePassword] = useState('');
   
   const [isEditingPassword, setIsEditingPassword] = useState(false);
 
@@ -217,6 +218,11 @@ const MyPage = () => {
       alert('탈퇴 사유를 입력해 주세요.');
       return;
     }
+
+    if (user?.providerCode === '01' && !deletePassword.trim()) {
+        alert('비밀번호를 입력해 주세요.');
+        return;
+    }
     
     if (window.confirm('정말로 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
       // ✅ 수정된 부분: 백엔드 UnsubscribeRequestDto가 필요로 하는 정보를 모두 보냅니다.
@@ -224,7 +230,8 @@ const MyPage = () => {
         email: user?.email,
         providerCode: user?.providerCode || '01', // 일반(LOCAL) 회원의 기본 코드값 (백엔드 설정에 맞춤)
         providerId: user?.providerId || null,     // 소셜 로그인 회원일 경우 존재하는 ID
-        reason: deleteReason
+        reason: deleteReason,
+        currentPassword: deletePassword
       }, {
         onSuccess: () => {
           // useUnsubscribe 훅 내부에 alert 처리가 되어 있으므로, 여기서는 후속 처리만 수행합니다.
@@ -239,6 +246,7 @@ const MyPage = () => {
   const cancelDelete = () => {
     setIsDeleting(false);
     setDeleteReason('');
+    setDeletePassword('');
   }
 
   return (
@@ -489,20 +497,30 @@ const MyPage = () => {
                 </>
               ) : (
                 <div className="w-100">
-                  <CFormInput 
-                    placeholder="탈퇴 사유를 입력해 주세요"
-                    value={deleteReason}
-                    onChange={(e) => setDeleteReason(e.target.value)}
-                    className="mb-2"
+                  {/* 일반 회원만 비밀번호 입력 표시 */}
+                  {user?.providerCode === '01' && (
+                      <CFormInput
+                          type="password"
+                          placeholder="현재 비밀번호를 입력해 주세요"
+                          value={deletePassword}
+                          onChange={(e) => setDeletePassword(e.target.value)}
+                          className="mb-2"
+                      />
+                  )}
+                  <CFormInput
+                      placeholder="탈퇴 사유를 입력해 주세요"
+                      value={deleteReason}
+                      onChange={(e) => setDeleteReason(e.target.value)}
+                      className="mb-2"
                   />
                   <div style={{ color: 'red', fontSize: '0.8rem', marginBottom: '1rem' }}>
-                    * 탈퇴 후 데이터는 복구되지 않습니다
+                      * 탈퇴 후 데이터는 복구되지 않습니다
                   </div>
                   <div className="d-flex gap-2">
-                    <CButton className="rounded-pill button button-red-outline" onClick={delAccount}>탈퇴하기</CButton>
-                    <CButton className="rounded-pill button button-muted-outline" onClick={cancelDelete}>취소</CButton>
+                      <CButton className="rounded-pill button button-red-outline" onClick={delAccount}>탈퇴하기</CButton>
+                      <CButton className="rounded-pill button button-muted-outline" onClick={cancelDelete}>취소</CButton>
                   </div>
-                </div>
+              </div>
               )}
             </CCardBody>
           </CCard>
