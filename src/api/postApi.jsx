@@ -30,11 +30,9 @@ export const searchPostList = async (data) => {
   }
 };
 
-export const deletePost = async (postId, userEmail) => {
+export const deletePost = async (data) => {
   try {
-    const response = await instance.delete(`/api/post/${postId}`, {
-      params: { userEmail }
-    });
+    const response = await instance.delete(`/api/post/delete`, {params: data});
     return response.data;
   } catch (error) {
     console.error("게시글 삭제 중 오류 발생:", error);
@@ -65,15 +63,15 @@ export const uploadPostImages = async (formData) => {
 };
 
 export const getPostDetail = async (postId, userEmail) => {
-  const response = await instance.get(`/api/post/${postId}`, {
-    params: { userEmail }
+  const response = await instance.get(`/api/post/detail`, {
+    params: { postId, userEmail }
   });
   return response;
 };
 
 export const getCommentList = async (postId, userEmail) => {
-  const response = await instance.get(`/api/comment/list/${postId}`, {
-    params: { userEmail }
+  const response = await instance.get(`/api/comment/list`, {
+    params: { postId, userEmail }
   });
   return response;
 };
@@ -84,20 +82,23 @@ export const insertComment = async (data) => {
 };
 
 export const deleteComment = async (commentId) => {
-  const response = await instance.patch(`/api/comment/delete/${commentId}`);
-  return response;
-};
-
-export const togglePostLike = async (postId, userEmail) => {
-  const response = await instance.post(`/api/post/${postId}/like`, null, {
-    params: { userEmail }
+  const response = await instance.patch(`/api/comment/delete/detail`, null, {
+    params: { commentId }
   });
   return response;
 };
 
+export const togglePostLike = async (postId, userEmail) => {
+  const response = await instance.post(`/api/post/like`, null, {
+    params: { postId, userEmail }
+  });
+  return response;
+};
+
+
 export const toggleCommentLike = async (commentId, userEmail) => {
-  const response = await instance.post(`/api/comment/${commentId}/like`, null, {
-    params: { userEmail }
+  const response = await instance.post(`/api/comment/like`, null, {
+    params: { commentId, userEmail }
   });
   return response;
 };
@@ -110,6 +111,8 @@ export const insertReport = async (targetCode, targetId, userEmail, reasonCode) 
 };
 
 export const updatePost = async (postId, postData) => {
-  const response = await instance.put(`/api/post/${postId}`, postData);
+  const response = await instance.put(`/api/post/update`, postData, {
+    params: { postId }
+  });
   return response;
 };
