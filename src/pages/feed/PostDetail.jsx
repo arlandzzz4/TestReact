@@ -6,6 +6,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import '../../scss/community.scss';
 import { getPostDetail, getCommentList, insertComment, deleteComment, deletePost, togglePostLike, toggleCommentLike, insertReport } from '../../api/postApi';
 import { useAuth } from '@/hooks/useAuth';
+import 'react-quill/dist/quill.snow.css';
 
 const CATEGORY_MAP = {
   '01': { label: '자유', bg: '#F0E6D3', color: '#B07D3A' },
@@ -75,7 +76,7 @@ const PostDetail = () => {
 
   const requireLogin = () => {
     alert('로그인 후 이용해주세요.');
-    navigate('/login'); // ✅ [2번] 로그인 페이지로 이동
+    navigate('/login');
   };
 
   const handlePostLike = () => {
@@ -272,7 +273,8 @@ const PostDetail = () => {
                         setOpenDropdown(null);
                         if (!post?.postId) { alert('게시글 정보를 불러오는 중입니다.'); return; }
                         if (window.confirm('게시글을 삭제할까요?')) {
-                          deletePost(post.postId, userEmail)
+                          console.log('postId:', post.postId, 'userEmail:', userEmail);
+                          deletePost({ postId: post.postId, userEmail })
                             .then(() => {
                               alert('삭제되었습니다.');
                               navigate('/feed');
@@ -337,7 +339,7 @@ const PostDetail = () => {
             <div className="comment-body">
               <div className="comment-meta-row">
                 <span className="author-name">{comment.nickname}</span>
-                <span className="author-date">{formatDate(comment.createdat)}</span>
+                <span className="author-date">{formatDate(comment.createdAt)}</span>
                 <div className="comment-menu-wrap" onClick={e => e.stopPropagation()}>
                   <span className="comment-menu-dot" onClick={() => toggleDropdown(`comment-${comment.commentId}`)}>⋯</span>
                   {openDropdown === `comment-${comment.commentId}` && (
@@ -371,7 +373,7 @@ const PostDetail = () => {
                       <div className="comment-body">
                         <div className="comment-meta-row">
                           <span className="author-name">{reply.nickname}</span>
-                          <span className="author-date">{formatDate(reply.createdat)}</span>
+                          <span className="author-date">{formatDate(reply.createdAt)}</span>
                           <div className="comment-menu-wrap" onClick={e => e.stopPropagation()}>
                             <span className="comment-menu-dot" onClick={() => toggleDropdown(`reply-${reply.commentId}`)}>⋯</span>
                             {openDropdown === `reply-${reply.commentId}` && (
