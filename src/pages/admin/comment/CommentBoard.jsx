@@ -44,7 +44,7 @@ const CommentBoard = () => {
       setIsModalOpen(true);
       setConfirmModalContent(comment.content.length > 100 ? comment.content.slice(0, 100) + '...' : comment.content);
       const deleteData = {
-        postId: comment.postId,
+        commentId: comment.commentId,
         delYn: 'Y',
       };
       setConfirmModalOnConfirm(() => () => {

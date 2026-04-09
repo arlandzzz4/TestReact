@@ -29,7 +29,9 @@ const CommonConfirmModal = ({ visible, onClose, title, targetContent, guide, wri
             backgroundColor: '#F8F7F2', 
             borderRadius: '15px',
             border: '1px solid #EFEBE0',
-            color: '#666'
+            color: '#666',
+            wordBreak: 'break-all',     // 긴 문자열을 강제로 줄바꿈
+            overflowWrap: 'anywhere'
           }}
         >
           <span className="fw-medium">"{targetContent}"</span>
