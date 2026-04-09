@@ -4,6 +4,7 @@ import { useAuthStore } from '@/store/useAuthStore';
 
 export const NOTIFICATION_QUERY_KEYS = {
   notifications: ['notifications'],
+  settings: ['notificationSettings'],
 };
 
 // 백엔드 데이터 → React에서 쓰는 형태로 변환
@@ -40,6 +41,23 @@ export function useNotifications() {
       return response.data.map(transformNotification);
     },
     enabled: !!user,
-    staleTime: 1000 * 60,
+    staleTime: 0,        //  0으로 변경 (항상 최신 데이터 요청)
+    refetchOnMount: true, //  추가 (페이지 진입할 때마다 새로 fetch)
+  });
+}
+
+// 알림 설정 조회
+export function useNotificationSettings() {
+  const user = useAuthStore((state) => state.user);
+
+  return useQuery({
+    queryKey: NOTIFICATION_QUERY_KEYS.settings,
+    queryFn: async () => {
+        const response = await notificationAPI.getSettings(user.email);
+        return response.data;
+    },
+    enabled: !!user,
+    staleTime: 0,
+    refetchOnMount: true,
   });
 }

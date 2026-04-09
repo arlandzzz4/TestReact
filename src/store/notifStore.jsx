@@ -15,14 +15,14 @@ export const useNotifSettingStore = create(
   persist(
     (set) => ({
       // 알림 타입별 ON/OFF 설정
-      likeEnabled:    true,  // 좋아요 알림 ON
+      likeEnabled: true,  // 좋아요 알림 ON
       commentEnabled: true,  // 댓글 알림 ON
-      noticeEnabled:  true,  // 공지사항 알림 ON
+      noticeEnabled: true,  // 공지사항 알림 ON
 
       // 설정 변경 함수
-      setLikeEnabled:    (val) => set({ likeEnabled: val }),
+      setLikeEnabled: (val) => set({ likeEnabled: val }),
       setCommentEnabled: (val) => set({ commentEnabled: val }),
-      setNoticeEnabled:  (val) => set({ noticeEnabled: val }),
+      setNoticeEnabled: (val) => set({ noticeEnabled: val }),
     }),
     {
       name: 'iob-notif-settings', // localStorage에 저장될 키 이름

@@ -414,10 +414,6 @@ const PostDetail = () => {
                           >
                             {reply.isLiked ? '💚' : '🤍'} {reply.likeCount}
                           </button>
-                          <button className="pd-reply-btn"
-                            onClick={() => setShowReplyInput(prev => ({ ...prev, [comment.commentId]: !prev[comment.commentId] }))}>
-                            ⤶ 댓글 달기
-                          </button>
                         </div>
                       </div>
                     </div>

@@ -14,7 +14,7 @@ const totalKcal = (meals) =>
 
 export default function DietDetail({ dateKey, prevWeight, userEmail, onBack }) {
   const [y, m, d] = dateKey.split('-')
-  const date = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`
+  const date = `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`
 
   const { data: detailData } = useDietDetail(date, userEmail)
 
@@ -27,7 +27,7 @@ export default function DietDetail({ dateKey, prevWeight, userEmail, onBack }) {
   useEffect(() => {
     if (detailData?.meals) setMeals(detailData.meals)
     if (detailData?.weight) setWeight(detailData.weight)
-}, [detailData])
+  }, [detailData])
 
   const { mutate: saveDiet } = useSaveDiet()
   const { mutate: saveWeight } = useSaveWeight()
@@ -49,11 +49,11 @@ export default function DietDetail({ dateKey, prevWeight, userEmail, onBack }) {
     }))
   }
 
-  const handleSaveWeight = () => saveWeight({ dateKey, weight, userEmail: userEmail})
+  const handleSaveWeight = () => saveWeight({ dateKey, weight, userEmail: userEmail })
 
   const handleBack = () => {
     const hasMeal = Object.values(meals).some(arr => arr.length > 0)
-    if (hasMeal || weight) saveDiet({ dateKey, meals, weight, userEmail: userEmail})
+    if (hasMeal || weight) saveDiet({ dateKey, meals, weight, userEmail: userEmail })
     onBack()
   }
 
@@ -86,7 +86,7 @@ export default function DietDetail({ dateKey, prevWeight, userEmail, onBack }) {
       <div className="iob-detail-header">
         <button className="iob-back-btn" onClick={handleBack}>← 캘린더로</button>
         <div className="iob-detail-date">
-          <em>{y}.</em>{String(m).padStart(2,'0')}.{String(d).padStart(2,'0')}
+          <em>{y}.</em>{String(m).padStart(2, '0')}.{String(d).padStart(2, '0')}
         </div>
       </div>
 
@@ -129,8 +129,14 @@ export default function DietDetail({ dateKey, prevWeight, userEmail, onBack }) {
                 placeholder="kg 입력"
                 step="0.1"
                 min="0"
+                maxLength={3}
                 value={weight}
-                onChange={e => setWeight(e.target.value)}
+                onChange={e => {
+                  if (e.target.value.length <= 3) { // ✅ 추가 (number 타입은 maxLength가 안 먹을 수 있어서)
+                    setWeight(e.target.value);
+                  }
+                }}
+
               />
               <button className="iob-weight-save-btn" onClick={handleSaveWeight}>저장</button>
             </div>
