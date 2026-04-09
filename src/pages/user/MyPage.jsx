@@ -172,54 +172,40 @@ const MyPage = () => {
   }
 
   const changePassword = async (data) => {
-    // --- [더미 데이터 테스트용 로직] ---
-    const DUMMY_CURRENT_PW = "1234";
-    if (data.currentPassword !== DUMMY_CURRENT_PW) {
-      alert("현재 비밀번호가 일치하지 않습니다.");
+  try {
+    const currentUser = auth.currentUser;
+    if (!currentUser) {
+      alert("로그인 정보가 만료되었습니다. 다시 로그인해 주세요.");
       return;
     }
-    alert("비밀번호가 성공적으로 변경되었습니다. (더미 처리)");
+
+    // 1. Firebase 재인증 (현재 비밀번호 검증)
+    const credential = EmailAuthProvider.credential(currentUser.email, data.currentPassword);
+    await reauthenticateWithCredential(currentUser, credential);
+
+    // 2. Firebase 비밀번호 변경
+    await updatePassword(currentUser, data.newPassword);
+
+    // 3. 백엔드 DB 동기화
+    await instance.patch('/api/user/me/password', {
+      email: user?.email,
+      newPassword: data.newPassword
+    });
+
+    alert("비밀번호가 성공적으로 변경되었습니다.");
     cancelPasswordEdit();
 
-    /* --- [실제 API 및 Firebase 연동 코드 - 필요 시 주석 해제하여 사용] ---
-    // try {
-    //   const currentUser = auth.currentUser;
-    //   if (!currentUser) {
-    //     alert("로그인 정보가 만료되었습니다. 다시 로그인해 주세요.");
-    //     return;
-    //   }
-    //
-    //   // 1. Firebase 현재 비밀번호 재인증
-    //   const credential = EmailAuthProvider.credential(currentUser.email, data.currentPassword);
-    //   await reauthenticateWithCredential(currentUser, credential);
-    //
-    //   // 2. Firebase 비밀번호 업데이트
-    //   await updatePassword(currentUser, data.newPassword);
-    //
-    //   // ID Token 발급 (강제 갱신)
-    //   const idToken = await currentUser.getIdToken(true);
-    //
-    //   // 3. Spring 백엔드 API 호출 (DB 동기화)
-    //   await instance.patch('/api/user/me/password', 
-    //     { 
-    //       email: user.email,        // 이메일 추가
-    //       newPassword: data.newPassword // 필드명을 'newPassword'로 변경
-    //     },
-    //     { headers: { Authorization: `Bearer ${idToken}` } }
-    //   );
-    //
-    //   alert("비밀번호가 성공적으로 변경되었습니다.");
-    //   cancelPasswordEdit();
-    // } catch (error) {
-    //   console.error("비밀번호 변경 실패:", error);
-    //   if (error.code === 'auth/invalid-credential') {
-    //     alert("현재 비밀번호가 일치하지 않습니다.");
-    //   } else {
-    //     alert("비밀번호 변경 중 오류가 발생했습니다.");
-    //   }
-    // }
-    */
-  };
+  } catch (error) {
+    console.error("비밀번호 변경 실패:", error);
+    if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
+      alert("현재 비밀번호가 일치하지 않습니다.");
+    } else if (error.code === 'auth/weak-password') {
+      alert("비밀번호가 너무 쉽습니다.");
+    } else {
+      alert("비밀번호 변경 중 오류가 발생했습니다.");
+    }
+  }
+};
 
   const cancelPasswordEdit = () => {
     setIsEditingPassword(false);
@@ -424,14 +410,14 @@ const MyPage = () => {
         <CCol xs={12} md={6} lg={6}>
           <CCard className="h-100">
             <CCardHeader>비밀번호 재설정</CCardHeader>
-            <CCardBody className="d-flex flex-column justify  -content-between align-items-start">   
+            <CCardBody className="d-flex flex-column justify-content-between align-items-start">   
               {!isEditingPassword ? (
                 <>
                   <p className='text-muted'>현재 비밀번호를 확인 후 새 비밀번호로 변경할 수 있습니다</p>
                   <CButton className="rounded-pill button-muted-outline mt-2" 
                   onClick={() => {
                     // 1. 소셜 로그인 여부 먼저 체크
-                    if (user.providerCode !== "01") {
+                    if (user?.providerCode !== "01") {
                       alert("소셜 회원가입 회원은 비밀번호를 재설정할 수 없습니다.");
                       return; // 더 이상 진행하지 않고 종료
                     }
