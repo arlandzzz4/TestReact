@@ -8,7 +8,7 @@ export const properties = {
   // 개발 환경에서만 로그를 남기고 싶을 때 사용하는 유틸
   log: (...args) => {
     if (import.meta.env.DEV) {
-      console.log('🛠️ [DEV_LOG]:', ...args);
+      console.log('[DEV_LOG]:', ...args);
     }
   },
   gaMeasurementId: import.meta.env.VITE_GA_MEASUREMENT_ID,
