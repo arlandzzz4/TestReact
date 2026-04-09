@@ -33,7 +33,7 @@ const NewPosts = () => {
             ) : Array.isArray(data) && data.length > 0 ? (
               data.map((item, index) => (
               <CTableRow key={item.id || index}>
-              <CTableDataCell>{item.title}</CTableDataCell>
+              <CTableDataCell>{item.title?.length > 50 ? item.title.slice(0, 50) + '...' : item?.title || ''}</CTableDataCell>
               <CTableDataCell>{item.nickname}</CTableDataCell>
               <CTableDataCell>{item.createdAt}</CTableDataCell>
               <CTableDataCell>{item.comments}</CTableDataCell>

@@ -62,7 +62,7 @@ return (
               <CTableDataCell >
                 {(postCurrentPage - 1) * 10 + index + 1}
               </CTableDataCell>
-              <CTableDataCell >{report.content}</CTableDataCell>
+              <CTableDataCell >{report.content?.length > 20 ? report.content.slice(0, 20) + '...' : report?.content || ''}</CTableDataCell>
               <CTableDataCell >{report.targetNickname}</CTableDataCell>
               <CTableDataCell >{report.reporterNickname}</CTableDataCell>
               <CTableDataCell >

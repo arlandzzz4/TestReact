@@ -64,7 +64,7 @@ const CommentReport = ({
                     </CTableDataCell>
                     
                     <CTableDataCell className="fw-bold text-dark py-3" style={{ maxWidth: '300px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {report.content}
+                      {report.content?.length > 30 ? report.content.slice(0, 30) + '...' : report?.content || ''}
                     </CTableDataCell>
                     
                     <CTableDataCell >{report.targetNickname}</CTableDataCell>

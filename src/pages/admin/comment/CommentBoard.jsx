@@ -153,9 +153,9 @@ const CommentBoard = () => {
                   comments.map((item, index) => (
                     <CTableRow key={item.id || index}>
                       <CTableDataCell>{offset + index + 1}</CTableDataCell>
-                      <CTableDataCell>{item.content}</CTableDataCell>
+                      <CTableDataCell>{item.content?.length > 30 ? item.content.slice(0, 30) + '...' : item?.content || ''}</CTableDataCell>
                       <CTableDataCell>{item.nickname}</CTableDataCell>
-                      <CTableDataCell>{item.title}</CTableDataCell>
+                      <CTableDataCell>{item.title?.length > 10 ? item.title.slice(0, 10) + '...' : item?.title || ''}</CTableDataCell>
                       <CTableDataCell>{item.createdAt}</CTableDataCell>
                       <CTableDataCell className="text-center">
                         <StatusBadge status={statusCodes?.[item.reportStatusCode] || '정상'} />
