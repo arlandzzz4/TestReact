@@ -33,7 +33,7 @@ const NewReposrts = () => {
                 ) : Array.isArray(data) && data.length > 0 ? (
                   data.map((item, index) => (
                   <CTableRow key={index}>
-                    <CTableDataCell>{item.detail}</CTableDataCell>
+                    <CTableDataCell>{item?.detail?.length > 50 ? item.detail.slice(0, 50) + '...' : item?.detail || ''}</CTableDataCell>
                     <CTableDataCell>{reasonCodes?.[item.reasonCode] || item.reasonCode}</CTableDataCell>
                     <CTableDataCell>{item.createdAt}</CTableDataCell>
                     <CTableDataCell className="text-center">

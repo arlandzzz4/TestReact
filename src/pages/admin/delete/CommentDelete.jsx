@@ -51,16 +51,16 @@ const CommentDelete = ({
                 </CTableRow>
               ) : Array.isArray(commentDeletes) && commentDeletes.length > 0 ? (
                 commentDeletes.map((data, index) => (
-                  <CTableRow key={data.id || index} className="small">
+                  <CTableRow key={data.id || index} >
                     <CTableDataCell >
                       {(commentCurrentPage - 1) * 10 + index + 1}
                     </CTableDataCell>
-                    <CTableDataCell className="fw-bold text-dark py-3" style={{ maxWidth: '300px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <CTableDataCell style={{ maxWidth: '300px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {data.content}
                     </CTableDataCell>
                     <CTableDataCell >{data.nickname}</CTableDataCell>
-                    <CTableDataCell className="">{data.createdAt}</CTableDataCell>
-                    <CTableDataCell className="">{data.deletedAt}</CTableDataCell>
+                    <CTableDataCell >{data.createdAt}</CTableDataCell>
+                    <CTableDataCell >{data.deletedAt}</CTableDataCell>
                   </CTableRow>
                 ))
               ) : (

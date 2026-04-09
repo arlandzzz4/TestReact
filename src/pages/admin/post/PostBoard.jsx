@@ -171,7 +171,7 @@ const PostBoard = () => {
         className="text-dark fw-bold"
         style={{ cursor: 'pointer', textDecoration: 'none' }}
       >
-                            {item.title}
+                            {item.title?.length > 30 ? item.title.slice(0, 30) + '...' : item?.title || ''}
                         </div>
                       </CTableDataCell>
                       <CTableDataCell>{item.nickname}</CTableDataCell>
