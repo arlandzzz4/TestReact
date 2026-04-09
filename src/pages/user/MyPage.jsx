@@ -40,6 +40,7 @@ const MyPage = () => {
   const [nickName, setNickName] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteReason, setDeleteReason] = useState('');
+  const [deletePassword, setDeletePassword] = useState('');
   
   const [isEditingPassword, setIsEditingPassword] = useState(false);
 
@@ -172,54 +173,40 @@ const MyPage = () => {
   }
 
   const changePassword = async (data) => {
-    // --- [더미 데이터 테스트용 로직] ---
-    const DUMMY_CURRENT_PW = "1234";
-    if (data.currentPassword !== DUMMY_CURRENT_PW) {
-      alert("현재 비밀번호가 일치하지 않습니다.");
+  try {
+    const currentUser = auth.currentUser;
+    if (!currentUser) {
+      alert("로그인 정보가 만료되었습니다. 다시 로그인해 주세요.");
       return;
     }
-    alert("비밀번호가 성공적으로 변경되었습니다. (더미 처리)");
+
+    // 1. Firebase 재인증 (현재 비밀번호 검증)
+    const credential = EmailAuthProvider.credential(currentUser.email, data.currentPassword);
+    await reauthenticateWithCredential(currentUser, credential);
+
+    // 2. Firebase 비밀번호 변경
+    await updatePassword(currentUser, data.newPassword);
+
+    // 3. 백엔드 DB 동기화
+    await instance.patch('/api/user/me/password', {
+      email: user?.email,
+      newPassword: data.newPassword
+    });
+
+    alert("비밀번호가 성공적으로 변경되었습니다.");
     cancelPasswordEdit();
 
-    /* --- [실제 API 및 Firebase 연동 코드 - 필요 시 주석 해제하여 사용] ---
-    // try {
-    //   const currentUser = auth.currentUser;
-    //   if (!currentUser) {
-    //     alert("로그인 정보가 만료되었습니다. 다시 로그인해 주세요.");
-    //     return;
-    //   }
-    //
-    //   // 1. Firebase 현재 비밀번호 재인증
-    //   const credential = EmailAuthProvider.credential(currentUser.email, data.currentPassword);
-    //   await reauthenticateWithCredential(currentUser, credential);
-    //
-    //   // 2. Firebase 비밀번호 업데이트
-    //   await updatePassword(currentUser, data.newPassword);
-    //
-    //   // ID Token 발급 (강제 갱신)
-    //   const idToken = await currentUser.getIdToken(true);
-    //
-    //   // 3. Spring 백엔드 API 호출 (DB 동기화)
-    //   await instance.patch('/api/user/me/password', 
-    //     { 
-    //       email: user.email,        // 이메일 추가
-    //       newPassword: data.newPassword // 필드명을 'newPassword'로 변경
-    //     },
-    //     { headers: { Authorization: `Bearer ${idToken}` } }
-    //   );
-    //
-    //   alert("비밀번호가 성공적으로 변경되었습니다.");
-    //   cancelPasswordEdit();
-    // } catch (error) {
-    //   console.error("비밀번호 변경 실패:", error);
-    //   if (error.code === 'auth/invalid-credential') {
-    //     alert("현재 비밀번호가 일치하지 않습니다.");
-    //   } else {
-    //     alert("비밀번호 변경 중 오류가 발생했습니다.");
-    //   }
-    // }
-    */
-  };
+  } catch (error) {
+    console.error("비밀번호 변경 실패:", error);
+    if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
+      alert("현재 비밀번호가 일치하지 않습니다.");
+    } else if (error.code === 'auth/weak-password') {
+      alert("비밀번호가 너무 쉽습니다.");
+    } else {
+      alert("비밀번호 변경 중 오류가 발생했습니다.");
+    }
+  }
+};
 
   const cancelPasswordEdit = () => {
     setIsEditingPassword(false);
@@ -231,6 +218,11 @@ const MyPage = () => {
       alert('탈퇴 사유를 입력해 주세요.');
       return;
     }
+
+    if (user?.providerCode === '01' && !deletePassword.trim()) {
+        alert('비밀번호를 입력해 주세요.');
+        return;
+    }
     
     if (window.confirm('정말로 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
       // ✅ 수정된 부분: 백엔드 UnsubscribeRequestDto가 필요로 하는 정보를 모두 보냅니다.
@@ -238,7 +230,8 @@ const MyPage = () => {
         email: user?.email,
         providerCode: user?.providerCode || '01', // 일반(LOCAL) 회원의 기본 코드값 (백엔드 설정에 맞춤)
         providerId: user?.providerId || null,     // 소셜 로그인 회원일 경우 존재하는 ID
-        reason: deleteReason
+        reason: deleteReason,
+        currentPassword: deletePassword
       }, {
         onSuccess: () => {
           // useUnsubscribe 훅 내부에 alert 처리가 되어 있으므로, 여기서는 후속 처리만 수행합니다.
@@ -253,6 +246,7 @@ const MyPage = () => {
   const cancelDelete = () => {
     setIsDeleting(false);
     setDeleteReason('');
+    setDeletePassword('');
   }
 
   return (
@@ -424,14 +418,14 @@ const MyPage = () => {
         <CCol xs={12} md={6} lg={6}>
           <CCard className="h-100">
             <CCardHeader>비밀번호 재설정</CCardHeader>
-            <CCardBody className="d-flex flex-column justify  -content-between align-items-start">   
+            <CCardBody className="d-flex flex-column justify-content-between align-items-start">   
               {!isEditingPassword ? (
                 <>
                   <p className='text-muted'>현재 비밀번호를 확인 후 새 비밀번호로 변경할 수 있습니다</p>
                   <CButton className="rounded-pill button-muted-outline mt-2" 
                   onClick={() => {
                     // 1. 소셜 로그인 여부 먼저 체크
-                    if (user.providerCode !== "01") {
+                    if (user?.providerCode !== "01") {
                       alert("소셜 회원가입 회원은 비밀번호를 재설정할 수 없습니다.");
                       return; // 더 이상 진행하지 않고 종료
                     }
@@ -503,20 +497,30 @@ const MyPage = () => {
                 </>
               ) : (
                 <div className="w-100">
-                  <CFormInput 
-                    placeholder="탈퇴 사유를 입력해 주세요"
-                    value={deleteReason}
-                    onChange={(e) => setDeleteReason(e.target.value)}
-                    className="mb-2"
+                  {/* 일반 회원만 비밀번호 입력 표시 */}
+                  {user?.providerCode === '01' && (
+                      <CFormInput
+                          type="password"
+                          placeholder="현재 비밀번호를 입력해 주세요"
+                          value={deletePassword}
+                          onChange={(e) => setDeletePassword(e.target.value)}
+                          className="mb-2"
+                      />
+                  )}
+                  <CFormInput
+                      placeholder="탈퇴 사유를 입력해 주세요"
+                      value={deleteReason}
+                      onChange={(e) => setDeleteReason(e.target.value)}
+                      className="mb-2"
                   />
                   <div style={{ color: 'red', fontSize: '0.8rem', marginBottom: '1rem' }}>
-                    * 탈퇴 후 데이터는 복구되지 않습니다
+                      * 탈퇴 후 데이터는 복구되지 않습니다
                   </div>
                   <div className="d-flex gap-2">
-                    <CButton className="rounded-pill button button-red-outline" onClick={delAccount}>탈퇴하기</CButton>
-                    <CButton className="rounded-pill button button-muted-outline" onClick={cancelDelete}>취소</CButton>
+                      <CButton className="rounded-pill button button-red-outline" onClick={delAccount}>탈퇴하기</CButton>
+                      <CButton className="rounded-pill button button-muted-outline" onClick={cancelDelete}>취소</CButton>
                   </div>
-                </div>
+              </div>
               )}
             </CCardBody>
           </CCard>
