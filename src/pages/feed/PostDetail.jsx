@@ -318,14 +318,19 @@ const PostDetail = () => {
                 className="comment-textarea"
                 placeholder="댓글을 입력하세요"
                 value={commentInput}
-                maxLength={500}
-                onChange={e => setCommentInput(e.target.value)}
+                onChange={e => {
+                  const val = e.target.value;
+                  // [...val]로 한글도 정확히 1글자로 카운트
+                  if ([...val].length <= 500) {
+                    setCommentInput(val);
+                  }
+                }}
                 onKeyDown={e => {
                   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleCommentSubmit(); }
                 }}
               />
               <div className="comment-input-footer">
-                <span className="comment-char-count">{commentInput.length}/500</span>
+                <span className="comment-char-count">{[...commentInput].length}/500</span>
                 <button className="pd-submit-btn" onClick={handleCommentSubmit}>댓글등록</button>
               </div>
             </div>
@@ -429,12 +434,21 @@ const PostDetail = () => {
                     className="comment-textarea sm"
                     placeholder="답글을 입력하세요"
                     value={replyInputs[comment.commentId] || ''}
-                    onChange={e => setReplyInputs(prev => ({ ...prev, [comment.commentId]: e.target.value }))}
+                    onChange={e => {
+                      const val = e.target.value;
+                      // [...val]로 한글도 정확히 1글자로 카운트
+                      if ([...val].length <= 500) {
+                        setReplyInputs(prev => ({ ...prev, [comment.commentId]: val }));
+                      }
+                    }}
                     onKeyDown={e => {
                       if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleReplySubmit(comment.commentId); }
                     }}
                   />
-                  <button className="pd-submit-btn sm" onClick={() => handleReplySubmit(comment.commentId)}>등록</button>
+                  <div className="comment-input-footer">
+                    <button className="pd-submit-btn sm " onClick={() => handleReplySubmit(comment.commentId)}>등록</button>
+                    <span className="comment-char-count">{[...(replyInputs[comment.commentId] || '')].length}/500</span>
+                  </div>
                 </div>
               )}
             </div>
