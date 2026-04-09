@@ -12,6 +12,8 @@ import { properties } from './constants/properties.js';
 import ErrorFallback from '@/components/error/ErrorFallback';
 import FullPageLoader from '@/components/common/FullPageLoader';
 import ReactGA from "react-ga4";
+import { setupOnMessageListener } from '@/api/fcm/fcmService';
+import NotificationHandler from './components/common/NotificationHandler.jsx';
 
 const AppRouter = lazy(() => import('./routes/AppRouter'));
 
@@ -70,6 +72,19 @@ function AuthWrapper({ children }) {
 function App() {
   const { reset } = useQueryErrorResetBoundary();
 
+  useEffect(() => {
+    const unsubscribe = setupOnMessageListener((payload) => {
+      // 1. 브라우저 기본 알림 띄우기
+      new Notification(payload.notification.title, {
+        body: payload.notification.body,
+        icon: '/logo192.png'
+      });
+      alert(`[알림] ${payload.notification.title}: ${payload.notification.body}`);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <ErrorBoundary
@@ -83,11 +98,13 @@ function App() {
         }}
       >
         <AuthWrapper>
+          <NotificationHandler>
           <Suspense 
             fallback={<FullPageLoader message="시스템을 불러오는 중입니다..." />}
           >
             <AppRouter />
           </Suspense>
+          </NotificationHandler>
         </AuthWrapper>
       </ErrorBoundary>
 

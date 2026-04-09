@@ -47,9 +47,9 @@ export const requestForToken = async (accessToken) => {
   }
 };
 
-export const onMessageListener = () =>
-  new Promise((resolve) => {
-    onMessage(messaging, (payload) => {
-      resolve(payload);
-    });
+export const setupOnMessageListener = (callback) => {
+  return onMessage(messaging, (payload) => {
+    console.log("포그라운드 메시지 수신:", payload);
+    callback(payload); // 알림이 올 때마다 전달받은 콜백 함수 실행
   });
+};
