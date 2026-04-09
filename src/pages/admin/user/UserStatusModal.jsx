@@ -48,7 +48,7 @@ const UserStatusModal = ({ visible, onClose, selectedUser, onApply }) => {
       visible={visible} 
       onClose={onClose} 
       alignment="center" // 중앙 정렬
-      size="sm" // 작은 크기로 얇게
+      //size="sm" // 작은 크기로 얇게
       className="border-0 shadow-lg"
     >
       <CModalHeader className="border-0 pb-0">
@@ -73,7 +73,7 @@ const UserStatusModal = ({ visible, onClose, selectedUser, onApply }) => {
               <CCardBody className="py-4">
                 <h6 className="fw-bold mb-2">활성</h6>
                 <div className="small text-body-secondary text-nowrap">
-                  정상적으로 서비스 이<br/>용 가능
+                  정상적으로 서비스 이용 가능
                 </div>
               </CCardBody>
             </CCard>
@@ -102,6 +102,7 @@ const UserStatusModal = ({ visible, onClose, selectedUser, onApply }) => {
           variant="outline" 
           onClick={onClose}
           size="sm"
+          active
           className="me-2 px-3 rounded-pill"
         >
           취소
@@ -110,6 +111,7 @@ const UserStatusModal = ({ visible, onClose, selectedUser, onApply }) => {
           color="success" 
           onClick={() => onApply(tempStatus)}
           size="sm"
+          active
           className="text-white px-3 rounded-pill"
         >
           적용

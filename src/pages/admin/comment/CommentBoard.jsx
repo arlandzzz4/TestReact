@@ -36,8 +36,8 @@ const CommentBoard = () => {
     const [confirmModalWriter, setConfirmModalWriter] = useState('');
     const [confirmModalOnConfirm , setConfirmModalOnConfirm] = useState(() => () => {});
 
-    const {data: totalCnt= 0, reCounting} = useCommentTotalCountQuery({word: searchWord, delYn:'N'});
-    const {data: comments, isLoading, reComment} = useCommentList({size, offset, word: searchWord, delYn:'N'});
+    const {data: totalCnt= 0, refetch:reCounting} = useCommentTotalCountQuery({word: searchWord, delYn:'N'});
+    const {data: comments, isLoading, refetch:reComment} = useCommentList({size, offset, word: searchWord, delYn:'N'});
     const {data: statusCodes} = useCodeGroupSearch('REPORT_STATUS', true);
 
     const onDeleteClick = (comment) => {

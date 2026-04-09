@@ -38,7 +38,7 @@ const PostBoard = () => {
     const [confirmModalWriter, setConfirmModalWriter] = useState('');
     const [confirmModalOnConfirm , setConfirmModalOnConfirm] = useState(() => () => {});
 
-    const {data: totalCnt= 0, reCounting} = usePostTotalCountQuery({word: searchWord, delYn:'N'});
+    const {data: totalCnt= 0, refetch:reCounting} = usePostTotalCountQuery({word: searchWord, delYn:'N'});
     const {data: posts, isLoading, refetch} = usePostList({size, offset, word: searchWord, delYn:'N'});
     const {data: statusCodes} = useCodeGroupSearch('REPORT_STATUS', true);
 

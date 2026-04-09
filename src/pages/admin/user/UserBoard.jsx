@@ -176,6 +176,7 @@ const UserBoard = () => {
                           color="light" 
                           size="sm" 
                           className="border"
+                          active
                           onClick={() => handleDetailClick(item)}
                         >
                           상세
