@@ -5,12 +5,12 @@ importScripts('https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-comp
 // 2. Firebase 초기화 (src의 설정을 쓸 수 없으므로 여기에 직접 입력)
 // 변경 이유: 서비스 워커는 public 폴더 내에서 독립적으로 실행되므로 외부 src 파일을 참조할 수 없습니다.
 const firebaseConfig = {
-  apiKey: "AIzaSyAT1Z5YuWz67DM1jTfjSnY_wCd5Xxh4L3I",
-  authDomain: "iob-dev-492003.firebaseapp.com",
-  projectId: "iob-dev-492003",
-  storageBucket: "iob-dev-492003.firebasestorage.app",
-  messagingSenderId: "872065915441",
-  appId: "1:872065915441:web:46f95d481de1459d6b5310"
+  apiKey: "AIzaSyDC0kfoRjeGKs18qsZWGmDSvI8liH3WGDI",
+  authDomain: "iob-project-492003.firebaseapp.com",
+  projectId: "iob-project-492003",
+  storageBucket: "iob-project-492003.firebasestorage.app",
+  messagingSenderId: "1085318928015",
+  appId: "1:1085318928015:web:0a23444f9b6587989282fa"
 };
 
 firebase.initializeApp(firebaseConfig);
