@@ -1,39 +1,23 @@
-import axios from 'axios';
-
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080/api',
-  timeout: 10000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('firebase_token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+import { instance } from './axios.jsx';
 
 export const notificationAPI = {
 
-  getAll: (userEmail) => api.get('/notifications', { params: { userEmail } }),
+  getAll: (userEmail) => instance.get('/api/notifications', { params: { userEmail } }),
 
-  markAsRead: (id) => api.patch(`/notifications/${id}/read`),
+  markAsRead: (id) => instance.patch(`/api/notifications/${id}/read`),
 
-  markAllRead: (userEmail) => api.patch('/notifications/read-all', null, { params: { userEmail } }),
+  markAllRead: (userEmail) => instance.patch('/api/notifications/read-all', null, { params: { userEmail } }),
 
-  deleteAll: (userEmail) => api.delete('/notifications', { params: { userEmail } }),
+  deleteAll: (userEmail) => instance.delete('/api/notifications', { params: { userEmail } }),
 
   // 알림 설정 조회
-  getSettings: (userEmail) => api.get('/notifications/settings', { params: { userEmail } }),
+  getSettings: (userEmail) => instance.get('/api/notifications/settings', { params: { userEmail } }),
 
   // 알림 설정 수정
   updateSettings: (userEmail, likeYn, commentYn, noticeYn) =>
-    api.patch('/notifications/settings', null, {
+    instance.patch('/api/notifications/settings', null, {
       params: { userEmail, likeYn, commentYn, noticeYn }
     }),
 };
 
-export default api;
+export default instance;
