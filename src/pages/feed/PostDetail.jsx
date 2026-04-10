@@ -276,7 +276,7 @@ const PostDetail = () => {
                         if (!post?.postId) { alert('게시글 정보를 불러오는 중입니다.'); return; }
                         if (window.confirm('게시글을 삭제할까요?')) {
                           console.log('postId:', post.postId, 'userEmail:', userEmail);
-                          deletePost({ postId: post.postId, userEmail })
+                          deletePost({ postId: post.postId, userEmail, delYn: 'Y' })
                             .then(() => {
                               alert('삭제되었습니다.');
                               navigate('/feed');
