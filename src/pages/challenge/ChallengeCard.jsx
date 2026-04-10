@@ -38,7 +38,7 @@ const ChallengeCard = ({ challenge, onDelete }) => {
     // 시간(시, 분, 초) 단위를 0으로 초기화하여 오직 날짜 기준으로만 계산
     const end = new Date(challenge.endDate);
     end.setHours(0, 0, 0, 0);
-
+    
     const now = new Date();
     now.setHours(0, 0, 0, 0);
 

@@ -112,6 +112,24 @@ const AppHeader = () => {
     return () => document.removeEventListener("scroll", handleScroll);
   }, []);
 
+      // 알림 세팅창 외부 클릭시 닫기 위함
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        settingRef.current &&
+        !settingRef.current.contains(event.target)
+      ) {
+        setSettingOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <CHeader
       position="sticky"
