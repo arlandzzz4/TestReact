@@ -297,6 +297,19 @@ const PostDetail = () => {
 
         <div className="post-detail-content" dangerouslySetInnerHTML={{ __html: post.content }} />
 
+        {post.imageUrls && post.imageUrls.length > 0 && (
+          <div className="post-detail-images">
+            {post.imageUrls.map((url, index) => (
+              <img
+                key={index}
+                src={`http://localhost:8080${url}`}
+                alt={`첨부 이미지 ${index + 1}`}
+                style={{ height: '100%', Width: '100%', marginBottom: '8px', display: 'block', objectFit: 'cover'}}
+              />
+            ))}
+          </div>
+        )}
+
         <div className="post-detail-reaction">
           <button className={`pd-like-btn ${postLiked ? 'liked' : ''}`} onClick={handlePostLike}>
             {postLiked ? '💚' : '🤍'} 좋아요 · {post.likeCount}
