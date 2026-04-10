@@ -9,6 +9,7 @@
 //  라우팅  → react-router-dom v7 (useNavigate)
 // ====================================================
 
+import { useNavigate } from 'react-router-dom';
 // TanStack Query 훅 (서버 데이터)
 import { useNotifications } from '../../hooks/queries/useNotificationQuery';
 import { useMarkAsRead, useMarkAllRead, useDeleteAll } from '../../hooks/mutations/useNotificationMutation';
@@ -130,8 +131,13 @@ export default function NotificationPage() {
 
 // ── 알림 아이템 컴포넌트 (분리해서 가독성↑) ─────
 function NotifItem({ notif, onRead }) {
+  const navigate = useNavigate();
   const handleClick = () => {
     if (!notif.isRead) onRead();
+
+    if (notif.type !== 'like') {
+      navigate(`/post/${notif.targetId}`);
+    }
   };
 
   // 타입 뱃지 아이콘 결정
