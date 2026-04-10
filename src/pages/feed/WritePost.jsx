@@ -24,7 +24,7 @@ import '../../scss/WritePost.scss';
 import '../../scss/style.scss';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { createPost, uploadPostImages, getPostDetail, updatePost } from '@/api/postApi';
+import { createPost, uploadPostImages, getPostDetail, updatePost, deletePostImage } from '@/api/postApi';
 
 export default function WritePost() {
   const navigate = useNavigate();
@@ -43,6 +43,7 @@ export default function WritePost() {
   const [content, setContent] = useState('');
   const [errors, setErrors] = useState({});
   const [images, setImages] = useState([]);
+  const [deletedImageUrls, setDeletedImageUrls] = useState([]);
   const MaxImages = 3;
   const { user, isAdmin } = useAuth();
   const quillRef = useRef(null);
@@ -67,6 +68,16 @@ export default function WritePost() {
         setContent(post.content);
         const categoryMap = { '01': '자유', '02': '정보', '03': '인원모집', '04': '공지사항' };
         setCategory(categoryMap[post.categoryCode] || '자유');
+        // 기존 이미지 불러오기
+        if (post.imageUrls && post.imageUrls.length > 0) {
+          const existingImages = post.imageUrls.map((url) => ({
+            id: Date.now() + Math.random(),
+            preview: `http://localhost:8080${url}`,
+            isExisting: true,
+            url: url,
+          }));
+          setImages(existingImages);
+        }
       })
       .catch(err => console.error('게시글 불러오기 실패', err));
   }, [isEditMode, id]);
@@ -117,6 +128,21 @@ export default function WritePost() {
           title: title,
           content: content
         });
+        // 삭제할 기존 이미지 처리
+        for (const url of deletedImageUrls) {
+          const fileName = url.split('/').pop(); // URL에서 파일명만 추출
+          await deletePostImage(fileName);
+        }
+        // 새로 추가한 이미지 업로드
+        const newImages = images.filter(img => !img.isExisting);
+        if (newImages.length > 0) {
+          const formData = new FormData();
+          formData.append('postId', Number(id));
+          newImages.forEach((img) => {
+            formData.append('file', img.file);
+          });
+          await uploadPostImages(formData);
+        }
         alert('게시글이 수정되었습니다.');
         navigate(`/post/${id}`);
       } else {
@@ -166,7 +192,15 @@ export default function WritePost() {
   const handleImageRemove = (id) => {
     setImages((prev) => {
       const removed = prev.find((img) => img.id === id);
-      if (removed) URL.revokeObjectURL(removed.preview);
+      if (removed) {
+        if (removed.isExisting) {
+          // 기존 이미지면 삭제 목록에 추가
+          setDeletedImageUrls(d => [...d, removed.url]);
+        } else {
+          // 새 이미지면 미리보기 URL 해제
+          URL.revokeObjectURL(removed.preview);
+        }
+      }
       return prev.filter((img) => img.id !== id);
     });
   };
