@@ -108,24 +108,23 @@ export default function CalcPage() {
   const hasAnyError = Object.values(errors).some(Boolean)
 
   return (
-    <div style={{ background: '#f0ede6', minHeight: '100vh' }}>
+    <div 
+      style={{ 
+        // background: '#f0ede6', 
+        minHeight: '100vh' }}
+    >
 
       {/* ── 페이지 헤더 ── */}
-      <div style={{
+      <div 
+        style={{
         padding: '36px 48px 28px',
-        background: '#f0ede6',
+        // background: '#f0ede6',
         borderBottom: '1px solid #e4e0d8',
       }}>
-        <h1 style={{
-          fontFamily: 'Montserrat, sans-serif',
-          fontSize: 'clamp(20px, 3vw, 26px)',
-          fontWeight: 900,
-          color: '#1a1a18',
-          marginBottom: 4,
-        }}>
+        <h1 style={{fontSize:'22px', fontWeight:'700', color:'textDark', marginBottom:'4px'}}>
           칼로리 · 목표 계산기
         </h1>
-        <p style={{ fontSize: 13, color: '#a8a59e', margin: 0 }}>
+        <p className="text-muted" style={{fontSize:'14px', margin:'0'}}>
           BMR, TDEE를 계산하고 목표 체중까지 예상 기간을 확인하세요
         </p>
         <div style={{ marginTop: 18 }}>

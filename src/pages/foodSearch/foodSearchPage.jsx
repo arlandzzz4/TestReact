@@ -232,8 +232,8 @@ const FoodSearchPage = () => {
 
       {/* 페이지 헤더 */}
       <div className="mb-4">
-        <h2 className="fw-bold mb-1">음식 영양성분 검색</h2>
-        <p className="text-medium-emphasis">
+        <h2 style={{fontSize:'22px', fontWeight:'700', color:'textDark', marginBottom:'4px'}}>음식 영양성분 검색</h2>
+        <p className="text-muted" style={{fontSize:'14px', margin:'0'}}>
           공공데이터 식품영양성분 DB에서 음식을 검색하고 영양 정보를 확인하세요
         </p>
       </div>
@@ -248,10 +248,11 @@ const FoodSearchPage = () => {
           size="lg"
         />
         <CButton
-          color="secondary"
+          // color="secondary"
+          className='half-round-green-btn'
           onClick={handleSearch}
           disabled={isFetching && !isFetchingNextPage}
-          style={{ minWidth: 80 }}
+          style={{ minWidth: 80}}
         >
           {isFetching && !isFetchingNextPage
             ? <CSpinner size="sm" />
