@@ -40,6 +40,11 @@ export const logoutUser = async (logoutData) => {
     console.log("실제 서버로 전송되는 데이터:", logoutData);
     await instance.post('/api/auth/logout', logoutData);
   } catch (error) {
-    console.error("서버 로그아웃 처리 중 오류 발생:", error);
+    if (error.response?.status === 401) {
+      console.warn("이미 세션이 만료되었습니다. 클라이언트 로그아웃을 진행합니다.");
+      return; 
+    }
+    // 다른 에러(500 등)는 추적을 위해 유지
+    throw error;
   }
 };
