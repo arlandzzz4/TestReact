@@ -13,7 +13,6 @@ import ErrorFallback from '@/components/error/ErrorFallback';
 import FullPageLoader from '@/components/common/FullPageLoader';
 import ReactGA from "react-ga4";
 import { setupOnMessageListener } from '@/api/fcm/fcmService';
-import NotificationHandler from './components/common/NotificationHandler.jsx';
 
 const AppRouter = lazy(() => import('./routes/AppRouter'));
 
@@ -98,13 +97,11 @@ function App() {
         }}
       >
         <AuthWrapper>
-          <NotificationHandler>
           <Suspense 
             fallback={<FullPageLoader message="시스템을 불러오는 중입니다..." />}
           >
             <AppRouter />
           </Suspense>
-          </NotificationHandler>
         </AuthWrapper>
       </ErrorBoundary>
 
