@@ -3,7 +3,7 @@ import { CCol, CCard, CCardBody } from '@coreui/react'
 import { useReportTotalCountQuery, useReportTodayCountQuery } from '@/hooks/queries/useReportQuery';
  
 const DashReportCard = () => {
-    const {data: totalCnt} = useReportTotalCountQuery({targetCode: '01'});
+    const {data: totalCnt} = useReportTotalCountQuery({targetCode: '01', reportStatusCode: ''});
     const {data: todayCnt} = useReportTodayCountQuery({targetCode: '01'});
     
     return (
