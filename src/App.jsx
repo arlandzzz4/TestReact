@@ -74,12 +74,7 @@ function App() {
   useEffect(() => {
     const unsubscribe = setupOnMessageListener((payload) => {
       // 1. 브라우저 기본 알림 띄우기
-      new Notification(payload.notification.title, {
-        body: payload.notification.body,
-        icon: '/logo192.png'
       });
-      alert(`[알림] ${payload.notification.title}: ${payload.notification.body}`);
-    });
 
     return () => unsubscribe();
   }, []);
