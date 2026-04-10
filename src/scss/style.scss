@@ -178,6 +178,20 @@ body {
   }
 }
 
+.half-round-green-btn{
+  background: #3d6b4f !important;
+  border: none !important;
+  border-radius: 0 40px 40px 0 !important;
+  color: #fff !important;
+  padding: 8px 32px !important;
+  font-weight: 700;
+
+  &:hover{
+        background-color: #1e4e30 !important;
+        border-color: #1e4e30 !important;
+  }
+}
+
 // @include color-mode(dark) {
 //   body {
 //     background-color: #F4F1EC !important;
