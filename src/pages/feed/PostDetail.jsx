@@ -42,10 +42,17 @@ const PostDetail = () => {
 
     getPostDetail(id, userEmail)
       .then(res => {
+        if (!res.data || res.data.delYn === 'Y') {
+          navigate('/404', { replace: true });
+          return;
+        }
         setPost(res.data);
         setPostLiked(res.data.liked);
       })
-      .catch(err => console.error('게시글 조회 실패', err));
+      .catch(err => {
+        console.error('게시글 조회 실패', err);
+        navigate('/404', { replace: true });
+      });
 
     getCommentList(id, userEmail)
       .then(res => {
