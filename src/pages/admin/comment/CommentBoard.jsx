@@ -21,6 +21,7 @@ import CommonPagination from '../common/CommonPagination';
 import { useCommentList, useCommentTotalCountQuery } from '@/hooks/queries/useCommentQuery';
 import CommonConfirmModal from '../common/CommonConfirmModal'
 import { useDeleteCommentMutation } from '@/hooks/mutations/useCommentMutation'
+import { useNavigate } from 'react-router-dom';
 
 const CommentBoard = () => {
     const [size, setSize] = useState(10);
@@ -39,6 +40,8 @@ const CommentBoard = () => {
     const {data: totalCnt= 0, refetch:reCounting} = useCommentTotalCountQuery({word: searchWord, delYn:'N'});
     const {data: comments, isLoading, refetch:reComment} = useCommentList({size, offset, word: searchWord, delYn:'N'});
     const {data: statusCodes} = useCodeGroupSearch('REPORT_STATUS', true);
+
+    const navigate = useNavigate();
 
     const onDeleteClick = (comment) => {
       setIsModalOpen(true);
@@ -153,7 +156,21 @@ const CommentBoard = () => {
                   comments.map((item, index) => (
                     <CTableRow key={item.id || index}>
                       <CTableDataCell>{offset + index + 1}</CTableDataCell>
-                      <CTableDataCell>{item.content?.length > 30 ? item.content.slice(0, 30) + '...' : item?.content || ''}</CTableDataCell>
+                      <CTableDataCell>
+                        <div 
+                          onClick={() => {
+                            if (item.postId) {
+                              navigate(`/post/${item.postId}`); // 2. 클릭 시 이동
+                            } else {
+                              console.error("postId가 없습니다!", item);
+                            }
+                          }}
+                          className="text-dark fw-bold"
+                          style={{ cursor: 'pointer', textDecoration: 'none' }}
+                        >
+                          {item.content?.length > 30 ? item.content.slice(0, 30) + '...' : item?.content || ''}
+                        </div>
+                      </CTableDataCell>
                       <CTableDataCell>{item.nickname}</CTableDataCell>
                       <CTableDataCell>{item.title?.length > 10 ? item.title.slice(0, 10) + '...' : item?.title || ''}</CTableDataCell>
                       <CTableDataCell>{item.createdAt}</CTableDataCell>

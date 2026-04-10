@@ -14,6 +14,7 @@ import CIcon from '@coreui/icons-react'
 import {cilClipboard} from '@coreui/icons'
 import { useCodeGroupSearch } from '@/hooks/queries/useCommonQuery';
 import CommonPagination from '../common/CommonPagination';
+import { useNavigate } from 'react-router-dom';
 
 const PostReport = ({ 
   activeKey, 
@@ -24,6 +25,7 @@ const PostReport = ({
   postCurrentPage,
   onDeleteClick
 }) => {
+  const navigate = useNavigate();
   const { data: statusCodes } = useCodeGroupSearch('REPORT_REASON', true);
 
 return (
@@ -62,7 +64,21 @@ return (
               <CTableDataCell >
                 {(postCurrentPage - 1) * 10 + index + 1}
               </CTableDataCell>
-              <CTableDataCell >{report.content?.length > 20 ? report.content.slice(0, 20) + '...' : report?.content || ''}</CTableDataCell>
+              <CTableDataCell >
+                <div 
+                  onClick={() => {
+                    if (report.targetId) {
+                      navigate(`/post/${report.targetId}`); // 2. 클릭 시 이동
+                    } else {
+                      console.error("targetId가 없습니다!", report);
+                    }
+                  }}
+                  className="text-dark fw-bold"
+                  style={{ cursor: 'pointer', textDecoration: 'none' }}
+                >
+                {report.content?.length > 20 ? report.content.slice(0, 20) + '...' : report?.content || ''}
+                </div>
+              </CTableDataCell>
               <CTableDataCell >{report.targetNickname}</CTableDataCell>
               <CTableDataCell >{report.reporterNickname}</CTableDataCell>
               <CTableDataCell >
