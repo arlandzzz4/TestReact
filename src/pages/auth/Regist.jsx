@@ -9,7 +9,7 @@ import {
   CFormLabel,
 } from '@coreui/react';
 import { auth, googleProvider } from '@/config/firebase';
-import { signInWithPopup, createUserWithEmailAndPassword } from 'firebase/auth';
+import { signInWithPopup, createUserWithEmailAndPassword, GoogleAuthProvider } from 'firebase/auth';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useUserQuery } from '@/hooks/queries/useUserQuery';
 import { handleLoginRedirect } from '@/utils/navigation';
@@ -187,6 +187,9 @@ const RegistPage = () => {
   // 구글 등록 핸들러
   const onGoogleLogin = async () => {
     if (isLoading.google) return;
+    const googleProvider = new GoogleAuthProvider();
+    googleProvider.addScope('https://www.googleapis.com/auth/userinfo.email');
+    googleProvider.addScope('openid');
     setIsLoading((prev) => ({ ...prev, google: true }));
     try {
       const result = await signInWithPopup(auth, googleProvider);
