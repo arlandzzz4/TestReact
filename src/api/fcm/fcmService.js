@@ -50,6 +50,18 @@ export const requestForToken = async (accessToken) => {
 export const setupOnMessageListener = (callback) => {
   return onMessage(messaging, (payload) => {
     console.log("포그라운드 메시지 수신:", payload);
-    callback(payload); // 알림이 올 때마다 전달받은 콜백 함수 실행
+    
+    // 포그라운드 알림 표시
+    const link = payload.data?.link_url;
+    const notification = new Notification(payload.notification.title, {
+      body: payload.notification.body,
+    });
+    
+    // 클릭 시 해당 게시글로 이동
+    notification.onclick = () => {
+      if (link) window.location.href = link;
+    };
+    
+    callback(payload);
   });
 };

@@ -34,6 +34,8 @@ const PostDetail = () => {
   const [reportTargetId, setReportTargetId] = useState(null);
   const [selectedReason, setSelectedReason] = useState('01');
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [clickImg, setClickImg] = useState(null);
+
 
   useEffect(() => {
     if (userEmail === "" && isLoggedIn) return; // 로그인했는데 email이 아직 없으면 기다림
@@ -296,6 +298,42 @@ const PostDetail = () => {
         </div>
 
         <div className="post-detail-content" dangerouslySetInnerHTML={{ __html: post.content }} />
+
+        {post.imageUrls && post.imageUrls.length > 0 && (
+          <div className="post-detail-images">
+            {post.imageUrls.map((url, index) => (
+              <img
+                onClick={()=>{setClickImg(url)}}
+                key={index}
+                src={url.startsWith('http')? url : `http://localhost:8080${url}`}
+                //src={`http://localhost:8080${url}`} //이거 s3일때를 대비해서 img/어쩌구로 오면 앞에 localhost 붙여주고, 아니면 그냥쓰게끔해야함
+                alt={`첨부 이미지 ${index + 1}`}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', marginBottom: '8px', display: 'block' }}
+              />
+            ))}
+          {/* 사진 크기 맞추고, 클릭하면 커지는형식 */}
+          </div>
+        )}
+
+        {/* 모달 */}
+        {clickImg && (
+          <div
+            onClick={() => setClickImg(null)}
+            style={{
+              position: 'fixed', top: 0, left: 0,
+              width: '100vw', height: '100vh',
+              backgroundColor: 'rgba(0,0,0,0.8)',
+              display: 'flex', justifyContent: 'center', alignItems: 'center',
+              zIndex: 9999
+            }}
+          >
+            <img
+              src={clickImg.startsWith('http')? clickImg : `http://localhost:8080${clickImg}`}
+              //src={`http://localhost:8080${clickImg}`} ////이거 s3일때를 대비해서 img/어쩌구로 오면 앞에 localhost 붙여주고, 아니면 그냥쓰게끔해야함
+              style={{ maxWidth: '90%', maxHeight: '90%', objectFit: 'contain' }}
+            />
+          </div>
+        )}
 
         <div className="post-detail-reaction">
           <button className={`pd-like-btn ${postLiked ? 'liked' : ''}`} onClick={handlePostLike}>
