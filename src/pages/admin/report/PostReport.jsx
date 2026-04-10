@@ -26,7 +26,8 @@ const PostReport = ({
   onDeleteClick
 }) => {
   const navigate = useNavigate();
-  const { data: statusCodes } = useCodeGroupSearch('REPORT_REASON', true);
+  const {data: statusCodes} = useCodeGroupSearch('REPORT_STATUS', true);
+  const { data: reasonCodes } = useCodeGroupSearch('REPORT_REASON', true);
 
 return (
   <>
@@ -46,6 +47,7 @@ return (
           <CTableHeaderCell >작성자</CTableHeaderCell>
           <CTableHeaderCell >신고자</CTableHeaderCell>
           <CTableHeaderCell >신고 사유</CTableHeaderCell>
+          <CTableHeaderCell >상태</CTableHeaderCell>
           <CTableHeaderCell >접수일</CTableHeaderCell>
           <CTableHeaderCell className="text-center">관리</CTableHeaderCell>
         </CTableRow>
@@ -53,7 +55,7 @@ return (
       <CTableBody>
         {isLoading ? (
           <CTableRow>
-            <CTableDataCell colSpan="7" className="text-center py-4 text-muted">
+            <CTableDataCell colSpan="8" className="text-center py-4 text-muted">
               <div className="spinner-border spinner-border-sm text-success me-2" role="status"></div>
               데이터를 불러오는 중입니다...
             </CTableDataCell>
@@ -87,7 +89,12 @@ return (
               <CTableDataCell >{report.reporterNickname}</CTableDataCell>
               <CTableDataCell >
                 <span className="badge bg-light text-dark rounded-pill px-2 py-1">
-                  {statusCodes?.[report.reasonCode] || report.reasonCode}
+                  {reasonCodes?.[report.reasonCode] || report.reasonCode}
+                </span>
+              </CTableDataCell>
+              <CTableDataCell >
+                <span className="badge bg-light text-dark rounded-pill px-2 py-1">
+                  {statusCodes?.[report.reportStatusCode] || report.reportStatusCode}
                 </span>
               </CTableDataCell>
               <CTableDataCell >{report.createdAt}</CTableDataCell>
@@ -112,7 +119,7 @@ return (
           ))
         ) : (
           <CTableRow>
-            <CTableDataCell colSpan="7" className="text-center text-muted py-3">
+            <CTableDataCell colSpan="8" className="text-center text-muted py-3">
               <CIcon icon={cilClipboard} size="xl" className="mb-2 text-secondary opacity-50" /><br />
               신고된 내역이 없습니다.
             </CTableDataCell>
