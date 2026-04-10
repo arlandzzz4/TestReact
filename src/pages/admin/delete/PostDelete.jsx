@@ -55,7 +55,7 @@ return (
               <CTableDataCell >
                 {(postCurrentPage - 1) * 10 + index + 1}
               </CTableDataCell>
-              <CTableDataCell >{data.title}</CTableDataCell>
+              <CTableDataCell >{data.title?.length > 30 ? data.title.slice(0, 30) + '...' : data?.title || ''}</CTableDataCell>
               <CTableDataCell >{data.nickname}</CTableDataCell>
               <CTableDataCell >{data.createdAt}</CTableDataCell>
               <CTableDataCell >{data.deletedAt}</CTableDataCell>

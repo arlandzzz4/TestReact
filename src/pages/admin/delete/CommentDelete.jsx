@@ -56,7 +56,7 @@ const CommentDelete = ({
                       {(commentCurrentPage - 1) * 10 + index + 1}
                     </CTableDataCell>
                     <CTableDataCell style={{ maxWidth: '300px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {data.content}
+                      {data.content?.length > 40 ? data.content.slice(0, 40) + '...' : data?.content || ''}
                     </CTableDataCell>
                     <CTableDataCell >{data.nickname}</CTableDataCell>
                     <CTableDataCell >{data.createdAt}</CTableDataCell>
