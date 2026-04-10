@@ -22,11 +22,11 @@ const ReportBoard = () => {
   const [confirmModalOnConfirm , setConfirmModalOnConfirm] = useState(() => () => {});
   const [postParams, setPostParams] = useState({ size, offset: 0, targetCode: '01' })
   const { data: postReportsData, isLoading: isPostLoading, refetch: refetchPosts } = useReportList(postParams)
-  const { data: postTotalCnt = 0 } = useReportTotalCountQuery({ targetCode: '01' })
+  const { data: postTotalCnt = 0 } = useReportTotalCountQuery({ targetCode: '01', reportStatusCode:'01' })
 
   const [commentParams, setCommentParams] = useState({ size, offset: 0, targetCode: '02' })
   const { data: commentReportsData, isLoading: isCommentLoading, refetch: refetchComments } = useReportList(commentParams)
-  const { data: commentTotalCnt = 0 } = useReportTotalCountQuery({ targetCode: '02' })
+  const { data: commentTotalCnt = 0 } = useReportTotalCountQuery({ targetCode: '02', reportStatusCode:'01' })
 
   const postTotalPages = Math.ceil(postTotalCnt / size) || 1
   const postCurrentPage = Math.floor(postParams.offset / size) + 1

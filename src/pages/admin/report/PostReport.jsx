@@ -65,12 +65,15 @@ return (
                 {(postCurrentPage - 1) * 10 + index + 1}
               </CTableDataCell>
               <CTableDataCell >
+                {report.delYn === 'Y' ? (
+                        report.content?.length > 20 ? report.content.slice(0, 20) + '...' : report?.content || ''
+                      ) : (
                 <div 
                   onClick={() => {
                     if (report.targetId) {
                       navigate(`/post/${report.targetId}`); // 2. 클릭 시 이동
                     } else {
-                      console.error("targetId가 없습니다!", report);
+                      console.error("postId 없습니다!", report);
                     }
                   }}
                   className="text-dark fw-bold"
@@ -78,6 +81,7 @@ return (
                 >
                 {report.content?.length > 20 ? report.content.slice(0, 20) + '...' : report?.content || ''}
                 </div>
+                )}
               </CTableDataCell>
               <CTableDataCell >{report.targetNickname}</CTableDataCell>
               <CTableDataCell >{report.reporterNickname}</CTableDataCell>
@@ -88,6 +92,9 @@ return (
               </CTableDataCell>
               <CTableDataCell >{report.createdAt}</CTableDataCell>
               <CTableDataCell className="text-center align-middle">
+                {report.delYn === 'Y' ? (
+                        <span style={{ color: 'gray' }}>원본글 삭제됨</span>
+                      ) : (
                 <CButton 
                   variant="outline" 
                   color="danger" 
@@ -99,6 +106,7 @@ return (
                 >
                   삭제
                 </CButton>
+                )}
               </CTableDataCell>
             </CTableRow>
           ))

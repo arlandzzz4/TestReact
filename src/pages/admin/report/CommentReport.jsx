@@ -14,6 +14,7 @@ import CIcon from '@coreui/icons-react'
 import {cilClipboard} from '@coreui/icons'
 import { useCodeGroupSearch } from '@/hooks/queries/useCommonQuery';
 import CommonPagination from '../common/CommonPagination';
+import { useNavigate } from 'react-router-dom';
 
 const CommentReport = ({
   activeKey,
@@ -24,6 +25,7 @@ const CommentReport = ({
   commentCurrentPage,
   onDeleteClick
 }) => {
+  const navigate = useNavigate();
   const { data: statusCodes } = useCodeGroupSearch('REPORT_REASON', true);
 
   return (
@@ -64,7 +66,24 @@ const CommentReport = ({
                     </CTableDataCell>
                     
                     <CTableDataCell className="fw-bold text-dark py-3" style={{ maxWidth: '300px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {report.delYn === 'Y' ? (
+                        report.content?.length > 30 ? report.content.slice(0, 30) + '...' : report?.content || ''
+                      ) : (
+                      <div 
+                        onClick={() => {
+                          if (report.postId) {
+                            navigate(`/post/${report.postId}`); // 2. 클릭 시 이동
+                          } else {
+                            console.error("postId 없습니다!", report);
+                          }
+                        }}
+                        className="text-dark fw-bold"
+                        style={{ cursor: 'pointer', textDecoration: 'none' }}
+                      >
                       {report.content?.length > 30 ? report.content.slice(0, 30) + '...' : report?.content || ''}
+                      </div>
+                      )}
+
                     </CTableDataCell>
                     
                     <CTableDataCell >{report.targetNickname}</CTableDataCell>
@@ -75,6 +94,9 @@ const CommentReport = ({
                     </CTableDataCell>
                     <CTableDataCell >{report.createdAt}</CTableDataCell>
                     <CTableDataCell className="text-center align-middle">
+                      {report.delYn === 'Y' ? (
+                        <span style={{ color: 'gray' }}>원본글 삭제됨</span>
+                      ) : (
                       <CButton 
                         variant="outline" 
                         color="danger" 
@@ -86,6 +108,7 @@ const CommentReport = ({
                       >
                         삭제
                       </CButton>
+                      )}
                     </CTableDataCell>
                   </CTableRow>
                 ))
