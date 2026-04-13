@@ -134,6 +134,7 @@ const UserBoard = () => {
                   <CButton color="dark" variant="outline" active={userStatusCode === ''} onClick={() => handleUserStatusCodeChange('')} size="sm" className={`px-3 border-0 ${userStatusCode === '' ? 'text-white' : 'text-dark'}`}>전체</CButton>
                   <CButton color="dark" variant="outline" active={userStatusCode === '01'} onClick={() => handleUserStatusCodeChange('01')} size="sm" className={`px-3 border-0 ${userStatusCode === '01' ? 'text-white' : 'text-dark'}`}>활성</CButton>
                   <CButton color="dark" variant="outline" active={userStatusCode === '02'} onClick={() => handleUserStatusCodeChange('02')} size="sm" className={`px-3 border-0 ${userStatusCode === '02' ? 'text-white' : 'text-dark'}`}>정지</CButton>
+                  <CButton color="dark" variant="outline" active={userStatusCode === '03'} onClick={() => handleUserStatusCodeChange('03')} size="sm" className={`px-3 border-0 ${userStatusCode === '03' ? 'text-white' : 'text-dark'}`}>탈퇴</CButton>
                 </CButtonGroup>
                 <span className="small text-body-secondary">총 <strong>{totalCnt}</strong>명</span>
               </CCol>
