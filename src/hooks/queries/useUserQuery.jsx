@@ -8,7 +8,7 @@ export const useUserQuery = () => {
       queryFn: () => searchEmail(email),
       enabled: !!email && enabled,
       retry: false,
-      staleTime: 1000 * 60 * 5,
+      staleTime: 1000 * 30,
     });
   };
   return { useEmailSearch };
@@ -20,7 +20,7 @@ export const useUserTotalCountQuery = (searchParams, enabled = true) => {
       queryFn: ()=>searchUserTotalCount(searchParams),
       enabled: enabled,
       retry: false,
-      staleTime: 1000 * 60 * 5,
+      staleTime: 1000 * 30,
     });
 };
 
@@ -30,7 +30,7 @@ export const useUserTodayCountQuery = (enabled = true) => {
       queryFn: ()=>searchUserTodayCount(),
       enabled: enabled,
       retry: false,
-      staleTime: 1000 * 60 * 5,
+      staleTime: 1000 * 30,
     });
 };
 
@@ -40,6 +40,6 @@ export const useUserList = (searchParams, enabled = true) => {
       queryFn: ()=>searchUserList(searchParams),
       enabled: enabled,
       retry: false,
-      staleTime: 1000 * 60 * 5,
+      staleTime: 1000 * 30,
     });
 };

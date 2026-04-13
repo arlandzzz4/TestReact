@@ -8,7 +8,7 @@ export const useCommentTotalCountQuery = (searchParams, enabled = true) => {
       queryFn: ()=>searchCommentTotalCount(searchParams),
       enabled: enabled,
       retry: false,
-      staleTime: 1000 * 60 * 5,
+      staleTime: 1000 * 30,
     });
 };
 
@@ -18,7 +18,7 @@ export const useCommentTodayCountQuery = (enabled = true) => {
       queryFn: ()=>searchCommentTodayCount(),
       enabled: enabled,
       retry: false,
-      staleTime: 1000 * 60 * 5,
+      staleTime: 1000 * 30,
     });
 };
 
@@ -28,6 +28,6 @@ export const useCommentList = (searchParams, enabled = true) => {
       queryFn: ()=>searchCommentList(searchParams),
       enabled: enabled,
       retry: false,
-      staleTime: 1000 * 60 * 5,
+      staleTime: 1000 * 30,
     });
 };

@@ -7,7 +7,7 @@ export const usePostTotalCountQuery = (searchParams, enabled = true) => {
       queryFn: ()=>searchPostTotalCount(searchParams),
       enabled: enabled,
       retry: false,
-      staleTime: 1000 * 60 * 5,
+      staleTime: 1000 * 30,
     });
 };
 
@@ -17,7 +17,7 @@ export const usePostTodayCountQuery = (enabled = true) => {
       queryFn: ()=>searchPostTodayCount(),
       enabled: enabled,
       retry: false,
-      staleTime: 1000 * 60 * 5,
+      staleTime: 1000 * 30,
     });
 };
 

@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { deleteComment } from '../../api/commentApi';
 
 export const useDeleteCommentMutation = () => {
@@ -6,6 +6,7 @@ export const useDeleteCommentMutation = () => {
         mutationFn: (data) => deleteComment(data),
         onSuccess: () => {
             alert('댓글이 성공적으로 삭제되었습니다.');
+            qc.invalidateQueries({ queryKey: ['comments','commentTodayCnt','commentTotalCnt'] })
         },
         onError: (error) => {
             console.error('댓글 삭제 에러:', error);
