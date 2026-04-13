@@ -30,13 +30,3 @@ export const useReportList = (searchParams, enabled = true) => {
       staleTime: 1000 * 30,
     });
 };
-
-export const useUpdateReportStatusCode = (searchParams, enabled = true) => {
-    return useQuery({
-      queryKey: ['reportStatus', searchParams],
-      queryFn: ()=>updateReportStatusCode(searchParams),
-      enabled: enabled,
-      retry: false,
-      staleTime: 1000 * 30,
-    });
-};
