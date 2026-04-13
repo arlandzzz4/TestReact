@@ -63,6 +63,7 @@ export const updateNickname = async (data) => {
 export const updatePassword = async (data) => {
   try {
     const response = await instance.patch('/api/user/me/password', {
+      email: data.email,        // < 이메일 추가
       newPassword: data.newPassword
     });
     return response.data;
