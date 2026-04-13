@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { deleteComment } from '../../api/commentApi';
 
 export const useDeleteCommentMutation = () => {
+    const qc = useQueryClient()
     return useMutation({
         mutationFn: (data) => deleteComment(data),
         onSuccess: () => {
