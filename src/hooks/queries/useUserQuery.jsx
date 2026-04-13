@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { searchEmail, searchUserTotalCount, searchUserTodayCount, searchUserList } from '@/api/userApi';
+import { searchEmail, searchUserTotalCount, searchUserTodayCount, searchUserList, searchNickname } from '@/api/userApi';
  
 export const useUserQuery = () => {
   const useEmailSearch = (email, enabled = false) => {
@@ -8,7 +8,7 @@ export const useUserQuery = () => {
       queryFn: () => searchEmail(email),
       enabled: !!email && enabled,
       retry: false,
-      staleTime: 1000 * 30,
+      staleTime: 0,
     });
   };
   return { useEmailSearch };
@@ -43,3 +43,13 @@ export const useUserList = (searchParams, enabled = true) => {
       staleTime: 1000 * 30,
     });
 };
+
+export const useNicknameQuery = (nickname, enabled = false) => {
+    return useQuery({
+      queryKey: ['nickname', nickname],
+      queryFn: () => searchNickname(nickname),
+      enabled: !!nickname && enabled,
+      retry: false,
+      staleTime: 0,
+    });
+  };

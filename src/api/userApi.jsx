@@ -80,3 +80,15 @@ export const unsubscribe = async (data) => {
     throw error;
   }
 }
+
+export const searchNickname = async (nickname) => {
+  try {
+    const response = await instance.get(`/api/user/search/nickname`, { 
+      params: { nickname } 
+    });
+    return response.data;
+  } catch (error) {
+    console.error("닉네임 검색 중 오류 발생:", error);
+    throw error;
+  }
+};

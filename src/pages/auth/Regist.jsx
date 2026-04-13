@@ -11,7 +11,7 @@ import {
 import { auth, googleProvider } from '@/config/firebase';
 import { signInWithPopup, createUserWithEmailAndPassword, GoogleAuthProvider } from 'firebase/auth';
 import { useAuthStore } from '@/store/useAuthStore';
-import { useUserQuery } from '@/hooks/queries/useUserQuery';
+import { useUserQuery, useNicknameQuery } from '@/hooks/queries/useUserQuery';
 import { handleLoginRedirect } from '@/utils/navigation';
 import { useRegistMutation } from '@/hooks/mutations/useAuthMutation';
 
@@ -33,6 +33,9 @@ export const signupSchema = z
     nickname: z.string().min(2, "닉네임은 2자 이상이어야 합니다."),
     emailConfirm: z.literal("Y", {
       errorMap: () => ({ message: "이메일 중복 확인이 필요합니다." }),
+    }),
+    nicknameConfirm: z.literal("Y", {
+      errorMap: () => ({ message: "닉네임 중복 확인이 필요합니다." }),
     }),
     terms: z.literal("Y", {
       errorMap: () => ({ message: "이용약관에 동의해야 합니다." }),
@@ -73,6 +76,7 @@ const RegistPage = () => {
       password: '',
       confirmPassword: '',
       nickname: '',
+      nicknameConfirm: '',
       terms: terms || '',   // 받아온 값 세팅
       privacy: privacy || '' // 받아온 값 세팅
     }
@@ -86,6 +90,12 @@ const RegistPage = () => {
 
   const password = watch("password");
   const confirmPassword = watch("confirmPassword");
+
+  const nicknameValue = watch("nickname");
+  const {
+    isLoading: isNicknameCheckLoading,
+    refetch: nicknameRefetch 
+  } = useNicknameQuery(nicknameValue, false);
 
   useEffect(() => {
     if (terms) setValue('terms', terms, { shouldValidate: true });
@@ -102,7 +112,7 @@ const RegistPage = () => {
     }
   }, [password, trigger]);
 
-  // 버튼 스타일 동적 결정
+   // 버튼 스타일 동적 결정
   const buttonStyle = {
     backgroundColor: isValid ? '#3d6b4f' : '#b2b2b2', // [핵심]: 통과 시 녹색, 미통과 시 회색
     border: 'none',
@@ -146,6 +156,34 @@ const RegistPage = () => {
     }catch (error) {
         console.error("이메일 중복 확인 실패:", error);
         alert("이메일 중복 확인 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+    }
+  };
+
+  //닉네임 중복 확인 핸들러
+  const onNicknameConfirm = async () => {
+    const currentNickname = watch("nickname");
+    if (!nicknameValue || nicknameValue.length < 2) {
+      alert("닉네임을 2자 이상 입력해주세요.");
+      return;
+    }
+    try {
+      //const {data : count, isSuccess} = await nicknameRefetch(); // 직접 refetch 호출
+      const result = await nicknameRefetch();
+      // 만약 result가 undefined라면 쿼리 키 설정 문제일 확률이 높습니다.
+      if (result && result.isSuccess) {
+        const count = result.data;
+        if (count === 0) {
+          alert("사용 가능한 닉네임입니다.");
+          setValue("nicknameConfirm", "Y", { shouldValidate: true });
+        } else {
+          alert("이미 사용 중인 닉네임입니다.");
+          setValue("nicknameConfirm", "N", { shouldValidate: true });
+        }
+      } else if (result && result.isError) {
+        throw new Error("서버 응답 에러");
+      }
+    } catch (error) {
+      alert("중복 확인 중 오류가 발생했습니다.");
     }
   };
 
@@ -264,7 +302,12 @@ const RegistPage = () => {
                   {/* 닉네임 섹션 */}
                   <div className="mt-2">
                     <CFormLabel style={labelStyle} maxLength={25}>닉네임</CFormLabel>
-                    <CFormInput style={inputStyle} placeholder="" {...register('nickname')} />
+                    <CInputGroup>
+                      <CFormInput style={inputStyle} placeholder="" {...register('nickname')} />
+                      <CButton type="button" onClick={onNicknameConfirm} disabled={isNicknameCheckLoading} style={{ backgroundColor: '#e9f5ee', color: '#3d6b4f', border: 'none', marginLeft: '10px', borderRadius: '8px', fontWeight: 'bold', fontSize: '13px' }}>
+                          {isNicknameCheckLoading ? <CSpinner size="sm"/> : '사용 확인'}
+                        </CButton>
+                    </CInputGroup>
                     <div style={errorSpaceStyle(errors.nickname)}>&nbsp;</div>
                     <div style={errorSpaceStyle(errors.nickname)}>* {errors.nickname?.message || '닉네임은 2~20자 사이로 입력해주세요'}</div>
                   </div>
