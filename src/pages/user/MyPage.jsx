@@ -164,39 +164,53 @@ const MyPage = () => {
   }
 
   const changePassword = async (data) => {
-  try {
-    const currentUser = auth.currentUser;
-    if (!currentUser) {
-      alert("로그인 정보가 만료되었습니다. 다시 로그인해 주세요.");
-      return;
-    }
-
-    // 1. Firebase 재인증 (현재 비밀번호 검증)
-    const credential = EmailAuthProvider.credential(currentUser.email, data.currentPassword);
-    await reauthenticateWithCredential(currentUser, credential);
-
-    // 2. Firebase 비밀번호 변경
-    await updatePassword(currentUser, data.newPassword);
-
-    // 3. 백엔드 DB 동기화
-    updatePasswordMutate({ email: user?.email, newPassword: data.newPassword }, {
-      onSuccess: () => {
-        alert("비밀번호가 성공적으로 변경되었습니다.");
-        cancelPasswordEdit();
+    try {
+      const currentUser = auth.currentUser;
+      // 1. 유저 및 이메일 존재 여부 확인
+      if (!currentUser || !user?.email) {
+        alert("로그인 정보가 만료되었습니다. 다시 로그인해 주세요.");
+        return;
       }
-    });
 
-  } catch (error) {
-    console.error("비밀번호 변경 실패:", error);
-    if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
-      alert("현재 비밀번호가 일치하지 않습니다.");
-    } else if (error.code === 'auth/weak-password') {
-      alert("비밀번호가 너무 쉽습니다.");
-    } else {
-      alert("비밀번호 변경 중 오류가 발생했습니다.");
+      // 2. 이메일 값 고정 (비동기 작업 중 유실 방지)
+      const targetEmail = user.email;
+
+      // 3. Firebase 재인증 (현재 비밀번호 검증)
+      const credential = EmailAuthProvider.credential(targetEmail, data.currentPassword);
+      await reauthenticateWithCredential(currentUser, credential);
+
+      // 4. Firebase 비밀번호 변경
+      await updatePassword(currentUser, data.newPassword);
+
+      // 5. 백엔드 DB 동기화
+      updatePasswordMutate(
+        { 
+          email: targetEmail, 
+          newPassword: data.newPassword 
+        }, 
+        {
+          onSuccess: () => {
+            alert("비밀번호가 성공적으로 변경되었습니다.");
+            cancelPasswordEdit();
+          },
+          onError: (error) => {
+            console.error("백엔드 동기화 실패:", error);
+            alert("인증 서버 비밀번호는 변경되었으나, DB 업데이트에 실패했습니다. 관리자에게 문의하세요.");
+          }
+        }
+      );
+
+    } catch (error) {
+      console.error("비밀번호 변경 실패:", error);
+      if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
+        alert("현재 비밀번호가 일치하지 않습니다.");
+      } else if (error.code === 'auth/weak-password') {
+        alert("비밀번호가 너무 쉽습니다. (8자 이상, 대소문자/숫자/특수문자 포함)");
+      } else {
+        alert("비밀번호 변경 중 오류가 발생했습니다: " + error.message);
+      }
     }
-  }
-};
+  };
 
   const cancelPasswordEdit = () => {
     setIsEditingPassword(false);
@@ -246,7 +260,7 @@ const MyPage = () => {
 
   const handleDeletePost = (postId) => {
     if (window.confirm('정말로 이 게시글을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
-      deletePostMutate({ postId, userEmail: user.email }, {
+      deletePostMutate({ postId, userEmail: user.email,delYn: 'Y' }, {
         onSuccess: () => {
           // 성공 시 목록을 다시 불러와 UI를 업데이트합니다.
           fetchMyPosts(currentPage);
