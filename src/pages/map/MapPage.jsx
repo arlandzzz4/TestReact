@@ -62,12 +62,12 @@ const MapPage = () => {
     script.onload = () => {
       window.kakao.maps.load(() => {
         setMapLoaded(true);
-        console.log("✅ 카카오맵 SDK 로드 완료!");
+        console.log("카카오맵 SDK 로드 완료!");
       });
     };
 
     script.onerror = () => {
-      console.error("❌ 카카오맵 SDK 로드 실패");
+      console.error("카카오맵 SDK 로드 실패");
     };
 
     document.head.appendChild(script);
@@ -92,7 +92,7 @@ const MapPage = () => {
       mapContainer.current,
       options,
     );
-    console.log("✅ 지도 초기화 완료!");
+    console.log("지도 초기화 완료!");
     // 지도 클릭 이벤트 (핀 등록 모드일 때만 작동)
     window.kakao.maps.event.addListener(
       mapInstance.current,
@@ -132,7 +132,7 @@ const MapPage = () => {
         alert("삭제에 실패했어요.");
       }
     } catch (error) {
-      console.error("❌ 삭제 실패:", error);
+      console.error("삭제 실패:", error);
       alert("서버 연결에 실패했어요.");
     }
   };
@@ -144,10 +144,10 @@ const MapPage = () => {
   const fetchCustomPins = async () => {
     try {
       const response = await instance.get("/api/map/pins");
-      console.log("📌 DB에서 불러온 핀 목록:", response.data);
+      console.log("DB에서 불러온 핀 목록:", response.data);
       displayCustomPins(response.data);
     } catch (error) {
-      console.error("❌ 핀 목록 불러오기 실패:", error);
+      console.error("핀 목록 불러오기 실패:", error);
     }
   };
 
@@ -208,7 +208,7 @@ const MapPage = () => {
         infowindow.current.open(mapInstance.current, marker);
       });
     });
-    console.log(`📍 DB 핀 ${pins.length}개 지도에 표시 완료!`);
+    console.log(`DB 핀 ${pins.length}개 지도에 표시 완료!`);
   };
   // 필터 변경 시 필터링 적용
   useEffect(() => {
@@ -374,7 +374,7 @@ const MapPage = () => {
           zIndex: 9,
         });
 
-        console.log(`📍 ${firstResult.place_name} 찾음!`);
+        console.log(` ${firstResult.place_name} 찾음!`);
 
         // 2단계: 주변 운동시설 검색
         searchNearbyGyms(lat, lng);
@@ -418,7 +418,7 @@ const MapPage = () => {
           completedSearches++;
 
           if (status === window.kakao.maps.services.Status.OK) {
-            console.log(`✅ ${keyword} ${data.length}개 발견`);
+            console.log(`${keyword} ${data.length}개 발견`);
             // ✅ 검색 키워드 태그 추가
             const tagged = data.map((item) => ({
               ...item,
@@ -441,7 +441,7 @@ const MapPage = () => {
               (a, b) => parseInt(a.distance) - parseInt(b.distance),
             );
 
-            console.log(`🎯 총 ${uniqueResults.length}개 운동시설 발견!`);
+            console.log(`총 ${uniqueResults.length}개 운동시설 발견!`);
             setGyms(uniqueResults);
             setLoading(false);
           }
@@ -533,7 +533,7 @@ const MapPage = () => {
       markers.current.push(marker);
     });
 
-    console.log(`📍 ${places.length}개 마커 표시 완료!`);
+    console.log(`${places.length}개 마커 표시 완료!`);
   };
   // 핀 등록 처리
   const handlePinSubmit = async () => {
@@ -564,7 +564,7 @@ const MapPage = () => {
       const response = await instance.post("/api/map/pins", pinData);
 
       if (response.status === 200) {
-        console.log("📌 DB 저장 성공!");
+        console.log("DB 저장 성공!");
         // DB에서 핀 목록 다시 불러오기 (닉네임, 삭제버튼 바로 반영)
         fetchCustomPins();
 
@@ -573,7 +573,7 @@ const MapPage = () => {
         alert("핀 등록에 실패했어요. 다시 시도해주세요.");
       }
     } catch (error) {
-      console.error("❌ 핀 등록 실패:", error);
+      console.error("핀 등록 실패:", error);
       alert("서버 연결에 실패했어요.");
     }
 
