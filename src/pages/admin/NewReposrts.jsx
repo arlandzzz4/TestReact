@@ -17,7 +17,7 @@ const NewReposrts = () => {
             <CTable hover responsive align="middle" className="mb-0 small">
               <CTableHead className="table-light">
                 <CTableRow>
-                  <CTableHeaderCell className="border-0">신고 내용</CTableHeaderCell>
+                  <CTableHeaderCell className="border-0">신고된 내용</CTableHeaderCell>
                   <CTableHeaderCell className="border-0">유형</CTableHeaderCell>
                   <CTableHeaderCell className="border-0">접수 시간</CTableHeaderCell>
                   <CTableHeaderCell className="border-0 text-center">상태</CTableHeaderCell>
@@ -33,7 +33,7 @@ const NewReposrts = () => {
                 ) : Array.isArray(data) && data.length > 0 ? (
                   data.map((item, index) => (
                   <CTableRow key={index}>
-                    <CTableDataCell>{item?.detail?.length > 50 ? item.detail.slice(0, 50) + '...' : item?.detail || ''}</CTableDataCell>
+                    <CTableDataCell>{item?.content?.length > 50 ? item.content.slice(0, 50) + '...' : item?.content || ''}</CTableDataCell>
                     <CTableDataCell>{reasonCodes?.[item.reasonCode] || item.reasonCode}</CTableDataCell>
                     <CTableDataCell>{item.createdAt}</CTableDataCell>
                     <CTableDataCell className="text-center">
