@@ -27,6 +27,7 @@ import { cilSearch, cilPlus } from '@coreui/icons'
 import PostCard from './PostCard'
 import WritePost from './WritePost'
 import { useNavigate } from 'react-router-dom'
+import { properties } from '@/constants/properties'
 
 const TABS = ['전체', '자유', '정보', '인원모집', '공지사항']
 
@@ -54,6 +55,7 @@ const CommunityPosts = () => {
 
   const navigate = useNavigate()
   const LIMIT = 10
+  const IMAGE_URL = properties.getImageUrl() || ''
 
   //API 호출
   const fetchPosts = useCallback(async (isReset = false) => {
@@ -154,9 +156,7 @@ const mappedPosts = posts.map(post => ({
     likes: post.likes,
     comments: post.comments,
     image: post.thumbnail 
-  ? post.thumbnail.startsWith('http') 
-    ? post.thumbnail 
-    : `${(instance.defaults.baseURL || '').replace(/\/$/, '')}${post.thumbnail}`
+  ? post.thumbnail.startsWith('http') ? post.thumbnail : `${(IMAGE_URL || '').replace(/\/$/, '')}${post.thumbnail}`
   : null
   }))
 

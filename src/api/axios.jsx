@@ -91,6 +91,19 @@ instance.interceptors.response.use(
       }
     }
 
+    if (response.status === 403) {
+      const errorData = response.data;
+      
+      // 백엔드에서 보낸 에러 코드가 AUTH_001(정지,탈퇴)인 경우
+      if (errorData?.code === 'AUTH_001') {
+        alert(errorData.message || '활동이 정지된 계정입니다.');
+        
+        logout(); // Zustand 스토어 및 토큰 초기화
+        
+        return new Promise(() => {})
+      }
+    }
+
     if (response.status !== 401) {
       const errorMsg = response.data?.message || '문제가 발생했습니다.';
       console.error(`[API Error] ${response.status}: ${errorMsg}`);
