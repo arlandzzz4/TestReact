@@ -31,7 +31,7 @@ export const useLoginMutation = () => {
         }else{
           if(message)
             alert(message);
-          navigate('/Agreement', { replace: true });
+          //navigate('/Agreement', { replace: true });
         }
       } catch (err) {
         console.error("onSuccess 내부 실행 에러:", err);
