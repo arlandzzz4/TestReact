@@ -61,34 +61,34 @@ export const useUnsubscribe = () => {
     return useMutation({
         //withdrawData = email, providerCode, providerId, reason
         mutationFn: async (withdrawData) => {
-        const user = auth.currentUser;
-        if (!user) throw new Error("USER_NOT_FOUND");
+  const user = auth.currentUser;
+  if (!user) throw new Error("USER_NOT_FOUND");
 
-        // 1. 보안 재인증 (Firebase 계정 삭제 전 필수 단계)
-        const provider = user.providerData[0]?.providerId;
+  // 1. 재인증
+  const provider = user.providerData[0]?.providerId;
+  if (provider === 'google.com') {
+      await reauthenticateWithPopup(user, googleProvider);
+  } else if (provider === 'password' && withdrawData.currentPassword) {
+      const credential = EmailAuthProvider.credential(user.email, withdrawData.currentPassword);
+      await reauthenticateWithCredential(user, credential);
+  }
 
-        if (provider === 'google.com') {
-            await reauthenticateWithPopup(user, googleProvider);
-        } else if (provider === 'password' && withdrawData.currentPassword) {
-            const credential = EmailAuthProvider.credential(user.email, withdrawData.currentPassword);
-            await reauthenticateWithCredential(user, credential);
-        }
-        // 2. FCM 토큰 무효화
-        try {
-            const messaging = getMessaging();
-            await deleteToken(messaging);
-            console.log("FCM 토큰 무효화 성공");
-        } catch (fcmError) {
-            console.warn("FCM 토큰 삭제 실패(이미 없거나 권한 문제):", fcmError);
-        }
-        // 3. 백엔드 데이터 삭제 (Axios 호출)
-        const response = await unsubscribe(withdrawData);
+  // 2. FCM 토큰 무효화
+  try {
+      const messaging = getMessaging();
+      await deleteToken(messaging);
+  } catch (fcmError) {
+      console.warn("FCM 토큰 삭제 실패:", fcmError);
+  }
 
-        // 4. Firebase Auth 유저 삭제
-        await user.delete();
+  // 3. ✅ Firebase Auth 유저 삭제 (백엔드보다 먼저!)
+  await user.delete();
 
-        return response;
-        },
+  // 4. 백엔드 DB 처리 (세션 무효화 전에 Firebase 삭제 완료됨)
+  const response = await unsubscribe(withdrawData);
+
+  return response;
+},
         onSuccess: () => {
             alert('유저가 성공적으로 탈퇴되었습니다.');
             logout(); 
