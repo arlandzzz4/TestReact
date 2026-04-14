@@ -20,11 +20,11 @@ export const requestForToken = async (accessToken) => {
 console.log("vapidKey1~~~~~~~~~~~~~~~~~~~~~~~~~~", properties );
     const permission = await Notification.requestPermission();
     if (permission !== 'granted') return null;
-    console.log("vapidKey2~~~~~~~~~~~~~~~~~~~~~~~~~~", properties );
+    
     const fcmDeviceToken = await getToken(messaging, { 
       vapidKey: properties.vapidKey
     });
-    
+    console.log("fcmDeviceToken~~~~~~~~~~~~~~~~~~~~~~~~~~", fcmDeviceToken );
     if (fcmDeviceToken) {
       try {
         await instance.patch("/api/user/me/fcmToken", { fcmToken: fcmDeviceToken }, { 
