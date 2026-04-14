@@ -25,6 +25,7 @@ import '../../scss/style.scss';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { createPost, uploadPostImages, getPostDetail, updatePost, deletePostImage } from '@/api/postApi';
+import { properties } from '@/constants/properties.js';
 
 export default function WritePost() {
   const navigate = useNavigate();
@@ -47,6 +48,8 @@ export default function WritePost() {
   const MaxImages = 3;
   const { user, isAdmin } = useAuth();
   const quillRef = useRef(null);
+
+  const IMAGE_URL = properties.getImageUrl();
 
   const modules = {
     toolbar: {
@@ -72,7 +75,7 @@ export default function WritePost() {
         if (post.imageUrls && post.imageUrls.length > 0) {
           const existingImages = post.imageUrls.map((url) => ({
             id: Date.now() + Math.random(),
-            preview: `http://localhost:8080${url}`,
+            preview: url.startsWith('http') ? url : `${(IMAGE_URL || '').replace(/\/$/, '')}${url}`,
             isExisting: true,
             url: url,
           }));
