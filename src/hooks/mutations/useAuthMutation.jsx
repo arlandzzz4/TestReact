@@ -77,11 +77,10 @@ export const useRegistMutation = () => {
   const login = useAuthStore((state) => state.login);
   return useMutation({
     mutationFn: registUser,
-    onSuccess: (data) => {
+    onSuccess: (e, data) => {
       alert('회원가입이 완료되었습니다!');
-      
-      if (data.accessToken && data.user) {
-        login(data.user, data.accessToken);
+      if (data.token && data.userData) {
+        login(data.userData, data.token);
         handleLoginRedirect(navigate, location);
       } else {
         navigate('/login', { replace: true });
