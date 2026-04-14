@@ -11,35 +11,30 @@ export const requestForToken = async (accessToken) => {
   }
 
   try {
-    // 권한 요청 (이미 허용되어 있다면 바로 진행됨)
-    const permission = await Notification.requestPermission();
-    if (permission !== 'granted') {
-      console.log("알림 권한이 거부되었습니다.");
+    const currentPermission = Notification.permission;
+
+    if (currentPermission === 'denied') {
+      alert("알림 권한이 차단되어 있습니다. 브라우저 주소창 왼쪽의 '설정' 아이콘을 눌러 알림을 허용해 주세요.");
       return null;
     }
+
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') return null;
 
     const fcmDeviceToken = await getToken(messaging, { 
       vapidKey: properties.vapidKey
     });
     
     if (fcmDeviceToken) {
-      console.log(":", fcmDeviceToken);
-      
-      await instance.patch("/api/user/me/fcmToken", 
-        { fcmToken: fcmDeviceToken },
-        { 
-          headers: { 
-            Authorization: `Bearer ${accessToken}` 
-          } 
-        }
-      )
-      .then(() => console.log("서버에 토큰 등록 완료"))
-      .catch(err => console.error("서버 토큰 등록 실패:", err));
-        
+      try {
+        await instance.patch("/api/user/me/fcmToken", { fcmToken: fcmDeviceToken }, { 
+          headers: { Authorization: `Bearer ${accessToken}` } 
+        });
+        console.log("서버에 토큰 등록 완료");
+      } catch (err) {
+        console.error("서비 연동 실패. 하지만 토큰은 확보됨:", fcmDeviceToken);
+      }
       return fcmDeviceToken;
-    } else {
-      console.log("토큰을 받을 수 없습니다.");
-      return null;
     }
   } catch (err) {
     console.error("FCM 프로세스 중 에러:", err);
