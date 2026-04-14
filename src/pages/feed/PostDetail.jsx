@@ -7,6 +7,7 @@ import '../../scss/community.scss';
 import { getPostDetail, getCommentList, insertComment, deleteComment, deletePost, togglePostLike, toggleCommentLike, insertReport } from '../../api/postApi';
 import { useAuth } from '@/hooks/useAuth';
 import 'react-quill/dist/quill.snow.css';
+import { properties } from '@/constants/properties.js';
 
 const CATEGORY_MAP = {
   '01': { label: '자유', bg: '#F0E6D3', color: '#B07D3A' },
@@ -35,6 +36,7 @@ const PostDetail = () => {
   const [selectedReason, setSelectedReason] = useState('01');
   const [openDropdown, setOpenDropdown] = useState(null);
   const [clickImg, setClickImg] = useState(null);
+  const IMAGE_URL = properties.getImageUrl();
 
 
   useEffect(() => {
@@ -312,8 +314,8 @@ const PostDetail = () => {
               <img
                 onClick={()=>{setClickImg(url)}}
                 key={index}
-                src={url.startsWith('http')? url : `http://localhost:8080${url}`}
-                //src={`http://localhost:8080${url}`} //이거 s3일때를 대비해서 img/어쩌구로 오면 앞에 localhost 붙여주고, 아니면 그냥쓰게끔해야함
+                src={url.startsWith('http')? url : `${(IMAGE_URL || '').replace(/\/$/, '')}${url}`}
+                //src={`${IMAGE_URL}${url}`} //이거 s3일때를 대비해서 img/어쩌구로 오면 앞에 localhost 붙여주고, 아니면 그냥쓰게끔해야함
                 alt={`첨부 이미지 ${index + 1}`}
                 style={{ width: '100%', height: '100%', objectFit: 'cover', marginBottom: '8px', display: 'block' }}
               />
@@ -335,8 +337,8 @@ const PostDetail = () => {
             }}
           >
             <img
-              src={clickImg.startsWith('http')? clickImg : `http://localhost:8080${clickImg}`}
-              //src={`http://localhost:8080${clickImg}`} ////이거 s3일때를 대비해서 img/어쩌구로 오면 앞에 localhost 붙여주고, 아니면 그냥쓰게끔해야함
+              src={clickImg.startsWith('http')? clickImg : `${(IMAGE_URL || '').replace(/\/$/, '')}${clickImg}`}
+              //src={`${IMAGE_URL}${clickImg}`} ////이거 s3일때를 대비해서 img/어쩌구로 오면 앞에 localhost 붙여주고, 아니면 그냥쓰게끔해야함
               style={{ maxWidth: '90%', maxHeight: '90%', objectFit: 'contain' }}
             />
           </div>
