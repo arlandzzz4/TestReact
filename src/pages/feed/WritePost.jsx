@@ -61,7 +61,7 @@ export default function WritePost() {
 
   useEffect(() => {
     if (!isEditMode) return;
-    getPostDetail(id)
+    getPostDetail(id, user?.email || "")
       .then(res => {
         const post = res.data;
         setTitle(post.title);
