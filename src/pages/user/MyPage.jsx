@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CRow, CCol, CCard, CCardBody, CCardHeader, CCardFooter, CButton, CPagination, CPaginationItem, CFormInput, CForm } from '@coreui/react';
+import { CRow, CCol, CCard, CCardBody, CCardHeader, CCardFooter, CButton, CPagination, CPaginationItem, CFormInput, CForm, CSpinner } from '@coreui/react';
 import '../../scss/MyPage.scss'
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
@@ -7,6 +7,7 @@ import { instance } from '@/api/axios'; // GET 요청에 여전히 사용되므�
 import { useAuthStore } from '@/store/useAuthStore';
 import { useUnsubscribe, useUpdateNicknameMutation, useUpdatePasswordMutation } from '@/hooks/mutations/useUserMutation';
 import { useDeletePostMutation } from '@/hooks/mutations/usePostMutation';
+import { useNicknameQuery } from '@/hooks/queries/useUserQuery';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -40,6 +41,7 @@ const MyPage = () => {
 
   const [clickEdtBtn, setClickEdtBtn] = useState(false);
   const [nickName, setNickName] = useState('');
+  const [isNicknameChecked, setIsNicknameChecked] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteReason, setDeleteReason] = useState('');
   const [deletePassword, setDeletePassword] = useState('');
@@ -55,6 +57,11 @@ const MyPage = () => {
   // 내 글 삭제 뮤테이션 훅
   const { mutate: deletePostMutate } = useDeletePostMutation();
 
+  // 닉네임 중복 확인 쿼리 훅
+  const {
+    isLoading: isNicknameCheckLoading,
+    refetch: nicknameRefetch 
+  } = useNicknameQuery(nickName, false);
 
   // 비밀번호 변경 폼 관리를 위한 react-hook-form 추가
   const {
@@ -140,6 +147,40 @@ const MyPage = () => {
     }
   };
 
+  const handleNicknameChange = (e) => {
+    setNickName(e.target.value);
+    setIsNicknameChecked(false);
+  };
+
+  const onNicknameConfirm = async () => {
+    if (!nickName.trim() || nickName.length < 2) {
+      alert("닉네임을 2자 이상 입력해주세요.");
+      return;
+    }
+    if (nickName === user?.nickname) {
+      alert("현재 사용 중인 닉네임입니다.");
+      setIsNicknameChecked(true);
+      return;
+    }
+    try {
+      const result = await nicknameRefetch();
+      if (result && result.isSuccess) {
+        const count = result.data;
+        if (count === 0) {
+          alert("사용 가능한 닉네임입니다.");
+          setIsNicknameChecked(true);
+        } else {
+          alert("이미 사용 중인 닉네임입니다.");
+          setIsNicknameChecked(false);
+        }
+      } else if (result && result.isError) {
+        throw new Error("서버 응답 에러");
+      }
+    } catch (error) {
+      alert("중복 확인 중 오류가 발생했습니다.");
+    }
+  };
+
   const editProfile = () => {
     if (!nickName.trim()) {
       alert("변경할 닉네임을 입력해 주세요.");
@@ -149,11 +190,16 @@ const MyPage = () => {
       alert("닉네임은 최대 50자까지 입력 가능합니다.");
       return;
     }
+    if (nickName !== user?.nickname && !isNicknameChecked) {
+      alert("닉네임 중복 확인을 진행해주세요.");
+      return;
+    }
     // 커스텀 훅을 사용하여 닉네임 변경 요청
     updateNicknameMutate({ email: user.email, nickname: nickName }, {
       onSuccess: () => {
         setNickName('');
         setClickEdtBtn(false);
+        setIsNicknameChecked(false);
       }
     });
   }
@@ -161,6 +207,7 @@ const MyPage = () => {
   const cancelEdit = () => {
     setNickName('');
     setClickEdtBtn(false);
+    setIsNicknameChecked(false);
   }
 
   const changePassword = async (data) => {
@@ -316,7 +363,10 @@ const MyPage = () => {
               :<CButton
                 onClick={() => {
                   setClickEdtBtn(!clickEdtBtn);
-                  if (!clickEdtBtn) setNickName(user?.nickname || '');
+                  if (!clickEdtBtn) {
+                    setNickName(user?.nickname || '');
+                    setIsNicknameChecked(true);
+                  }
                   cancelPasswordEdit();
                   cancelDelete();
                 }}
@@ -335,13 +385,23 @@ const MyPage = () => {
               </div>
               {clickEdtBtn?
                 <div style={{margin: '1.5rem 0 0 0'}}>
-                  <CFormInput 
-                    onChange={(e) => setNickName(e.target.value)}
-                    value={nickName}
-                    placeholder='변경할 닉네임 입력'
-                    style={{margin: '0 0 1rem 0'}}
-                    max Length={50}
-                  />
+                  <div className="d-flex mb-3">
+                    <CFormInput 
+                      onChange={handleNicknameChange}
+                      value={nickName}
+                      placeholder='변경할 닉네임 입력'
+                      style={{margin: '0'}}
+                      maxLength={50}
+                    />
+                    <CButton 
+                        type="button" 
+                        onClick={onNicknameConfirm} 
+                        disabled={isNicknameCheckLoading} 
+                        style={{ backgroundColor: '#e9f5ee', color: '#3d6b4f', border: 'none', marginLeft: '10px', borderRadius: '8px', fontWeight: 'bold', fontSize: '13px', whiteSpace: 'nowrap' }}
+                    >
+                        {isNicknameCheckLoading ? <CSpinner size="sm"/> : '중복 확인'}
+                    </CButton>
+                  </div>
                   <CButton
                     onClick={editProfile}
                     className="rounded-pill button-green"
