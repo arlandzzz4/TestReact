@@ -77,14 +77,28 @@ export const useRegistMutation = () => {
   const login = useAuthStore((state) => state.login);
   return useMutation({
     mutationFn: registUser,
-    onSuccess: (e, data) => {
+    onSuccess: (data) => {
       alert('회원가입이 완료되었습니다!');
-      if (data.token && data.userData) {
-        login(data.userData, data.token);
-        handleLoginRedirect(navigate, location);
-      } else {
-        navigate('/login', { replace: true });
-      }
+      const { accessToken, user, success, message} = data;
+        if (accessToken) {
+          login(user, accessToken);
+
+          import('@/api/fcm/fcmService').then(({ requestForToken }) => {
+            requestForToken(accessToken).catch(err => console.error("FCM 지연 등록 실패:", err));
+          });
+        }
+        if(success){
+          if (!accessToken) {
+            throw new Error("토큰이 응답에 포함되어 있지 않습니다.");
+          }
+
+          
+          handleLoginRedirect(navigate, location);
+        }else{
+          if(message)
+            alert(message);
+          //navigate('/Agreement', { replace: true });
+        }
     },
     onError: (error) => {
       const errorMessage = error.message || '회원가입에 실패했습니다.';
