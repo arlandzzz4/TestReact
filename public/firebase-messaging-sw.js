@@ -2,7 +2,7 @@
 importScripts('https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js');
 
-const targetUrl = event.notification.data.link_url || '/';
+//const targetUrl = event.notification.data.link_url || '/';
 // 2. Firebase 초기화 (src의 설정을 쓸 수 없으므로 여기에 직접 입력)
 // 변경 이유: 서비스 워커는 public 폴더 내에서 독립적으로 실행되므로 외부 src 파일을 참조할 수 없습니다.
 const firebaseConfig = {
