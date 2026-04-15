@@ -114,7 +114,7 @@ const RegistPage = () => {
 
    // 버튼 스타일 동적 결정
   const buttonStyle = {
-    backgroundColor: isValid ? '#3d6b4f' : '#b2b2b2', // [핵심]: 통과 시 녹색, 미통과 시 회색
+    backgroundColor: isValid ? '#3d6b4f' : '#b2b2b2', // 통과 시 녹색, 미통과 시 회색
     border: 'none',
     color: 'white',
     fontWeight: 'bold',

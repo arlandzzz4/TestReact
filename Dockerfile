@@ -1,7 +1,7 @@
 # 1단계: 빌드 (Node.js 환경)
 FROM node:20-alpine AS build
 
-# [변경 이유]: 기본값이 'development'일 경우, CI/CD 파이프라인이나 수동 빌드 시 
+# 기본값이 'development'일 경우, CI/CD 파이프라인이나 수동 빌드 시 
 # 별도의 인자를 주지 않으면 무거운 개발용 번들로 실서버에 배포되는 대참사가 발생합니다.
 # 실서버 배포용 Dockerfile이므로 기본값을 'production'으로 변경하여 안전을 확보합니다.
 ARG BUILD_MODE=production

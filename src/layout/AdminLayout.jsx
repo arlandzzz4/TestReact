@@ -13,7 +13,7 @@ const AdminLayout = () => (
         
         {/* 3. 실제 컨텐츠 영역 */}
         <div className="body flex-grow-1 px-3">
-          {/* [핵심]: AppContent 내부에서 Outlet이 호출되어 페이지가 바뀝니다. */}
+          {/* AppContent 내부에서 Outlet이 호출되어 페이지가 바뀝니다. */}
           <AppContent />
         </div>
         

@@ -26,7 +26,7 @@ const router = createBrowserRouter([
             lazy: () => import('@/pages/feed/Feed').then(m => ({ Component: m.default })) 
           },
           //게시글 포스트 상세로 이동하는 라우트 처리
-          { // [글 수정] 선택 시, 게시글작성 페이지로 이동
+          { // 선택 시, 게시글작성 페이지로 이동
             path: 'post/edit/:id',
             lazy: () => import('@/pages/feed/WritePost').then(m => ({ Component: m.default })),
           },

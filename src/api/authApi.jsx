@@ -23,7 +23,7 @@ export const registUser = async ({ userData, token }) => {
   try {
     const response = await instance.post('/api/auth/regist', userData, {
       headers: {
-        Authorization: `Bearer ${token}` // [핵심] 백엔드로 토큰 전달
+        Authorization: `Bearer ${token}` //백엔드로 토큰 전달
       }
     });
     return response.data; 
