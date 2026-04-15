@@ -31,8 +31,21 @@ const ChallengePage = () => {
   const [description, setDescription] = useState(''); //챌린지 설명 저장
   const [challenges, setChallenges] = useState([]); // 생성된 챌린지 목록을 저장할 배열
   const { user } = useAuth(); // 1. 전역 상태에서 로그인한 유저 정보 가져오기
+  const [isMobile, setIsMobile] = useState(false);
 
   const userEmail = user?.email || ""; // 2. 실제 로그인한 유저 이메일 할당
+
+  useEffect(() => {
+    const handleResize = () => {
+      // 모바일 화면 너비 기준(768px) 보다 작을 경우 isMobile을 true로 설정
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    handleResize(); // 컴포넌트 마운트 시 초기 체크
+    window.addEventListener('resize', handleResize); // 화면 크기 변경 감지
+
+    return () => window.removeEventListener('resize', handleResize); // 클린업
+  }, []);
 
   useEffect(() => {
     fetchChallenges();
@@ -143,10 +156,18 @@ const ChallengePage = () => {
 // }
 
   return (
-    <div className="p-8" style={{padding: '2rem 2.5rem 3rem'}}>
-      <div className="d-flex justify-content-between align-items-center">
-        <h2 style={{fontSize:'22px', fontWeight:'700', color:'textDark', marginBottom:'4px'}}>도전! 1인 챌린지</h2>
-        <CButton onClick={newChallenge} className='form-submit-btn'>+ 추가</CButton>
+    <div className="p-8" style={{padding: isMobile ? '2rem 1rem 3rem' : '2rem 2.5rem 3rem'}}>
+      <div className="d-flex justify-content-between align-items-center flex-nowrap gap-3">
+        <h2
+          style={{ fontSize: '22px', fontWeight: '700', color: 'textDark', marginBottom: '4px', whiteSpace: 'nowrap' }}
+        >
+          도전! 1인 챌린지
+        </h2>
+        <CButton
+          onClick={newChallenge}
+          className="form-submit-btn"
+          style={{ flexShrink: 0, whiteSpace: 'nowrap' }}
+        >+ 추가</CButton>
       </div>
       <p className="text-muted" style={{fontSize:'14px', margin:'0'}}>나만의 목표를 세우고 꾸준히 기록해보세요</p>
       <hr />

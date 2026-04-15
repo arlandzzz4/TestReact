@@ -36,8 +36,21 @@ const PostDetail = () => {
   const [selectedReason, setSelectedReason] = useState('01');
   const [openDropdown, setOpenDropdown] = useState(null);
   const [clickImg, setClickImg] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
   const IMAGE_URL = properties.getImageUrl();
 
+
+  useEffect(() => {
+    const handleResize = () => {
+      // 모바일 화면 너비 기준(768px) 보다 작을 경우 isMobile을 true로 설정
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    handleResize(); // 컴포넌트 마운트 시 초기 체크
+    window.addEventListener('resize', handleResize); // 화면 크기 변경 감지
+
+    return () => window.removeEventListener('resize', handleResize); // 클린업
+  }, []);
 
   useEffect(() => {
     if (userEmail === "" && isLoggedIn) return; // 로그인했는데 email이 아직 없으면 기다림
@@ -254,7 +267,11 @@ const PostDetail = () => {
   };
 
   return (
-    <div className="post-detail-wrap" onClick={() => setOpenDropdown(null)}>
+    <div
+      className="post-detail-wrap"
+      style={isMobile ? { maxWidth: '100%', margin: '0', padding: '0' } : {}}
+      onClick={() => setOpenDropdown(null)}
+    >
 
       {/* 게시글 본문 */}
       <div className="post-detail-card">

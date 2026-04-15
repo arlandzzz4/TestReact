@@ -142,7 +142,7 @@ const PostBoard = () => {
                   <CTableHeaderCell className="text-center" style={{ width: '50px' }}>No.</CTableHeaderCell>
                   <CTableHeaderCell>게시글</CTableHeaderCell>
                   <CTableHeaderCell>닉네임</CTableHeaderCell>
-                  <CTableHeaderCell>가입일</CTableHeaderCell>
+                  <CTableHeaderCell>작성일</CTableHeaderCell>
                   <CTableHeaderCell>댓글</CTableHeaderCell>
                   <CTableHeaderCell className="text-center">관리</CTableHeaderCell>
                 </CTableRow>
