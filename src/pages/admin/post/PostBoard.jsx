@@ -144,14 +144,13 @@ const PostBoard = () => {
                   <CTableHeaderCell>닉네임</CTableHeaderCell>
                   <CTableHeaderCell>가입일</CTableHeaderCell>
                   <CTableHeaderCell>댓글</CTableHeaderCell>
-                  <CTableHeaderCell className="text-center">상태</CTableHeaderCell>
                   <CTableHeaderCell className="text-center">관리</CTableHeaderCell>
                 </CTableRow>
               </CTableHead>
               <CTableBody>
                 {isLoading ? (
                   <CTableRow>
-                    <CTableDataCell colSpan="7" className="text-center py-4 text-muted">
+                    <CTableDataCell colSpan="6" className="text-center py-4 text-muted">
                       데이터를 불러오는 중입니다...
                     </CTableDataCell>
                   </CTableRow>
@@ -177,9 +176,6 @@ const PostBoard = () => {
                       <CTableDataCell>{item.nickname}</CTableDataCell>
                       <CTableDataCell>{item.createdAt}</CTableDataCell>
                       <CTableDataCell>{item.comments}</CTableDataCell>
-                      <CTableDataCell className="text-center">
-                        <StatusBadge status={statusCodes?.[item.reportStatusCode] || '정상'} />
-                      </CTableDataCell>
                       <CTableDataCell className="text-center align-middle">
                         <CButton
                         variant="outline" 
@@ -197,7 +193,7 @@ const PostBoard = () => {
                   ))
                 ) : (
                   <CTableRow>
-                    <CTableDataCell colSpan="7" className="text-center text-muted py-3">
+                    <CTableDataCell colSpan="6" className="text-center text-muted py-3">
                       데이터가 없습니다.
                     </CTableDataCell>
                   </CTableRow>

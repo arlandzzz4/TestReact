@@ -44,7 +44,15 @@ instance.interceptors.response.use(
     const { config, response } = error;
     const originalRequest = config;
 
-    if (!response) return Promise.reject(error);
+    if (!response) {
+      if (!originalRequest._retryCount) {
+        originalRequest._retryCount = 1;
+        console.warn("서버 연결 실패. 재접속 시도 중...");
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        return instance(originalRequest);
+      }
+      return Promise.reject(error);
+    }
 
     if (originalRequest.url.includes(LOGIN_ENDPOINT)) {
       return Promise.reject(error);
@@ -107,6 +115,15 @@ instance.interceptors.response.use(
     if (response.status !== 401) {
       const errorMsg = response.data?.message || '문제가 발생했습니다.';
       console.error(`[API Error] ${response.status}: ${errorMsg}`);
+    }
+
+    if (response?.status === 500 && response.data?.message?.includes("FirebaseApp")) {
+      if (!originalRequest._firebaseRetry) {
+         originalRequest._firebaseRetry = true;
+         console.warn("Firebase 초기화 대기 중...");
+         await new Promise(resolve => setTimeout(resolve, 1500));
+         return instance(originalRequest);
+       }
     }
 
     return Promise.reject(error);
