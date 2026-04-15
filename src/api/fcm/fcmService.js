@@ -17,14 +17,12 @@ export const requestForToken = async (accessToken) => {
       alert("알림 권한이 차단되어 있습니다. 브라우저 주소창 왼쪽의 '설정' 아이콘을 눌러 알림을 허용해 주세요.");
       return null;
     }
-console.log("vapidKey1~~~~~~~~~~~~~~~~~~~~~~~~~~", properties );
     const permission = await Notification.requestPermission();
     if (permission !== 'granted') return null;
     
     const fcmDeviceToken = await getToken(messaging, { 
       vapidKey: properties.vapidKey
     });
-    console.log("fcmDeviceToken~~~~~~~~~~~~~~~~~~~~~~~~~~", fcmDeviceToken );
     if (fcmDeviceToken) {
       try {
         await instance.patch("/api/user/me/fcmToken", { fcmToken: fcmDeviceToken }, { 
