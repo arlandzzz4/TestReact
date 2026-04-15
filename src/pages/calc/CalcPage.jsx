@@ -6,7 +6,7 @@
 //   npm install @coreui/react @coreui/icons @coreui/icons-react
 //   (CoreUI CSS는 앱 엔트리에서 import '@coreui/coreui/dist/css/coreui.min.css')
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import {
   CCard, CCardBody, CCardTitle,
   CFormLabel, CFormInput, CButton,
@@ -42,6 +42,19 @@ export default function CalcPage() {
   const [actIdx, setActIdx]   = useState(-1)
   const [errors, setErrors]   = useState(INIT_ERRORS)
   const [result, setResult]   = useState(null)       // 계산 결과 또는 null
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      // 모바일 화면 너비 기준(768px) 보다 작을 경우 isMobile을 true로 설정
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    handleResize(); // 컴포넌트 마운트 시 초기 체크
+    window.addEventListener('resize', handleResize); // 화면 크기 변경 감지
+
+    return () => window.removeEventListener('resize', handleResize); // 클린업
+  }, []);
 
   /* 입력 변경 */
   const handleChange = useCallback((field) => (e) => {
@@ -116,9 +129,8 @@ export default function CalcPage() {
 
       {/* ── 페이지 헤더 ── */}
       <div 
-        style={{
-        padding: '36px 48px 28px',
-        // background: '#f0ede6',
+        style={{ 
+        padding: isMobile ? '36px 15px 28px' : '36px 48px 28px',
         borderBottom: '1px solid #e4e0d8',
       }}>
         <h1 style={{fontSize:'22px', fontWeight:'700', color:'textDark', marginBottom:'4px'}}>
@@ -139,7 +151,7 @@ export default function CalcPage() {
       </div>
 
       {/* ── 본문 ── */}
-      <div style={{ padding: '32px 48px', maxWidth: 980 }}>
+      <div style={{ padding: isMobile ? '32px 15px' : '32px 48px', maxWidth: 980 }}>
         <CRow className="g-4">
 
           {/* ────────── 좌: 입력 카드 ────────── */}

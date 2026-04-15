@@ -162,6 +162,12 @@ const mappedPosts = posts.map(post => ({
 
   return (
     <div className="mb-4">
+      {/* 모바일에서 탭 스크롤바를 숨기기 위한 스타일 */}
+      <style>{`
+        .category-tabs-container::-webkit-scrollbar {
+          display: none; /* Chrome, Safari, Opera*/
+        }
+      `}</style>
 
       {/* ── 섹션 헤더 ── */}
       <div
@@ -177,6 +183,7 @@ const mappedPosts = posts.map(post => ({
 
         {/* 필터 탭 */}
         <div
+          className="category-tabs-container"
           style={{
             display: 'flex',
             gap: 4,
@@ -184,6 +191,11 @@ const mappedPosts = posts.map(post => ({
             borderRadius: '40px',
             padding: '4px',
             boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+            // 모바일 뷰에서 가로 스크롤 가능하도록 설정
+            overflowX: 'auto',
+            scrollbarWidth: 'none', // Firefox
+            msOverflowStyle: 'none', // IE and Edge
+            minWidth: 0, // flex 아이템이 줄어들 때 overflow가 제대로 동작하도록 보장
           }}
         >
           {TABS.map((tab) => (
@@ -201,6 +213,8 @@ const mappedPosts = posts.map(post => ({
                 cursor: 'pointer',
                 transition: 'all 0.2s',
                 boxShadow: activeTab === tab ? `0 2px 8px ${TAB_COLORS[tab].shadow}` : 'none',
+                whiteSpace: 'nowrap', // 버튼 내 텍스트 줄바꿈 방지
+                flexShrink: 0,        // 버튼이 찌그러지는 것을 방지
               }}
             >
               {tab}
@@ -209,7 +223,7 @@ const mappedPosts = posts.map(post => ({
         </div>
 
         {/* 우측 그룹: 검색창 + 글쓰기 버튼 */}
-        <div className="d-flex align-items-center gap-2">
+        <div className="d-flex align-items-center gap-2" style={{ flexShrink: 0 }}>
           
           {/* 검색창 */}
           <CInputGroup style={{ width: 220 }}>

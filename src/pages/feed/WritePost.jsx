@@ -48,6 +48,7 @@ export default function WritePost() {
   const MaxImages = 3;
   const { user, isAdmin } = useAuth();
   const quillRef = useRef(null);
+  const [isMobile, setIsMobile] = useState(false);
 
   const IMAGE_URL = properties.getImageUrl();
 
@@ -61,6 +62,18 @@ export default function WritePost() {
       ]
     }
   }
+
+  useEffect(() => {
+    const handleResize = () => {
+      // 모바일 화면 너비 기준(768px) 보다 작을 경우 isMobile을 true로 설정
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    handleResize(); // 컴포넌트 마운트 시 초기 체크
+    window.addEventListener('resize', handleResize); // 화면 크기 변경 감지
+
+    return () => window.removeEventListener('resize', handleResize); // 클린업
+  }, []);
 
   useEffect(() => {
     if (!isEditMode) return;
@@ -83,7 +96,7 @@ export default function WritePost() {
         }
       })
       .catch(err => console.error('게시글 불러오기 실패', err));
-  }, [isEditMode, id]);
+  }, [isEditMode, id, user?.email, IMAGE_URL]);
 
   const handleLeave = () => {
     if (isDirty) {
@@ -225,7 +238,11 @@ export default function WritePost() {
 
       {/* ── 에디터 및 본문 영역 ── */}
       <div className="d-flex justify-content-center mb-5 write-post-container">
-        <div className="write-post-inner">
+        <div
+          className="write-post-inner"
+          // 모바일 뷰일 때, 좌우 여백을 없애고 너비를 100%로 설정
+          style={isMobile ? { width: '100%', maxWidth: '100%', margin: '0', padding: '0 15px' } : {}}
+        >
           <form onSubmit={handleSubmit}>
             {/* ── 카테고리 선택 영역 ── */}
             <p className="form-section-title mt-3">카테고리 <span className="required-star">*</span></p>

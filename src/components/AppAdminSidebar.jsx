@@ -86,7 +86,7 @@ const AppAdminSidebar = () => {
           </span>
           <span
           style={{ color: 'white', fontSize: '0.8rem', textDecoration: 'none' }}
-          > Information Of Balace</span>
+          > Information Of Balance</span>
           {/* 사이드바가 좁혀졌을 때 보일 축약 이름 */}
           <span className="sidebar-brand-narrow" style={{ color: 'white', fontWeight: 'bold', fontSize: '1.5rem' }}>
             I
