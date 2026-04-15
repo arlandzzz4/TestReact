@@ -141,13 +141,14 @@ const CommentBoard = () => {
                   <CTableHeaderCell>작성자</CTableHeaderCell>
                   <CTableHeaderCell>게시글</CTableHeaderCell>
                   <CTableHeaderCell>작성일</CTableHeaderCell>
+                  <CTableHeaderCell >신고수</CTableHeaderCell>
                   <CTableHeaderCell className="text-center">관리</CTableHeaderCell>
                 </CTableRow>
               </CTableHead>
               <CTableBody>
                 {isLoading ? (
                   <CTableRow>
-                    <CTableDataCell colSpan="6" className="text-center py-4 text-muted">
+                    <CTableDataCell colSpan="7" className="text-center py-4 text-muted">
                       데이터를 불러오는 중입니다...
                     </CTableDataCell>
                   </CTableRow>
@@ -174,6 +175,9 @@ const CommentBoard = () => {
                       <CTableDataCell>{item.title?.length > 10 ? item.title.slice(0, 10) + '...' : item?.title || ''}</CTableDataCell>
                       <CTableDataCell>{item.createdAt}</CTableDataCell>
                       <CTableDataCell className="text-center align-middle">
+                        {item.reportCnt}
+                      </CTableDataCell>
+                      <CTableDataCell className="text-center align-middle">
                         <CButton
                         variant="outline" 
                         color="danger" 
@@ -190,7 +194,7 @@ const CommentBoard = () => {
                   ))
                 ) : (
                   <CTableRow>
-                    <CTableDataCell colSpan="6" className="text-center text-muted py-3">
+                    <CTableDataCell colSpan="7" className="text-center text-muted py-3">
                       데이터가 없습니다.
                     </CTableDataCell>
                   </CTableRow>
